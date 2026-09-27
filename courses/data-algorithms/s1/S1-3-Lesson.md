@@ -1,0 +1,88 @@
+# 栈、队列与双端队列
+
+> 数组与链表是"通用容器"，而栈和队列是**限制存取端**的抽象：只在特定一端进出，换来清晰的语义与 O(1) 操作。
+> 后端里它们不是做题工具，而是线程池、消息削峰、BFS、表达式求值、撤销/回滚的骨架。
+
+## 一、栈 Stack：后进先出（LIFO）
+
+只在一端（栈顶）push/pop，均 O(1)。它的本质是**"最近的最先处理"**——嵌套结构、撤销、回溯都天然是栈。
+
+```java
+// 反面教材：java.util.Stack 继承 Vector，方法全 synchronized，还暴露 get(i) 破坏栈语义
+Deque<Integer> stack = new ArrayDeque<>();   // JDK 官方推荐：用 Deque 当栈
+stack.push(1);
+stack.push(2);
+int top = stack.pop();   // 2
+```
+
+**典型用途**：
+- **表达式求值 / 括号匹配**：`()` `[]` `{}` 的嵌套校验，遇到闭括号弹栈顶配对。
+- **DFS 与回溯**：递归的调用栈就是栈；把递归改迭代时手工维护栈。
+- **撤销 / 编译**：Ctrl+Z、浏览器前进后退、编译器语法分析（算符优先）。
+- **单调栈**：求"下一个更大元素"（阶段四 s4-6 详解）。
+
+## 二、队列 Queue：先进先出（FIFO）
+
+尾部入、头部出，均 O(1)。它体现的是**"先来先服务"**，是并发与调度的天然模型。
+
+```java
+Deque<Integer> q = new ArrayDeque<>();   // 单线程队列
+q.offer(1); q.offer(2);
+q.poll();   // 1，出队
+```
+
+**典型用途**：
+- **BFS / 层序遍历**：按距离逐层扩散，队列保证先发现的先扩展。
+- **线程池任务队列**、**消息队列（MQ）**、**请求排队**、**滑动窗口限流**。
+- **生产者-消费者**：一方 `offer`、一方 `poll`，中间用队列解耦。
+
+## 三、双端队列 Deque：两头通吃
+
+`ArrayDeque` 底层是**循环数组** + `head/tail` 取模移动，两头都能 O(1) 增删，既能当栈又能当队列，还比 `Stack`/`LinkedList` 更快更省内存。**单线程要栈或队列，一律 `ArrayDeque`。**
+
+```java
+Deque<Integer> dq = new ArrayDeque<>();
+dq.addFirst(2); dq.addLast(3);
+dq.removeFirst(); dq.removeLast();
+// 不能存 null：用 null 表示"空/无元素"，存 null 会与 peek 返回 null 歧义
+```
+
+## 四、PriorityQueue：出队按优先级，不是 FIFO
+
+`PriorityQueue` 底层是**二叉堆**（下节 s2-3 详解），`offer/poll` O(log n)，堆顶永远是极值。适合"每次取最优先/最小/最大"的场景：任务调度、Top-K、Dijkstra、合并 K 个有序序列。注意它**不保证整体有序**，只保证堆顶最值出队。
+
+## 五、BlockingQueue：并发生产消的核心
+
+`put/take` 自带"队空阻塞等待 / 队满阻塞生产者"，是 JUC 线程池与生产者-消费者的骨架：
+
+| 实现 | 结构 | 锁 | 典型场景 |
+|---|---|---|---|
+| `ArrayBlockingQueue` | 有界数组 | 单锁 + notEmpty/notFull | 需要严格有界背压 |
+| `LinkedBlockingQueue` | 可选有界链表 | put/take 两把锁，吞吐高 | 高并发产消（务必显式设容量） |
+| `SynchronousQueue` | 不存元素 | 直接交接 | `CachedThreadPool` 即拿即走 |
+| `PriorityBlockingQueue` | 无界堆 | — | 按优先级出队 |
+
+**稳定性生命线——必须用有界队列**：无界队列会让线程池的 `maximumPoolSize` 与拒绝策略形同虚设（任务全进队列，线程数停在 core），突发流量下无限堆积 → OOM，且排队延迟不可控。
+
+```java
+// 手动建线程池：有界队列 + 明确拒绝策略，才是生产可用配置
+new ThreadPoolExecutor(core, max, 60, SECONDS,
+    new ArrayBlockingQueue<>(queueCap),        // 队列容量 = 到达速率 × 可容忍排队时间
+    new ThreadPoolExecutor.CallerRunsPolicy()); // 打满时回压到调用方，而非静默丢弃
+```
+
+> 电力/电商场景：采集网关每秒海量上报涌入 → 前端 `BlockingQueue` 缓冲削峰，消费者 `drainTo` 批量落库；队列容量由压测出的合理排队深度决定，太大是"把过载藏起来"，RT 会更晚更隐蔽地爆发。
+
+## 六、选型口诀
+
+1. 单线程要**栈** → `ArrayDeque`（push/pop/peek），弃用 `java.util.Stack`。
+2. 单线程要**队列** → `ArrayDeque`（offer/poll/peek）。
+3. 要**按优先级**出队 → `PriorityQueue`（堆）。
+4. **并发**产消 / 线程池 → `BlockingQueue`，且**必须显式有界**并配拒绝策略。
+
+## 七、本节要点回顾
+
+1. 栈=LIFO（表达式/DFS/回溯/撤销），队列=FIFO（BFS/调度/削峰），Deque=两头通吃的循环数组。
+2. JDK 里栈和队列都用 `ArrayDeque`，别用 `Stack`；优先级出队用 `PriorityQueue`。
+3. `BlockingQueue` 是线程池与生产者-消费者的骨架，**有界是铁律**，容量靠压测定。
+4. 这些抽象在阶段三会重逢：BFS 用队列、DFS/回溯用栈、Dijkstra 用优先队列。

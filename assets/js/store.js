@@ -1,5 +1,5 @@
 /* 进度存储：localStorage 为主，Markdown 进度文件为辅（可导入/导出，满足"进度文件必须是 Markdown"） */
-import { CATEGORIES, INDEX, secKey } from './data.js?v=5';
+import { CATEGORIES, INDEX, secKey } from './data.js?v=13';
 
 const LS_PROGRESS = 'bjb.progress.v1';
 const LS_THEME = 'bjb.theme';

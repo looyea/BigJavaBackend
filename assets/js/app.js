@@ -1,8 +1,8 @@
 /* 路由 + 页面渲染：首页 / 课程包 / 小节课程 / 小测验 / 作业题 / 面试题 / 地图 / 进度 */
 /* 模块 URL 带版本号：浏览器会强缓存 ES Module 的静态路径，改动 JS 后同步递增 index.html 与本文件的 ?v 以强制刷新 */
-import { CATEGORIES, INDEX, findSection, secFile, secKey } from './data.js?v=5';
-import { renderMarkdown, parseQuiz, stripTitle, renderInline, gradeQuiz } from './md.js?v=5';
-import * as store from './store.js?v=5';
+import { CATEGORIES, INDEX, findSection, secFile, secKey } from './data.js?v=13';
+import { renderMarkdown, parseQuiz, stripTitle, renderInline, gradeQuiz } from './md.js?v=13';
+import * as store from './store.js?v=13';
 
 const app = document.getElementById('app');
 const mdCache = new Map();
@@ -11,6 +11,16 @@ const mdCache = new Map();
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const stars = (n) => `<span class="stars">${'★'.repeat(n)}<span class="off">${'★'.repeat(5 - n)}</span></span>`;
+
+/* 按重要级标定讲解详略（见 data.js 设计基线）：重要度越高，内容越详实深入 */
+const DEPTH = {
+  5: ['核心精讲', '源码 + 场景 + 行业实践，逐层深入'],
+  4: ['重点标准', '讲透原理并配实战与权衡'],
+  3: ['标准概览', '够用机制 + 典型示例'],
+  2: ['简明速览', '定位、用法与取舍'],
+  1: ['了解即可', '知道是什么、何时需要'],
+};
+const depthOf = (imp) => DEPTH[imp] || DEPTH[3];
 
 function toast(msg) {
   const el = document.getElementById('toast');
@@ -62,8 +72,12 @@ function notFound(title, hint) {
 function viewHome() {
   const s = store.siteStats();
   const html = CATEGORIES.map((cat) => {
-    const cards = cat.packages.map((pkg) => {
+    /* 课程包按重要级降序排列：同等重要保持定义顺序（即推荐学习顺序） */
+    const cards = cat.packages.map((pkg, i) => ({ pkg, i }))
+      .sort((a, b) => (b.pkg.importance - a.pkg.importance) || (a.i - b.i))
+      .map(({ pkg }) => {
       const st = store.pkgStats(pkg.id);
+      const [dName, dDesc] = depthOf(pkg.importance);
       const tag = st.done === 0 ? '<span class="tag">未开始</span>'
         : st.done < st.total ? '<span class="tag avail">进行中</span>'
           : '<span class="tag done">已完成</span>';
@@ -74,7 +88,10 @@ function viewHome() {
           <span>阶段 ${pkg.stages.length} · 小节 ${st.total}</span>
           <span>重要性 ${stars(pkg.importance)}</span>
         </div>
-        <div class="meta" style="margin-top:4px"><span>已过关 ${st.done}/${st.total}</span></div>
+        <div class="meta" style="margin-top:4px">
+          <span class="depth-tag depth-${pkg.importance}">${dName}</span>
+          <span>已过关 ${st.done}/${st.total}</span>
+        </div>
       </a>`;
     }).join('');
     return `<section class="category">
@@ -86,6 +103,7 @@ function viewHome() {
   return `${crumb([{ text: '首页' }])}
     <h1 class="page-title">Big Java Backend <span class="tag">大Java后端</span></h1>
     <p class="page-sub">以资深架构师的视角组织的 Java 后端学习体系：${CATEGORIES.length} 个大技术分区 · ${Object.keys(INDEX.pkg).length} 个课程包 · ${s.total} 个小节。已过关 ${s.sections} 节，采用过关制解锁。</p>
+    <p class="legend">方块顺序即推荐学习路径（地基 → 语言 → 框架 → 分布式 → 架构 → 数据/中间件/治理 → 工程化 → 行业专题）；每张卡片底部按重要级标注讲解详略，<b>越红越需深入精讲、越绿越可速览了解</b>：<span class="depth-legend"><span class="depth-tag depth-5">核心精讲</span><span class="depth-tag depth-4">重点标准</span><span class="depth-tag depth-3">标准概览</span><span class="depth-tag depth-2">简明速览</span><span class="depth-tag depth-1">了解即可</span></span></p>
     ${html}`;
 }
 

@@ -72,6 +72,26 @@ a:hover { text-decoration: underline; }
 .pkg-card .meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); }
 .pkg-card.locked { opacity: .55; }
 
+/* 首页学习路径说明 + 详略分档标签 */
+.legend { font-size: 12.5px; color: var(--text-dim); margin: -8px 0 22px; line-height: 1.9; }
+.legend .depth-legend { display: inline-flex; flex-wrap: wrap; gap: 5px; vertical-align: middle; margin-left: 4px; }
+.depth-tag {
+  display: inline-block; padding: 1px 8px; font-size: 11px; border-radius: 999px; font-weight: 600;
+  color: var(--accent); background: var(--bg-soft); border: 1px solid var(--line);
+}
+/* 按重要级着色：越红越需深入精讲，越绿越可速览（颜色随主题背景以半透明叠加，四套主题通用） */
+.depth-tag.depth-5 { color: #f0555b; border-color: color-mix(in srgb, #e5484d 55%, transparent); background: color-mix(in srgb, #e5484d 16%, transparent); }
+.depth-tag.depth-4 { color: #ef7d3b; border-color: color-mix(in srgb, #ea6c2a 55%, transparent); background: color-mix(in srgb, #ea6c2a 15%, transparent); }
+.depth-tag.depth-3 { color: #d7a92f; border-color: color-mix(in srgb, #c9a227 55%, transparent); background: color-mix(in srgb, #c9a227 15%, transparent); }
+.depth-tag.depth-2 { color: #35ab93; border-color: color-mix(in srgb, #2fa08a 55%, transparent); background: color-mix(in srgb, #2fa08a 15%, transparent); }
+.depth-tag.depth-1 { color: #52b76a; border-color: color-mix(in srgb, #46a758 55%, transparent); background: color-mix(in srgb, #46a758 15%, transparent); }
+/* 浅色（paper/eye）主题下略微加深，保证对比度 */
+:root[data-theme="paper"] .depth-tag.depth-5, :root[data-theme="eye"] .depth-tag.depth-5 { color: #b02127; }
+:root[data-theme="paper"] .depth-tag.depth-4, :root[data-theme="eye"] .depth-tag.depth-4 { color: #a84e12; }
+:root[data-theme="paper"] .depth-tag.depth-3, :root[data-theme="eye"] .depth-tag.depth-3 { color: #7c5f0f; }
+:root[data-theme="paper"] .depth-tag.depth-2, :root[data-theme="eye"] .depth-tag.depth-2 { color: #176b5a; }
+:root[data-theme="paper"] .depth-tag.depth-1, :root[data-theme="eye"] .depth-tag.depth-1 { color: #27743a; }
+
 .stars { color: var(--accent); letter-spacing: 1px; font-size: 13px; }
 .stars .off { color: var(--line); }
 .tag {
@@ -95,7 +115,7 @@ a:hover { text-decoration: underline; }
 .map-table td.center { text-align: center; }
 
 .sec-box {
-  display: flex; align-items: stretch; gap: 16px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 12px;
   width: 100%; margin-bottom: 12px; padding: 14px 16px;
   background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
 }
@@ -109,7 +129,8 @@ a:hover { text-decoration: underline; }
 .sec-box.is-locked { background: var(--bg-soft); border-style: dashed; opacity: .72; }
 .sec-box.is-locked h3::after { content: " 🔒"; font-size: 12px; }
 
-.blocks { display: flex; flex-direction: column; gap: 8px; flex: 0 0 118px; }
+.blocks { display: flex; flex-direction: row; gap: 10px; }
+.blocks a, .blocks button, .blocks .lock-tip { flex: 1 1 0; }
 .blocks a, .blocks button {
   padding: 8px 6px; font-size: 13px; text-align: center; cursor: pointer;
   color: var(--text-soft); background: var(--bg-soft);
@@ -128,11 +149,11 @@ a:hover { text-decoration: underline; }
   color: var(--text-soft); background: none; border: 0;
 }
 .lesson-toc .toc-link:hover { color: var(--accent); }
-.md { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 24px 28px; }
-.md h1 { font-size: 24px; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
-.md h2 { font-size: 20px; margin-top: 34px; border-left: 4px solid var(--accent); padding-left: 10px; }
-.md h3 { font-size: 17px; margin-top: 26px; }
-.md h4 { font-size: 15px; color: var(--text-soft); }
+.md { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 24px 28px; font-size: 18px; }
+.md h1 { font-size: 26px; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+.md h2 { font-size: 22px; margin-top: 34px; border-left: 4px solid var(--accent); padding-left: 10px; }
+.md h3 { font-size: 19px; margin-top: 26px; }
+.md h4 { font-size: 17px; color: var(--text-soft); }
 .md p { margin: 10px 0; }
 .md ul, .md ol { padding-left: 24px; }
 .md li { margin: 4px 0; }
@@ -140,7 +161,7 @@ a:hover { text-decoration: underline; }
 .md pre { padding: 14px 16px; overflow-x: auto; background: var(--bg-code); border: 1px solid var(--line); border-radius: 8px; }
 .md pre code { padding: 0; background: none; }
 .md blockquote { margin: 14px 0; padding: 8px 14px; color: var(--text-soft); background: var(--bg-soft); border-left: 4px solid var(--accent-2); border-radius: 0 8px 8px 0; }
-.md table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+.md table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 16px; }
 .md th, .md td { padding: 7px 10px; border: 1px solid var(--line); }
 .md th { background: var(--bg-soft); }
 .md img { max-width: 100%; }
