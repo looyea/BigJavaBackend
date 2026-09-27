@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Java Backend · 大Java后端</title>
+<link rel="stylesheet" href="assets/css/themes.css">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="#/">
+    <span class="brand-zh">大Java后端</span>
+    <span class="brand-en">Big Java Backend</span>
+  </a>
+  <nav class="top-nav">
+    <a href="#/">首页</a>
+    <a href="#/map">学习地图</a>
+    <a href="#/progress">进度</a>
+  </nav>
+  <div class="theme-switch" id="theme-switch" title="切换主题">
+    <button type="button" data-theme-btn="dark">深色</button>
+    <button type="button" data-theme-btn="eye">护眼</button>
+    <button type="button" data-theme-btn="navy">藏青</button>
+    <button type="button" data-theme-btn="paper">纸白</button>
+  </div>
+</header>
+
+<main id="app" class="site-main" aria-live="polite"></main>
+
+<footer class="site-footer">
+  <span>过关制学习 · 小测验 ≥ 60 分解锁下一关</span>
+  <span class="sep">|</span>
+  <span>进度保存在浏览器并支持导出 Markdown 进度文件</span>
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="assets/js/app.js?v=5"></script>
+</body>
+</html>

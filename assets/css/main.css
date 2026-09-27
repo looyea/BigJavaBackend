@@ -1,0 +1,199 @@
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.75 "Segoe UI", "Microsoft YaHei", "PingFang SC", -apple-system, sans-serif;
+  transition: background .25s, color .25s;
+}
+
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---------- 头部 ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 24px;
+  padding: 12px 28px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand-zh { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
+.brand-en { font-size: 12px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
+.top-nav { display: flex; gap: 18px; font-size: 14px; }
+.top-nav a { color: var(--text-soft); }
+.top-nav a.active, .top-nav a:hover { color: var(--accent); text-decoration: none; }
+.theme-switch { margin-left: auto; display: flex; gap: 6px; }
+.theme-switch button {
+  font-size: 12px; padding: 4px 10px; cursor: pointer;
+  color: var(--text-soft); background: var(--bg-card);
+  border: 1px solid var(--line); border-radius: 999px;
+}
+.theme-switch button[aria-pressed="true"] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+
+/* ---------- 主体 ---------- */
+.site-main { max-width: 1180px; margin: 0 auto; padding: 28px 28px 80px; }
+.site-footer {
+  padding: 16px 28px; text-align: center; font-size: 12px; color: var(--text-dim);
+  border-top: 1px solid var(--line); background: var(--bg-soft);
+}
+.site-footer .sep { margin: 0 10px; }
+.crumb { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; }
+.crumb a { color: var(--text-dim); }
+.crumb span { margin: 0 6px; }
+
+.page-title { font-size: 26px; margin: 0 0 6px; }
+.page-sub { color: var(--text-soft); margin: 0 0 22px; }
+
+/* ---------- 分区 & 课程卡 ---------- */
+.category { margin-bottom: 34px; }
+.category-head {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+}
+.category-head h2 { font-size: 19px; margin: 0; }
+.category-head .count { font-size: 12px; color: var(--text-dim); }
+.grid {
+  display: grid; gap: 14px; margin-top: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+}
+.pkg-card {
+  display: block; padding: 14px 16px; color: inherit;
+  background: var(--bg-card); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow);
+}
+.pkg-card:hover { text-decoration: none; border-color: var(--accent); transform: translateY(-2px); }
+.pkg-card h3 { margin: 0 0 6px; font-size: 16px; }
+.pkg-card .desc { margin: 0 0 10px; font-size: 13px; color: var(--text-soft); min-height: 56px; }
+.pkg-card .meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); }
+.pkg-card.locked { opacity: .55; }
+
+.stars { color: var(--accent); letter-spacing: 1px; font-size: 13px; }
+.stars .off { color: var(--line); }
+.tag {
+  display: inline-block; padding: 1px 8px; margin-left: 6px;
+  font-size: 11px; color: var(--text-soft);
+  border: 1px solid var(--line); border-radius: 999px;
+}
+.tag.done { color: var(--ok); border-color: var(--ok); }
+.tag.avail { color: var(--accent); border-color: var(--accent); }
+.tag.lock { color: var(--lock); }
+
+/* ---------- 阶段 / 小节 ---------- */
+.stage { margin-bottom: 30px; }
+.stage-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.stage-head h2 { font-size: 18px; margin: 0; }
+.stage-head .pct { font-size: 12px; color: var(--text-dim); }
+
+.map-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0 16px; }
+.map-table th, .map-table td { padding: 6px 10px; border: 1px solid var(--line); text-align: left; }
+.map-table th { background: var(--bg-soft); color: var(--text-soft); font-weight: 600; }
+.map-table td.center { text-align: center; }
+
+.sec-box {
+  display: flex; align-items: stretch; gap: 16px;
+  width: 100%; margin-bottom: 12px; padding: 14px 16px;
+  background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
+}
+.sec-box .main { flex: 1 1 auto; min-width: 0; }
+.sec-box h3 { margin: 0 0 4px; font-size: 15px; }
+.sec-box h3 a { color: inherit; }
+.sec-box h3 a:hover { color: var(--accent); text-decoration: none; }
+.sec-box:not(.is-locked):hover { border-color: var(--accent); }
+.sec-box .sum { margin: 0 0 8px; font-size: 13px; color: var(--text-soft); }
+.sec-box .stars-line { font-size: 12px; color: var(--text-dim); }
+.sec-box.is-locked { background: var(--bg-soft); border-style: dashed; opacity: .72; }
+.sec-box.is-locked h3::after { content: " 🔒"; font-size: 12px; }
+
+.blocks { display: flex; flex-direction: column; gap: 8px; flex: 0 0 118px; }
+.blocks a, .blocks button {
+  padding: 8px 6px; font-size: 13px; text-align: center; cursor: pointer;
+  color: var(--text-soft); background: var(--bg-soft);
+  border: 1px solid var(--line); border-radius: 8px; font-family: inherit;
+}
+.blocks a:hover, .blocks button:hover { color: var(--accent); text-decoration: none; border-color: var(--accent); }
+.blocks .passed { color: var(--ok); border-color: var(--ok); }
+.blocks .lock-tip { padding: 8px 6px; font-size: 13px; text-align: center; color: var(--lock); border: 1px dashed var(--line); border-radius: 8px; }
+
+/* ---------- 课程正文 ---------- */
+.lesson-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 26px; }
+.lesson-toc { position: sticky; top: 76px; align-self: start; font-size: 13px; color: var(--text-soft); }
+.lesson-toc div { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.lesson-toc .toc-link {
+  padding: 0; font: inherit; font-size: 13px; text-align: left; cursor: pointer;
+  color: var(--text-soft); background: none; border: 0;
+}
+.lesson-toc .toc-link:hover { color: var(--accent); }
+.md { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 24px 28px; }
+.md h1 { font-size: 24px; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+.md h2 { font-size: 20px; margin-top: 34px; border-left: 4px solid var(--accent); padding-left: 10px; }
+.md h3 { font-size: 17px; margin-top: 26px; }
+.md h4 { font-size: 15px; color: var(--text-soft); }
+.md p { margin: 10px 0; }
+.md ul, .md ol { padding-left: 24px; }
+.md li { margin: 4px 0; }
+.md code { padding: 1px 6px; font-family: Consolas, "Java", monospace; font-size: 90%; background: var(--bg-code); border-radius: 4px; }
+.md pre { padding: 14px 16px; overflow-x: auto; background: var(--bg-code); border: 1px solid var(--line); border-radius: 8px; }
+.md pre code { padding: 0; background: none; }
+.md blockquote { margin: 14px 0; padding: 8px 14px; color: var(--text-soft); background: var(--bg-soft); border-left: 4px solid var(--accent-2); border-radius: 0 8px 8px 0; }
+.md table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+.md th, .md td { padding: 7px 10px; border: 1px solid var(--line); }
+.md th { background: var(--bg-soft); }
+.md img { max-width: 100%; }
+.md hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+.md details { margin: 14px 0; padding: 10px 14px; background: var(--bg-soft); border: 1px dashed var(--line); border-radius: 8px; }
+.md summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+
+/* mermaid 风格的纯 CSS 流程图 */
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 16px 0; padding: 16px; background: var(--bg-soft); border: 1px dashed var(--line); border-radius: 10px; }
+.flow .node { padding: 8px 14px; font-size: 13px; color: var(--text); background: var(--bg-card); border: 1px solid var(--accent-2); border-radius: 8px; }
+.flow .arrow { color: var(--accent); font-size: 16px; }
+
+/* ---------- 测验 ---------- */
+.quiz-q { margin-bottom: 18px; padding: 14px 16px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; }
+.quiz-q .q-title { font-weight: 600; margin-bottom: 8px; }
+.quiz-q .q-score { float: right; font-size: 12px; color: var(--text-dim); }
+.quiz-q label { display: block; padding: 3px 0; font-size: 14px; cursor: pointer; }
+.quiz-q input { margin-right: 8px; }
+.quiz-q.wrong { border-color: var(--bad); }
+.quiz-q.right { border-color: var(--ok); }
+.quiz-q.partial { border-color: var(--accent); }
+.quiz-q .q-text {
+  display: block; width: 100%; margin: 6px 0 2px; padding: 8px 10px;
+  font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg-soft); border: 1px solid var(--line); border-radius: 8px;
+}
+.quiz-q .q-text:focus { outline: none; border-color: var(--accent-2); }
+.quiz-q textarea.q-text { resize: vertical; min-height: 84px; }
+.quiz-result { margin-top: 6px; font-size: 14px; color: var(--text-soft); }
+.exp { margin-top: 8px; padding-top: 8px; font-size: 13px; color: var(--text-dim); border-top: 1px dashed var(--line); }
+
+.btn {
+  padding: 9px 22px; font-size: 15px; font-family: inherit; cursor: pointer;
+  color: var(--bg); background: var(--accent); border: none; border-radius: 8px;
+}
+.btn:hover { filter: brightness(1.1); }
+.btn.ghost { color: var(--text-soft); background: transparent; border: 1px solid var(--line); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.banner { margin: 14px 0; padding: 12px 16px; border-radius: 8px; font-size: 14px; }
+.banner.ok { color: var(--ok); background: var(--bg-card); border: 1px solid var(--ok); }
+.banner.bad { color: var(--bad); background: var(--bg-card); border: 1px solid var(--bad); }
+.notice { padding: 26px; text-align: center; color: var(--text-dim); background: var(--bg-card); border: 1px dashed var(--line); border-radius: 12px; }
+
+.toast {
+  position: fixed; right: 24px; bottom: 24px; z-index: 50;
+  padding: 12px 18px; font-size: 14px; color: var(--bg);
+  background: var(--accent); border-radius: 8px; box-shadow: var(--shadow);
+}
+
+@media (max-width: 860px) {
+  .lesson-layout { grid-template-columns: 1fr; }
+  .lesson-toc { position: static; }
+  .sec-box { flex-direction: column; }
+  .blocks { flex-direction: row; flex-basis: auto; }
+  .site-header { flex-wrap: wrap; gap: 12px; }
+}
