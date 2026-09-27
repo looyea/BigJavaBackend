@@ -82,13 +82,49 @@
 
 - Netty 走的是**中间那条：NIO/epoll 多路复用 + Reactor 线程模型**（s1-2、s2-1），并在 Linux 上直接用 **native epoll transport**（s4-1 那些内核选项也是在这条路上才能设）。
 
-## 六、三大行业场景钩子
+## 六、例子：BIO 阻塞读 vs NIO 多路复用非阻塞读（正确用法与错误用法）
+
+```java
+// 例子目的：把"阻塞/非阻塞、单线程盯一个 fd vs 一个线程盯多个 fd"落成可运行代码对比
+import java.io.*; import java.net.*; import java.nio.*; import java.nio.channels.*;
+class IoModelDemo {
+    // 【BIO】accept()/read() 都会挂起当前线程直到就绪 —— 同步阻塞
+    static void bio() throws IOException {
+        ServerSocket ss = new ServerSocket(8080);
+        Socket s = ss.accept();          // 阻塞：无新连接时线程挂在这里
+        byte[] buf = new byte[1024];
+        int n = s.getInputStream().read(buf); // 阻塞：对端未发数据时挂起（阶段1+阶段2 都阻塞）
+        // 错误用法：为每个连接新建一个线程 → 10 万连接=10 万线程，光栈内存几十 GB、上下文切换打爆 CPU（C10K 根因）
+    }
+
+    // 【NIO 多路复用】一个 Selector 盯多个 Channel，只处理就绪的 —— 同步非阻塞
+    static void nio() throws IOException {
+        Selector sel = Selector.open();
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+        ssc.configureBlocking(false);        // 正确用法：注册到 Selector 前必须非阻塞，否则…
+        ssc.register(sel, SelectionKey.OP_ACCEPT); // 只关心"连接到达"事件
+        // 错误用法：ssc 保持阻塞态就 register → 抛 IllegalStateException("Non-blocking mode not set")
+        while (true) {
+            sel.select();                    // 阻塞点在内核多路复用（不占用户线程轮询），返回就绪个数
+            for (SelectionKey k : sel.selectedKeys()) { // 只遍历"就绪的那几个"→ O(活跃)而非 O(总连接)
+                k.attach(null);              // 处理后就绪集已消费
+            }
+            sel.selectedKeys().clear();      // 正确用法：手动清空已处理 key，否则下轮重复处理
+            // 错误用法：不 clear() → 上轮的 key 仍在 selectedKeys 里，重复处理/逻辑错乱
+        }
+    }
+}
+// 正确使用结果：nio() 用1 根线程就能盯成万个连接，成本随"活跃连接数"而非"总连接数"增长
+// 这就是下一节 Reactor 与 Netty 的地基；数据拷贝仍靠用户线程 read → 属"同步非阻塞"
+```
+
+## 七、三大行业场景钩子
 
 - **电商**：营销网关扛 C10K+ 长连接，若还在 BIO"一连接一线程"，10 万连接 = 10 万线程 → 光栈内存就几十 GB、切换打爆 CPU；换 Netty(Reactor+epoll) 后**几根 IO 线程**扛住连接，业务线程池只做计算。
 - **金融**：行情推送服务器海量订阅连接，用 epoll LT + 连接数限流；对**磁盘**（流水落盘）可用 AIO/io_uring 真异步，对**网络**仍走 epoll —— 理解"两类 IO 成熟度不同"才不会用错。
 - **电力**：主站百万终端 TCP 长连接，select 的 1024 上限直接不够用且 O(n) 扫描拖垮 → 必须 epoll；ET 虽省 CPU 但嵌入式固件团队易写漏数据，务实选 LT。
 
-## 七、要点回顾
+## 八、要点回顾
 
 1. 两维度分清：**阻塞/非阻塞看阶段 1（等数据要不要傻等）**；**同步/异步看阶段 2（拷贝谁做、完成是否回调通知）**。
 2. 五模型：BIO(同步阻塞) / 非阻塞 / **多路复用(同步非阻塞，后端主流)** / 信号驱动(仍同步) / **AIO(真异步)**。

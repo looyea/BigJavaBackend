@@ -27,8 +27,16 @@
 **稳定 = 相等元素保持原有相对顺序。** 单关键字排序无所谓；一旦**多关键字**或"排完还要按原序 tie-break"，稳定性决定正确性：
 
 ```java
-// 先按次要键(时间)排好，再按主要键(金额)做"稳定"排序 → 金额相同的仍按时间有序
-Arrays.sort(orders, Comparator.comparing(o -> o.amount));  // TimSort 稳定，保住了上一步的时间序
+// 例子目的：把"多关键字靠两次稳定排序堆出来"这条结论跑一遍
+record Order(String amount, String time) {}   // 金额、时间都是字符串形式的数值
+List<Order> orders = new ArrayList<>(List.of(
+        new Order("100", "09:30"), new Order("50", "09:31"), new Order("100", "09:29")));
+// 第一步：先按次要键（时间）排好——此处不写，假设已有序
+// 第二步：再按主要键（金额）做"稳定"排序 → 金额相同的仍按时间有序
+orders.sort(Comparator.comparing(Order::amount));   // TimSort 稳定，保住了上一步的时间序
+System.out.println(orders);   // 正确使用结果：[100@09:29, 100@09:30, 50@09:31]——两条 100 元按时间先后保留
+// 错误用法：换成不稳定算法（快排/堆排/Arrays.sort(int[])）做第二步 → 金额相同的两条可能被对调，录入先后信息丢失
+// 工程止亏：多关键字优先用一个 Comparator 一次写完 thenComparing，不依赖"稳定"这个隐性前提
 ```
 
 金融"同金额订单保持录入先后"、电商"同分商品保持上架顺序"都依赖稳定。**要稳定 → 归并/TimSort/插入；快排/堆排/`Arrays.sort(int[])` 都不稳定。**
@@ -57,8 +65,10 @@ Arrays.sort(orders, Comparator.comparing(o -> o.amount));  // TimSort 稳定，�
 金融日终 20 亿流水、500GB 日志按时间排序——**放不进内存，快排/归并都要求数据在数组里，直接失效**。标准打法 = **分块内排 + 多路归并**：
 
 ```flow
+// 图目的：数据超内存时的标准流水线——注意只有"块内排序"能吃进内存，归并阶段是流式的
 切分(按内存预算) → 每块内排序(TimSort/快排, 能进内存即可) → 落盘成有序段
 → k 路归并: 用容量 k 的小顶堆存各段当前头部, 弹出最小流式写出, 该段补下一个
+// 应用例：500GB 日志分 500 块×每块 1GB → 块内各 O(n log n) → 一次 500 路归并，堆只占 O(500)
 ```
 
 - 复杂度 O(N log k)、堆只占 O(k)；**读放大**用较大缓冲块控制、写用顺序追加。
@@ -71,7 +81,60 @@ Arrays.sort(orders, Comparator.comparing(o -> o.amount));  // TimSort 稳定，�
 - **金融**：多关键字稳定排序保证同额保序；日终海量流水走外部排序。
 - **电力**：设备上报按时间戳排，近乎有序 → TimSort 的 Run 优化最能打。
 
-## 八、本节要点回顾
+## 八、例子：正确用法与错误用法
+
+```java
+// 例子目的：验证"基本类型不稳序 / 对象稳序 / 数组元素含 null 直接炸 / 自然序不一致比不了"四个真实后果
+import java.util.*;
+
+public class SortDemo {
+    record Row(int key, String tag) { String s() { return key + "@" + tag; } }
+
+    public static void main(String[] args) {
+        // 知识点 1 正确用法：对象数组走 TimSort，相等元素保留原序
+        Row[] obj = { new Row(1, "a"), new Row(1, "b"), new Row(0, "c") };
+        Arrays.sort(obj, Comparator.comparingInt(Row::key));    // 稳定算法：只按 key 排，同 key 不交换
+        System.out.println(obj[0].s() + "," + obj[1].s());        // 正确用例输出：0@c,1@a（两个 1 仍按录入序 a 正在前）
+
+        // 知识点 1 错误用法：以为基本类型数组也稳序
+        int[][] pair = { {1, 10}, {1, 20}, {0, 30} };              // 想按第一位排并保留第二位原序
+        Arrays.sort(pair, Comparator.comparingInt(a -> a[0]));      // 对象数组（int[] 是对象），这里仍稳定
+        System.out.println(pair[0][1] + "," + pair[1][1]);           // 输出 30,10：稳定保序
+        // 真正的坑在 int[]/long[]：Arrays.sort(int[]) 是双轴快排，不稳序；拿它排"并行数组"会错位
+        int[] ids   = {1, 1, 0};
+        int[] vals  = {10, 20, 30};                                  // 两个数组下标一一对应
+        Arrays.sort(ids);                                           // 错误：只排了一半，ids 变 [0,1,1] 而 vals 未跟着动 → 对应关系彻底错乱
+        System.out.println(ids[0] + "->" + vals[0]);                 // 输出 0->10：本该是 0->30，这就是不稳定+拆排的双重后果
+        // 正确做法：成对数据装进对象/二维数组一起排，或用索引排序
+
+        // 知识点 2 错误用法：数组里塞 null
+        Integer[] withNull = {3, null, 1};
+        try {
+            Arrays.sort(withNull);                        // 错误：自然序比较时拆箱 null → 抛 NullPointerException
+        } catch (NullPointerException e) {
+            System.out.println("排序遇 null 元素：Comparable 比较时拆箱报 NPE");   // 输出该行
+        }
+        Arrays.sort(withNull, Comparator.nullsFirst(Comparator.naturalOrder()));   // 正确：显式声明 null 位置
+        System.out.println(withNull[0]);                   // 正确使用结果：输出 null（null 被排到最前）
+
+        // 知识点 3 错误用法：不兼容类型丢进同一个自然序排序
+        try {
+            List<Comparable> mix = new ArrayList<>(List.of(1, "a"));
+            mix.sort(Comparator.naturalOrder());           // 错误：Integer.compare("a") → 抛 ClassCastException
+        } catch (ClassCastException e) {
+            System.out.println("混排不同可比类型：compare 时强转失败");   // 输出该行
+        }
+
+        // 知识点 4 正确用法：大数组并行排序
+        int[] big = new int[1 << 20];
+        for (int i = 0; i < big.length; i++) big[i] = big.length - i;   // 逆序填充，给双轴快排制造不利输入
+        Arrays.parallelSort(big);                                        // 正确：ForkJoin 分治 + 多路归并，吃多核
+        System.out.println(big[0] + "," + big[big.length - 1]);           // 正确用例输出：1,1048576
+    }
+}
+```
+
+## 九、本节要点回顾
 
 1. 三条主线：比较排序（快归堆，下界 O(n log n)）、非比较（计数/基数/桶，破线性）、外部排序（分块+多路归并）。
 2. 快排通用最快、归并稳定 + 最坏有保证、堆排原地但缓存差；按"要不要稳定/要不要最坏保证/内存够不够"选。

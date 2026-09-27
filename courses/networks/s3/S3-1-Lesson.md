@@ -103,7 +103,34 @@ HTTP 缓存是"离用户最近的 CDN/浏览器缓存"能打掉 80% 回源的根
 - **金融**：行情快照 `max-age=1~3 s` 强缓存 + 协商兜底，既抗刷又不太旧；敏感页一律 `no-store`、`private`，禁止 CDN 落地；401/403 严格区分，鉴权失败绝不返回业务数据。
 - **电力**：海量终端上报走 POST（非幂等），必须服务端幂等去重（同一 `采集时间+测点` 重复上报只记一次）；主站下发的批量文件用 `Range` 断点续传应对弱网吧。
 
-## 九、要点回顾
+## 九、例子：手写一个 HTTP/1.1 请求（正确用法与错误用法）
+
+```java
+// 例子目的：用裸 Socket 发一个带 Host 头的 HTTP/1.1 请求，直观看到报文结构与 keep-alive
+import java.io.*;
+import java.net.*;
+class Http11Demo {
+    public static void main(String[] args) throws Exception {
+        try (Socket s = new Socket("api.example.com", 80)) {
+            OutputStream out = s.getOutputStream();
+            // 请求行 + 必须的 Host 头 + 空行（CRLF CRLF）分隔头与体
+            String req = "GET /ping HTTP/1.1\r\n"
+                       + "Host: api.example.com\r\n"          // HTTP/1.1 强制要求：缺 Host 直接 400
+                       + "Connection: keep-alive\r\n"          // 声明复用连接，不每次重建 TCP
+                       + "\r\n";                                // 空行标志头部结束
+            out.write(req.getBytes("UTF-8"));
+            out.flush();
+            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(), "UTF-8"));
+            System.out.println(in.readLine());                  // 正确使用结果：输出状态行，如 HTTP/1.1 200 OK
+        }
+    }
+}
+// 错误用法 1：漏写 Host 头 → HTTP/1.1 服务器直返 400 Bad Request（Host 是 1.1 唯一强制的头）
+// 错误用法 2：行分隔用 \n 而非 \r\n → 不少服务器解析请求行/头出错，返回 400 或挂起（HTTP 规约要求 CRLF）
+// 错误用法：GET 带副作用（如用 GET /delete?id=1）→ 违反幂等/安全方法语义，会被预取、缓存、爬虫误触发（生产事故）
+```
+
+## 十、要点回顾
 
 1. 报文 = 行 + 头 + **空行** + 体；body 长度靠 **Content-Length 或 chunked**（互斥）。
 2. **持久连接**省握手/慢启动，但带来**应用层队头阻塞**，浏览器靠多连接硬扛；服务端 idle timeout 要 **<** 中间层，避免复用死连接 502。

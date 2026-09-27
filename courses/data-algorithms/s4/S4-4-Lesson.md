@@ -15,11 +15,13 @@
 ## 二、DP 思考五步法（通用流程）
 
 ```flow
+// 图目的：DP 的通用拆解流程——①状态定义是全局唯一的难点，其余四步都是它的推论
 ① 定义状态 dp[i] 到底表示什么（最难也最关键）
 ② 推导转移方程：dp[i] 由哪些更小的状态算来
 ③ 确定 base case（最小时的已知值）
 ④ 确定遍历顺序（保证算 dp[i] 时它依赖的状态已就绪）
 ⑤ 空间优化（滚动变量 / 降维）
+// 应用例（爬楼梯）：状态=到第 i 阶的方法数 → 转移=dp[i-1]+dp[i-2] → base=dp[1]=1,dp[2]=2 → 顺序从小到大 → 滚动成两个变量
 ```
 
 其中**①状态定义**决定一切：同样一道题，状态定义不同，难度天差地别。练 DP 本质是练"识别状态"。
@@ -27,17 +29,21 @@
 ## 三、两种写法：记忆化搜索 vs 递推
 
 ```java
-// 爬楼梯：每次 1 或 2 阶，到 n 阶有几种走法（斐波那契）
+// 例子目的：同一道爬楼梯，两种写法跑同一个 n，验证结果一致
+int n = 5;
 // 写法 A：记忆化自顶向下（递归 + 缓存，最接近暴力、最好想）
-long[] memo = new long[n+1];
+long[] memo = new long[n+1];        // 长度必须是 n+1：写成 new long[n] 会在 memo[i] 访下标 n 时越界
 long climb(int i){
-    if(i<=2) return i;                        // base
+    if(i<=2) return i;                        // base：1 阶 1 法、2 阶 2 法
     if(memo[i]!=0) return memo[i];            // 命中缓存，避免重算 → 这就是 DP
-    return memo[i] = climb(i-1) + climb(i-2); // 转移
+    return memo[i] = climb(i-1) + climb(i-2); // 转移：最后一步跨 1 阶或 2 阶，两类不重不漏
 }
+System.out.println(climb(5));                   // 正确使用结果：输出 8
 // 写法 B：递推自底向上（填表，无递归栈开销，易做空间优化）
 long[] dp = new long[n+1]; dp[1]=1; dp[2]=2;
-for(int i=3;i<=n;i++) dp[i]=dp[i-1]+dp[i-2];
+for(int i=3;i<=n;i++) dp[i]=dp[i-1]+dp[i-2];    // 从小到大，依赖项一定已就绪
+System.out.println(dp[5]);                      // 正确使用结果：同样输出 8，与写法 A 一致
+// 错误用法：把 base 记成 dp[1]=1, dp[2]=1 → 整个序列后移一位，输出 5（逻辑错且不报错）
 ```
 
 - **记忆化搜索**：好想到、天然处理"可达性不完备"的状态；但有递归栈开销。
@@ -48,13 +54,15 @@ for(int i=3;i<=n;i++) dp[i]=dp[i-1]+dp[i-2];
 状态沿一条线推进。
 
 ```java
-// 打家劫舍：不能偷相邻，求最大金额
-// dp[i] = 到第 i 间房为止能偷的最大值；转移：不偷 i → dp[i-1]；偷 i → dp[i-2]+a[i]
+// 例子目的：把滚动变量的线性 DP 跑起来（不能偷相邻屋，求最大金额）
 int rob(int[] a){
-    int prev2=0, prev1=0;                       // 滚动变量，O(1) 空间
-    for(int x : a){ int cur=Math.max(prev1, prev2+x); prev2=prev1; prev1=cur; }
-    return prev1;
+    int prev2=0, prev1=0;                       // 滚动变量，O(1) 空间：prev2=dp[i-2]、prev1=dp[i-1]
+    for(int x : a){ int cur=Math.max(prev1, prev2+x); prev2=prev1; prev1=cur; }   // 不偷本间取 prev1，偷则 prev2+x
+    return prev1;                                // 扫完全部房间后 prev1 即 dp[n]
 }
+System.out.println(rob(new int[]{1, 2, 3, 1}));   // 正确使用结果：输出 4（偷下标 0 与 2：1+3）
+// 错误用法：把两个赋值写成 prev1=cur; prev2=prev1; → prev2 被覆盖成 cur，等价于 dp[i-1]+x，相邻屋被连着偷
+System.out.println(robWrong(new int[]{1, 2, 3, 1}));   // 错误结果输出 6（把四间全偷了）
 // 最大子数组和（Kadane）：dp[i]=max(a[i], dp[i-1]+a[i])，答案取所有 dp[i] 最大
 ```
 
@@ -67,9 +75,16 @@ int rob(int[] a){
 - **空间优化成一维**：`dp[w]` 逆序遍历 w（每件只用一次）。
 
 ```java
-// 0-1 背包一维：容量逆序，保证每件物品只被选一次
-int[] dp = new int[W+1];
-for(int i=0;i<n;i++) for(int w=W; w>=wt[i]; w--) dp[w]=Math.max(dp[w], dp[w-wt[i]]+val[i]);
+// 例子目的：同一个背包、同一批物品，只改遍历方向就能看出"逆序=只选一次 / 正序=重复选"的差异
+int W = 5; int[] wt = {2, 3}; int[] val = {4, 5};     // 两件物品：重量/价值分判 (2,4) 与 (3,5)
+int[] dp = new int[W+1];                              // dp[w] = 容量 w 下的最大价值，初始全 0
+for(int i=0;i<2;i++) for(int w=W; w>=wt[i]; w--) dp[w]=Math.max(dp[w], dp[w-wt[i]]+val[i]);   // 0-1 背包：容量逆序
+System.out.println(dp[W]);   // 正确用例输出：9（两件各装一次：4+5）
+// 错误用法：求 0-1 背包却写成容量正序 for(w=wt[i]; w<=W; w++) → 同一物品被反复装
+int[] dp2 = new int[W+1];
+for(int i=0;i<2;i++) for(int w=wt[i]; w<=W; w++) dp2[w]=Math.max(dp2[w], dp2[w-wt[i]]+val[i]);
+System.out.println(dp2[W]);  // 错误结果输出：10（重量 2 的货被装两次，相当于完全背包）
+// 完全背包/零钱兑换（无限个）才要正序：要的就是"同一个面额可重复用"
 ```
 
 **完全背包**（每件无限个）：唯一区别是容量**正序**遍历（允许重复选）。这个"逆序/正序"的差别是面试高频考点，也是零钱兑换（求最少硬币、无限个）用正序的原因。
@@ -79,18 +94,21 @@ for(int i=0;i<n;i++) for(int w=W; w>=wt[i]; w--) dp[w]=Math.max(dp[w], dp[w-wt[i
 状态是 `dp[i][j]`，从上方和左方转移。
 
 ```java
-// 编辑距离：word1→word2 最少操作数
+// 例子目的：把二维 DP 的两个常见错误后果复现——base 缺失、下标偏移多算一位
 int minDistance(String a, String b){
-    int m=a.length(), n=b.length(); int[][] dp=new int[m+1][n+1];
-    for(int i=0;i<=m;i++) dp[i][0]=i;           // base：删成空
-    for(int j=0;j<=n;j++) dp[0][j]=j;           // base：从空插入
+    int m=a.length(), n=b.length(); int[][] dp=new int[m+1][n+1];   // 多行列容纳"空前缀"，否则会下标越界
+    for(int i=0;i<=m;i++) dp[i][0]=i;           // base：把 a 的前 i 个删成空串，代价 i（漏了这句则整列默认 0，结果偏小）
+    for(int j=0;j<=n;j++) dp[0][j]=j;           // base：从空串插入出 b 的前 j 个，代价 j
     for(int i=1;i<=m;i++) for(int j=1;j<=n;j++)
         dp[i][j] = a.charAt(i-1)==b.charAt(j-1)
-                 ? dp[i-1][j-1]                                     // 相等：不动
+                 ? dp[i-1][j-1]                                     // 相等：不动，直接继承左上角
                  : 1 + Math.min(dp[i-1][j-1],                       // 替换
                        Math.min(dp[i-1][j], dp[i][j-1]));           // 删除 / 插入
     return dp[m][n];
 }
+System.out.println(minDistance("horse", "ros"));   // 正确使用结果：输出 3（horse→rorse 替换 h→r、orse→ros 删 e、rorse→ros 删 t，共 3 步）
+System.out.println(minDistance("", "abc"));        // 边界正确输出：3——全靠上面两行 base 支撑，删 base 后这里会返 0
+// 错误用法：把循环写成 for(int i=0;i<m;i++) 并用 charAt(i) → 访问 dp[m][*] 时多出一行未填，结果错且易下标越界
 ```
 
 LIS（最长递增子序列）`dp[i]=以i结尾的LIS长度`，O(n²) 或配合二分/ patience 排序降到 O(n log n)——二分（s3-3）与 DP 的漂亮结合。

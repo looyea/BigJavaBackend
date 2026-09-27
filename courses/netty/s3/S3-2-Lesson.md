@@ -11,25 +11,30 @@ TCP 有 `SO_KEEPALIVE`，但默认探测间隔 **2 小时**（`tcp_keepalive_tim
 Netty 用 `IdleStateHandler` 把"读写/全空闲"检测内置成一个 handler（放在 pipeline **靠头部**，s2-1 作业讲过原因）：
 
 ```java
-// 读空闲 15s、写空闲 0(关)、所有空闲 60s 触发
-pipeline.addLast(new IdleStateHandler(15, 0, 60, TimeUnit.SECONDS));
-pipeline.addLast(new HeartbeatHandler());
+// 例子目的：把 IdleStateHandler 注册在 pipeline 靠头部，使其最先看到空闲事件
+pipeline.addLast(new IdleStateHandler(15, 0, 60, TimeUnit.SECONDS)); // 读空闲15s、写空闲0(关)、全空闲60s 触发
+pipeline.addLast(new HeartbeatHandler());   // 必须再跟一个处理 IdleStateEvent 的下游 handler
+// 正确使用结果：空闲到时向 pipeline 发 IdleStateEvent，由 HeartbeatHandler 接住处理
+// 错误用法：addLast 只加 IdleStateHandler 不加处理 handler → 空闲事件传到 Tail 被忽略，假死连接永不回收
+// 错误用法：IdleStateHandler 放链尾 → 入站事件先被前面 handler 消费，空闲检测不灵（应靠头）
 ```
 触发时它向 pipeline 发一个 **`IdleStateEvent`**（`userEventTriggered`），你在下游 handler 里处理：
 
 ```java
+// 例子目的：在下游 handler 里处理 IdleStateEvent，区分读/写空闲做探活或发心跳
 public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-    if (evt instanceof IdleStateEvent) {
+    if (evt instanceof IdleStateEvent) {                 // 只关心空闲事件
         IdleStateEvent e = (IdleStateEvent) evt;
-        if (e.state() == IdleState.READER_IDLE) {
-            // 读空闲：一段时间没收到对端数据 → 发心跳探活 or 超过 N 次没回就 close
-            if (++missed >= 3) { ctx.close(); }
-            else ctx.writeAndFlush(PingMessage);
+        if (e.state() == IdleState.READER_IDLE) {         // 读空闲：一段时间没收到对端数据
+            if (++missed >= 3) { ctx.close(); }          // 连续 3 次没回→ 判定对端死，主动关
+            else ctx.writeAndFlush(PingMessage);         // 否则发 Ping 探活
         } else if (e.state() == IdleState.WRITER_IDLE) {
             ctx.writeAndFlush(Heartbeat);   // 写空闲：没业务数据时定时发心跳
         }
-    }
+    } else { ctx.fireUserEventTriggered(evt); }          // 非空闲事件必须往下传，不吞
 }
+// 正确使用结果：readerIdle 需 > 对端心跳间隔×(2~3)，正常空闲不误杀，真死连接超时被关闭
+// 错误用法：readerIdle 设得比对端心跳间隔还小 → 正常空闲也被判死、频繁 close 好连接（拖垮可用率）
 ```
 
 **双向心跳的推荐设计**（业界最稳的一套）：
@@ -47,22 +52,28 @@ public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
 ### 1. WriteBufferWaterMark：高低水位
 
 ```java
+// 例子目的：设置出站缓冲高/低水位，让 channel 在积压时通过 isWritable 报"写不动"
 bootstrap.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
-                      new WriteBufferWaterMark(32*1024, 64*1024)); // low, high
+                      new WriteBufferWaterMark(32*1024, 64*1024)); // low=32K, high=64K
+// 正确使用结果：缓冲>64K → isWritable()变 false；回落<32K → 变 true（迟滞区间防抖动）
+// 错误用法：以为 write() 会因高水位自动阻塞/拒绝 → 它照样接收并堆进缓冲，不主动降速照样 OOM
 ```
 - 出站缓冲 **> highWaterMark** → `channel.isWritable()` 变 **false**（"写不动了"信号）。
 - 回落到 **< lowWaterMark** → 重新 true（迟滞区间防抖动）。
 - **注意**：`write()` 本身**不会阻塞、也不会拒绝**——它照样接收并堆进缓冲。水位只是**给你一个 `isWritable` 标志**，**主动降速/丢弃的责任在你**：
 
 ```java
-if (ctx.channel().isWritable()) {
+// 例子目的：根据 isWritable 做背压处置（降速/丢弃），而不是盲写
+if (ctx.channel().isWritable()) {          // 水位未高→ 正常写
     ctx.write(resp);
 } else {
     // 背压处置：丢弃非关键消息 / 降级 / 计数告警 / 关慢消费者 / 让上游 produce 变慢
-    droppedCounter.increment();
-    ReferenceCountUtil.release(resp); // 别忘了 release（s2-2）
+    droppedCounter.increment();            // 记录丢弃量以便告警
+    ReferenceCountUtil.release(resp); // 别忘了 release（s2-2），否则 ByteBuf 泄漏
 }
 ctx.flush(); // 攒够再统一 flush
+// 正确使用结果：慢消费者的发送缓冲不再无限增长，内存可控
+// 错误用法：else 分支忘了 release(resp) → 丢弃的对象仍持有池化 ByteBuf → 内存泄漏（LEAK 日志）
 ```
 
 ### 2. 背压的传导（端到端）
@@ -71,7 +82,10 @@ ctx.flush(); // 攒够再统一 flush
 ### 3. FlushConsolidationHandler：合批 flush 省 syscall
 每条 `writeAndFlush` 都触发一次 `flush()`→`writev` syscall，高频小写时 syscall 开销可观。`FlushConsolidationHandler`（放**靠近 Head 的出站**位置）把多次 flush **合并成每 N 次或定时一次**：
 ```java
-pipeline.addLast(new FlushConsolidationHandler(64, true)); // 每 64 次 flush 才真刷一次
+// 例子目的：用 FlushConsolidationHandler 将多次 flush 合批，省 syscall
+pipeline.addLast(new FlushConsolidationHandler(64, true)); // 每 64 次 flush 才真刷一次，true=自动读时重新调度
+// 正确使用结果：高频小写的 writev syscall 次数大幅下降→ 吞吐提升
+// 错误用法：把它放得离 Head 太远/顺位错→ 不能覆盖多数出站写、合批效果差；对延迟极敏感场景设太大又增尾延迟
 ```
 配合"业务里用 `ctx.write` 攒、合适时机 `flush` 一次"，显著降低 syscall、提升吞吐；代价是极端情况略增延迟，可用其定时兜底。
 

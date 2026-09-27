@@ -30,9 +30,13 @@
 ## 三、curl -w：最快定性（务必背下这几个占位符）
 
 ```bash
+# 例子目的：用 curl 分段计时一次把 DNS/建连/TLS/TTFB/总耗时全打出来，定位慢在哪一段
 curl -s -o /dev/null -w \
 "dns:%{time_namelookup} connect:%{time_connect} tls:%{time_appconnect} ttfb:%{time_starttransfer} total:%{time_total} code:%{http_code}\n" \
-https://api.example.com/ping
+https://api.example.com/ping          # -o /dev/null 丢弃 body，-w 只输出自定义计时行
+# 正确用法结果：输出如 dns:0.01 connect:0.03 tls:0.08 ttfb:0.20 total:0.21 code:200 —— 各值递增，相邻差就是那一段耗时
+# 错误用法：忘写 -o /dev/null → body 打印到终端混在计时行里，日志被污染不好解析
+# 错误用法：只看 total 不下钻差值 → "慢"但不知慢在哪层；若 code:000 表示根本没拿到响应（连接/解析失败），不是慢是错
 ```
 - `time_namelookup`：DNS 完成。
 - `time_connect`：TCP 握手完成（−namelookup ≈ 建连耗时，含 RTT）。
@@ -45,11 +49,14 @@ https://api.example.com/ping
 ## 四、ss：连接与拥塞的照妖镜
 
 ```bash
+# 例子目的：ss 看连接状态分布与逐连接拥塞参数，排 TIME_WAIT/CLOSE_WAIT 堆积与 accept 积压
 ss -s                          # 全机连接概览（timewait、established 计数）
-ss -ant state time-wait        # TIME_WAIT 堆积？
-ss -ant state close-wait       # CLOSE_WAIT 泄漏（应用没 close，s2-2）
+ss -ant state time-wait        # TIME_WAIT 堆积？（主动关闭方才会进）
+ss -ant state close-wait       # CLOSE_WAIT 泄漏（对端已关、应用没 close，s2-2）
 ss -lnt                        # 监听队列：Send-Q=上限 Recv-Q=当前 accept 积压
 ss -tin                        # ★ 逐连接：cwnd、rto、rtt、retrans、bytes_acked
+# 正确用法结果：Recv-Q 接近 Send-Q → accept 不过来啦（查应用线程池/GC）；CLOSE_WAIT 只增不减 → 代码漏 close 的连接泄漏
+# 错误用法：看到大量 TIME_WAIT 就惊慌 → 它是主动关闭方的正常状态（等 2MSL），高并发短连接服务器多为正常，真正要查的是 CLOSE_WAIT 泄漏
 ```
 `ss -tin` 一行典型输出：
 ```

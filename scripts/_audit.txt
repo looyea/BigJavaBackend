@@ -1,0 +1,701 @@
+已写实课文数 = 170
+
+===== Lesson（已写实 170 个文件）=====
+【A】无例子程序代码块: 0
+【B】有例子但缺"错误用例"标注: 1
+   courses/dist-data/s1/S1-2-Lesson.md  blocks=1 目的=true
+【C】例子注释密度<35%: 1
+   courses/gateway/s1/S1-2-Lesson.md  density=0.33  blocks=7
+【E】图示块缺"目的"说明: 86
+   courses/data-algorithms/s1/S1-4-Lesson.md  缺 1 处
+   courses/data-algorithms/s2/S2-1-Lesson.md  缺 4 处
+   courses/druid/s1/S1-1-Lesson.md  缺 1 处
+   courses/gateway/s1/S1-1-Lesson.md  缺 2 处
+   courses/gateway/s1/S1-2-Lesson.md  缺 2 处
+   courses/graalvm/s1/S1-1-Lesson.md  缺 2 处
+   courses/hikaricp/s1/S1-1-Lesson.md  缺 1 处
+   courses/jakarta-ee/s1/S1-1-Lesson.md  缺 1 处
+   courses/jakarta-ee/s1/S1-2-Lesson.md  缺 1 处
+   courses/java-basics/s1/S1-1-Lesson.md  缺 2 处
+   courses/java-basics/s1/S1-2-Lesson.md  缺 1 处
+   courses/java-basics/s1/S1-3-Lesson.md  缺 1 处
+   courses/java-basics/s2/S2-1-Lesson.md  缺 1 处
+   courses/java-basics/s2/S2-2-Lesson.md  缺 1 处
+   courses/java-basics/s2/S2-3-Lesson.md  缺 1 处
+   courses/java-basics/s3/S3-1-Lesson.md  缺 1 处
+   courses/java-basics/s3/S3-2-Lesson.md  缺 1 处
+   courses/java-modern/s2/S2-1-Lesson.md  缺 2 处
+   courses/job-scheduling/s1/S1-1-Lesson.md  缺 2 处
+   courses/job-scheduling/s1/S1-2-Lesson.md  缺 1 处
+   courses/juc/s1/S1-1-Lesson.md  缺 1 处
+   courses/juc/s1/S1-2-Lesson.md  缺 1 处
+   courses/juc/s1/S1-3-Lesson.md  缺 1 处
+   courses/juc/s2/S2-1-Lesson.md  缺 1 处
+   courses/juc/s2/S2-2-Lesson.md  缺 1 处
+   courses/juc/s2/S2-3-Lesson.md  缺 1 处
+   courses/juc/s3/S3-1-Lesson.md  缺 1 处
+   courses/jvm/s1/S1-1-Lesson.md  缺 2 处
+   courses/jvm/s1/S1-2-Lesson.md  缺 2 处
+   courses/jvm/s2/S2-1-Lesson.md  缺 1 处
+   courses/jvm/s2/S2-2-Lesson.md  缺 2 处
+   courses/jvm/s2/S2-3-Lesson.md  缺 2 处
+   courses/jvm/s3/S3-1-Lesson.md  缺 1 处
+   courses/jvm/s3/S3-2-Lesson.md  缺 1 处
+   courses/kafka/s1/S1-1-Lesson.md  缺 1 处
+   courses/kafka/s1/S1-2-Lesson.md  缺 1 处
+   courses/mysql/s1/S1-1-Lesson.md  缺 2 处
+   courses/mysql/s1/S1-2-Lesson.md  缺 1 处
+   courses/mysql/s2/S2-1-Lesson.md  缺 1 处
+   courses/mysql/s2/S2-2-Lesson.md  缺 1 处
+   courses/mysql/s3/S3-1-Lesson.md  缺 2 处
+   courses/mysql/s3/S3-2-Lesson.md  缺 1 处
+   courses/mysql/s3/S3-3-Lesson.md  缺 1 处
+   courses/nacos/s1/S1-1-Lesson.md  缺 4 处
+   courses/nacos/s1/S1-2-Lesson.md  缺 4 处
+   courses/netty/s1/S1-1-Lesson.md  缺 1 处
+   courses/netty/s1/S1-2-Lesson.md  缺 3 处
+   courses/netty/s1/S1-3-Lesson.md  缺 2 处
+   courses/netty/s2/S2-1-Lesson.md  缺 1 处
+   courses/netty/s2/S2-2-Lesson.md  缺 2 处
+   courses/netty/s2/S2-3-Lesson.md  缺 5 处
+   courses/netty/s3/S3-1-Lesson.md  缺 1 处
+   courses/netty/s3/S3-3-Lesson.md  缺 1 处
+   courses/networks/s1/S1-2-Lesson.md  缺 1 处
+   courses/networks/s2/S2-2-Lesson.md  缺 3 处
+   courses/networks/s2/S2-3-Lesson.md  缺 2 处
+   courses/networks/s2/S2-4-Lesson.md  缺 2 处
+   courses/networks/s3/S3-1-Lesson.md  缺 2 处
+   courses/networks/s3/S3-3-Lesson.md  缺 2 处
+   courses/networks/s3/S3-4-Lesson.md  缺 3 处
+   courses/networks/s4/S4-2-Lesson.md  缺 3 处
+   courses/networks/s4/S4-3-Lesson.md  缺 3 处
+   courses/openfeign/s1/S1-1-Lesson.md  缺 1 处
+   courses/rabbitmq/s1/S1-1-Lesson.md  缺 1 处
+   courses/rocketmq/s1/S1-1-Lesson.md  缺 4 处
+   courses/rocketmq/s1/S1-2-Lesson.md  缺 2 处
+   courses/sentinel/s1/S1-1-Lesson.md  缺 2 处
+   courses/sentinel/s1/S1-2-Lesson.md  缺 1 处
+   courses/spring-ai/s1/S1-2-Lesson.md  缺 1 处
+   courses/spring-ai/s2/S2-1-Lesson.md  缺 1 处
+   courses/spring-boot/s1/S1-1-Lesson.md  缺 1 处
+   courses/spring-boot/s1/S1-2-Lesson.md  缺 3 处
+   courses/spring-boot/s1/S1-3-Lesson.md  缺 1 处
+   courses/spring-boot/s2/S2-1-Lesson.md  缺 1 处
+   courses/spring-boot/s2/S2-2-Lesson.md  缺 1 处
+   courses/spring-boot/s3/S3-1-Lesson.md  缺 1 处
+   courses/spring-boot/s3/S3-2-Lesson.md  缺 1 处
+   courses/spring-cloud-alibaba/s1/S1-1-Lesson.md  缺 1 处
+   courses/spring-core/s1/S1-1-Lesson.md  缺 1 处
+   courses/spring-core/s1/S1-2-Lesson.md  缺 1 处
+   courses/spring-core/s2/S2-1-Lesson.md  缺 1 处
+   courses/spring-core/s2/S2-2-Lesson.md  缺 1 处
+   courses/spring-data-jpa/s1/S1-1-Lesson.md  缺 1 处
+   courses/spring-mvc/s1/S1-1-Lesson.md  缺 1 处
+   courses/spring-mvc/s1/S1-2-Lesson.md  缺 1 处
+   courses/spring-mvc/s2/S2-2-Lesson.md  缺 1 处
+【D】合规: 168
+
+===== Homework（已写实 300 个文件）=====
+【A】无例子程序代码块: 249
+   courses/argocd/s1/S1-1-Homework.md
+   courses/argocd/s1/S1-2-Homework.md
+   courses/argocd/s1/S1-3-Homework.md
+   courses/arthas/s1/S1-1-Homework.md
+   courses/arthas/s1/S1-2-Homework.md
+   courses/async-profiler/s1/S1-1-Homework.md
+   courses/chaos/s1/S1-1-Homework.md
+   courses/data-security/s1/S1-1-Homework.md
+   courses/data-security/s1/S1-2-Homework.md
+   courses/ddd-architecture/s1/S1-1-Homework.md
+   courses/ddd-architecture/s1/S1-2-Homework.md
+   courses/ddd-architecture/s2/S2-2-Homework.md
+   courses/design-patterns/s1/S1-2-Homework.md
+   courses/design-patterns/s1/S1-3-Homework.md
+   courses/design-patterns/s2/S2-1-Homework.md
+   courses/design-patterns/s2/S2-2-Homework.md
+   courses/dist-data/s1/S1-1-Homework.md
+   courses/dist-data/s1/S1-2-Homework.md
+   courses/dist-data/s2/S2-1-Homework.md
+   courses/dist-data/s2/S2-2-Homework.md
+   courses/dist-theory/s1/S1-1-Homework.md
+   courses/dist-theory/s1/S1-2-Homework.md
+   courses/dist-theory/s1/S1-3-Homework.md
+   courses/dist-theory/s2/S2-1-Homework.md
+   courses/dist-theory/s2/S2-2-Homework.md
+   courses/dist-theory/s2/S2-3-Homework.md
+   courses/docker/s1/S1-1-Homework.md
+   courses/docker/s1/S1-2-Homework.md
+   courses/docker/s1/S1-3-Homework.md
+   courses/docker/s2/S2-1-Homework.md
+   courses/docker/s2/S2-2-Homework.md
+   courses/docker/s2/S2-3-Homework.md
+   courses/druid/s1/S1-1-Homework.md
+   courses/ecommerce/s1/S1-1-Homework.md
+   courses/ecommerce/s1/S1-2-Homework.md
+   courses/ecommerce/s2/S2-1-Homework.md
+   courses/ecommerce/s2/S2-2-Homework.md
+   courses/elasticsearch/s1/S1-1-Homework.md
+   courses/elasticsearch/s1/S1-2-Homework.md
+   courses/elasticsearch/s1/S1-3-Homework.md
+   courses/elk/s1/S1-1-Homework.md
+   courses/elk/s1/S1-2-Homework.md
+   courses/elk/s1/S1-3-Homework.md
+   courses/fintech/s1/S1-1-Homework.md
+   courses/fintech/s1/S1-2-Homework.md
+   courses/fintech/s2/S2-1-Homework.md
+   courses/fintech/s2/S2-2-Homework.md
+   courses/flink/s1/S1-1-Homework.md
+   courses/flink/s1/S1-2-Homework.md
+   courses/flink/s1/S1-3-Homework.md
+   courses/flink/s1/S1-4-Homework.md
+   courses/gateway/s1/S1-1-Homework.md
+   courses/gateway/s1/S1-2-Homework.md
+   courses/gatling/s1/S1-1-Homework.md
+   courses/gatling/s1/S1-2-Homework.md
+   courses/gatling/s1/S1-3-Homework.md
+   courses/github-actions/s1/S1-1-Homework.md
+   courses/github-actions/s1/S1-2-Homework.md
+   courses/github-actions/s1/S1-3-Homework.md
+   courses/gitlab-ci/s1/S1-1-Homework.md
+   courses/gitlab-ci/s1/S1-2-Homework.md
+   courses/gitlab-ci/s1/S1-3-Homework.md
+   courses/graalvm/s1/S1-1-Homework.md
+   courses/gradle/s1/S1-1-Homework.md
+   courses/gradle/s1/S1-2-Homework.md
+   courses/gradle/s1/S1-3-Homework.md
+   courses/gradle/s1/S1-4-Homework.md
+   courses/grafana/s1/S1-1-Homework.md
+   courses/grafana/s1/S1-2-Homework.md
+   courses/high-availability/s1/S1-1-Homework.md
+   courses/high-availability/s1/S1-2-Homework.md
+   courses/high-availability/s1/S1-3-Homework.md
+   courses/high-concurrency/s1/S1-1-Homework.md
+   courses/high-concurrency/s1/S1-2-Homework.md
+   courses/high-concurrency/s2/S2-1-Homework.md
+   courses/high-concurrency/s2/S2-2-Homework.md
+   courses/idempotent/s1/S1-1-Homework.md
+   courses/idempotent/s1/S1-2-Homework.md
+   courses/istio/s1/S1-1-Homework.md
+   courses/istio/s1/S1-2-Homework.md
+   courses/istio/s1/S1-3-Homework.md
+   courses/istio/s1/S1-4-Homework.md
+   courses/jakarta-ee/s1/S1-1-Homework.md
+   courses/jakarta-ee/s1/S1-2-Homework.md
+   courses/java-basics/s1/S1-3-Homework.md
+   courses/java-basics/s1/S1-4-Homework.md
+   courses/java-basics/s2/S2-1-Homework.md
+   courses/java-basics/s2/S2-3-Homework.md
+   courses/java-basics/s2/S2-4-Homework.md
+   courses/java-basics/s3/S3-1-Homework.md
+   courses/java-basics/s3/S3-2-Homework.md
+   courses/java-modern/s1/S1-1-Homework.md
+   courses/java-modern/s1/S1-2-Homework.md
+   courses/java-modern/s2/S2-1-Homework.md
+   courses/java-modern/s2/S2-2-Homework.md
+   courses/jmeter/s1/S1-1-Homework.md
+   courses/jmeter/s1/S1-2-Homework.md
+   courses/jmeter/s1/S1-3-Homework.md
+   courses/job-scheduling/s1/S1-1-Homework.md
+   courses/job-scheduling/s1/S1-2-Homework.md
+   courses/jol/s1/S1-1-Homework.md
+   courses/juc/s1/S1-1-Homework.md
+   courses/juc/s1/S1-2-Homework.md
+   courses/juc/s1/S1-3-Homework.md
+   courses/juc/s2/S2-1-Homework.md
+   courses/juc/s2/S2-2-Homework.md
+   courses/juc/s2/S2-3-Homework.md
+   courses/juc/s3/S3-1-Homework.md
+   courses/juc/s3/S3-2-Homework.md
+   courses/juc/s3/S3-3-Homework.md
+   courses/junit/s1/S1-1-Homework.md
+   courses/junit/s1/S1-2-Homework.md
+   courses/junit/s1/S1-3-Homework.md
+   courses/junit/s1/S1-4-Homework.md
+   courses/jvm/s1/S1-1-Homework.md
+   courses/jvm/s1/S1-2-Homework.md
+   courses/jvm/s2/S2-1-Homework.md
+   courses/jvm/s2/S2-2-Homework.md
+   courses/jvm/s2/S2-3-Homework.md
+   courses/jvm/s3/S3-1-Homework.md
+   courses/jvm/s3/S3-2-Homework.md
+   courses/jwt/s1/S1-1-Homework.md
+   courses/jwt/s1/S1-2-Homework.md
+   courses/jwt/s1/S1-3-Homework.md
+   courses/kafka/s1/S1-2-Homework.md
+   courses/kafka-streams/s1/S1-1-Homework.md
+   courses/kafka-streams/s1/S1-2-Homework.md
+   courses/kubernetes/s1/S1-1-Homework.md
+   courses/kubernetes/s1/S1-2-Homework.md
+   courses/kubernetes/s1/S1-3-Homework.md
+   courses/kubernetes/s2/S2-1-Homework.md
+   courses/kubernetes/s2/S2-2-Homework.md
+   courses/kubernetes/s3/S3-1-Homework.md
+   courses/kubernetes/s3/S3-2-Homework.md
+   courses/linkerd/s1/S1-1-Homework.md
+   courses/linkerd/s1/S1-2-Homework.md
+   courses/linux-shell/s1/S1-1-Homework.md
+   courses/linux-shell/s1/S1-2-Homework.md
+   courses/loki/s1/S1-1-Homework.md
+   courses/loki/s1/S1-2-Homework.md
+   courses/loki/s1/S1-3-Homework.md
+   courses/maven/s1/S1-1-Homework.md
+   courses/maven/s1/S1-2-Homework.md
+   courses/maven/s2/S2-1-Homework.md
+   courses/maven/s2/S2-2-Homework.md
+   courses/maven/s2/S2-3-Homework.md
+   courses/media-sns/s1/S1-1-Homework.md
+   courses/media-sns/s1/S1-2-Homework.md
+   courses/memcached/s1/S1-1-Homework.md
+   courses/minio/s1/S1-1-Homework.md
+   courses/mockito/s1/S1-1-Homework.md
+   courses/mockito/s1/S1-2-Homework.md
+   courses/mockito/s1/S1-3-Homework.md
+   courses/mockito/s1/S1-4-Homework.md
+   courses/mybatis/s1/S1-1-Homework.md
+   courses/mybatis/s1/S1-2-Homework.md
+   courses/mybatis/s1/S1-3-Homework.md
+   courses/mysql/s1/S1-1-Homework.md
+   courses/mysql/s3/S3-2-Homework.md
+   courses/nacos/s1/S1-1-Homework.md
+   courses/nacos/s1/S1-2-Homework.md
+   courses/netty/s1/S1-1-Homework.md
+   courses/netty/s1/S1-2-Homework.md
+   courses/netty/s1/S1-3-Homework.md
+   courses/netty/s2/S2-1-Homework.md
+   courses/netty/s2/S2-2-Homework.md
+   courses/netty/s2/S2-3-Homework.md
+   courses/netty/s3/S3-1-Homework.md
+   courses/netty/s3/S3-2-Homework.md
+   courses/netty/s3/S3-3-Homework.md
+   courses/networks/s1/S1-1-Homework.md
+   courses/networks/s1/S1-3-Homework.md
+   courses/networks/s2/S2-3-Homework.md
+   courses/networks/s2/S2-4-Homework.md
+   courses/networks/s3/S3-1-Homework.md
+   courses/networks/s3/S3-2-Homework.md
+   courses/networks/s3/S3-3-Homework.md
+   courses/networks/s3/S3-4-Homework.md
+   courses/networks/s4/S4-1-Homework.md
+   courses/networks/s4/S4-2-Homework.md
+   courses/networks/s4/S4-3-Homework.md
+   courses/oauth2/s1/S1-1-Homework.md
+   courses/oauth2/s1/S1-2-Homework.md
+   courses/oauth2/s1/S1-3-Homework.md
+   courses/openfeign/s1/S1-1-Homework.md
+   courses/opentelemetry/s1/S1-1-Homework.md
+   courses/opentelemetry/s1/S1-2-Homework.md
+   courses/opentelemetry/s1/S1-3-Homework.md
+   courses/opentelemetry/s1/S1-4-Homework.md
+   courses/postgresql/s1/S1-1-Homework.md
+   courses/postgresql/s1/S1-2-Homework.md
+   courses/power-grid/s1/S1-1-Homework.md
+   courses/power-grid/s1/S1-2-Homework.md
+   courses/prometheus/s1/S1-1-Homework.md
+   courses/prometheus/s1/S1-2-Homework.md
+   courses/prometheus/s1/S1-3-Homework.md
+   courses/prometheus/s1/S1-4-Homework.md
+   courses/rabbitmq/s1/S1-1-Homework.md
+   courses/rocketmq/s1/S1-1-Homework.md
+   courses/rocketmq/s1/S1-2-Homework.md
+   courses/rocketmq/s1/S1-3-Homework.md
+   courses/rpc/s1/S1-1-Homework.md
+   courses/rpc/s1/S1-2-Homework.md
+   courses/seata/s1/S1-1-Homework.md
+   courses/seata/s1/S1-2-Homework.md
+   courses/sentinel/s1/S1-1-Homework.md
+   courses/sentinel/s1/S1-2-Homework.md
+   courses/shardingsphere/s1/S1-1-Homework.md
+   courses/shardingsphere/s1/S1-2-Homework.md
+   courses/shiro/s1/S1-1-Homework.md
+   courses/skywalking/s1/S1-1-Homework.md
+   courses/skywalking/s1/S1-2-Homework.md
+   courses/skywalking/s1/S1-3-Homework.md
+   courses/sonar/s1/S1-1-Homework.md
+   courses/spring-ai/s1/S1-1-Homework.md
+   courses/spring-ai/s1/S1-2-Homework.md
+   courses/spring-ai/s2/S2-1-Homework.md
+   courses/spring-ai/s2/S2-2-Homework.md
+   courses/spring-boot/s1/S1-1-Homework.md
+   courses/spring-boot/s1/S1-2-Homework.md
+   courses/spring-boot/s1/S1-3-Homework.md
+   courses/spring-boot/s2/S2-1-Homework.md
+   courses/spring-boot/s2/S2-2-Homework.md
+   courses/spring-boot/s2/S2-3-Homework.md
+   courses/spring-boot/s3/S3-1-Homework.md
+   courses/spring-boot/s3/S3-2-Homework.md
+   courses/spring-cloud-alibaba/s1/S1-1-Homework.md
+   courses/spring-core/s1/S1-1-Homework.md
+   courses/spring-core/s1/S1-2-Homework.md
+   courses/spring-core/s2/S2-1-Homework.md
+   courses/spring-core/s2/S2-2-Homework.md
+   courses/spring-data-jpa/s1/S1-2-Homework.md
+   courses/spring-mvc/s1/S1-1-Homework.md
+   courses/spring-mvc/s1/S1-2-Homework.md
+   courses/spring-mvc/s2/S2-1-Homework.md
+   courses/spring-mvc/s2/S2-2-Homework.md
+   courses/spring-security/s1/S1-1-Homework.md
+   courses/spring-security/s1/S1-2-Homework.md
+   courses/system-design/s1/S1-1-Homework.md
+   courses/system-design/s1/S1-2-Homework.md
+   courses/system-design/s3/S3-1-Homework.md
+   courses/system-design/s3/S3-2-Homework.md
+   courses/temporal/s1/S1-1-Homework.md
+   courses/test-containers/s1/S1-1-Homework.md
+   courses/tidb/s1/S1-1-Homework.md
+   courses/tidb/s1/S1-2-Homework.md
+   courses/web-defense/s1/S1-1-Homework.md
+   courses/web-defense/s1/S1-2-Homework.md
+   courses/web-defense/s1/S1-3-Homework.md
+【B】有例子但缺"错误用例"标注: 29
+   courses/caffeine/s1/S1-1-Homework.md  blocks=1 目的=true
+   courses/data-algorithms/s1/S1-1-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s1/S1-2-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s1/S1-3-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s1/S1-4-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s2/S2-1-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s2/S2-2-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s2/S2-3-Homework.md  blocks=2 目的=false
+   courses/data-algorithms/s2/S2-4-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s3/S3-1-Homework.md  blocks=2 目的=false
+   courses/data-algorithms/s3/S3-2-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s3/S3-3-Homework.md  blocks=2 目的=false
+   courses/data-algorithms/s4/S4-1-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s4/S4-2-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s4/S4-3-Homework.md  blocks=1 目的=false
+   courses/data-algorithms/s4/S4-4-Homework.md  blocks=2 目的=false
+   courses/data-algorithms/s4/S4-5-Homework.md  blocks=2 目的=false
+   courses/data-algorithms/s4/S4-6-Homework.md  blocks=2 目的=false
+   courses/java-basics/s1/S1-1-Homework.md  blocks=1 目的=false
+   courses/java-basics/s1/S1-2-Homework.md  blocks=1 目的=false
+   courses/java-basics/s3/S3-3-Homework.md  blocks=1 目的=false
+   courses/kafka/s1/S1-1-Homework.md  blocks=2 目的=false
+   courses/mysql/s1/S1-2-Homework.md  blocks=2 目的=true
+   courses/mysql/s2/S2-1-Homework.md  blocks=1 目的=true
+   courses/mysql/s2/S2-2-Homework.md  blocks=1 目的=true
+   courses/mysql/s3/S3-1-Homework.md  blocks=1 目的=true
+   courses/mysql/s3/S3-3-Homework.md  blocks=1 目的=true
+   courses/networks/s1/S1-2-Homework.md  blocks=1 目的=false
+   courses/networks/s2/S2-2-Homework.md  blocks=2 目的=false
+【C】例子注释密度<35%: 20
+   courses/data-algorithms/s1/S1-2-Homework.md  density=0.17  blocks=1
+   courses/data-algorithms/s2/S2-1-Homework.md  density=0.15  blocks=1
+   courses/data-algorithms/s2/S2-4-Homework.md  density=0.29  blocks=1
+   courses/data-algorithms/s3/S3-1-Homework.md  density=0.18  blocks=2
+   courses/data-algorithms/s3/S3-3-Homework.md  density=0.18  blocks=2
+   courses/data-algorithms/s4/S4-1-Homework.md  density=0.08  blocks=1
+   courses/data-algorithms/s4/S4-2-Homework.md  density=0.3  blocks=1
+   courses/data-algorithms/s4/S4-3-Homework.md  density=0.14  blocks=1
+   courses/data-algorithms/s4/S4-4-Homework.md  density=0.33  blocks=2
+   courses/data-algorithms/s4/S4-5-Homework.md  density=0.21  blocks=2
+   courses/data-algorithms/s4/S4-6-Homework.md  density=0.21  blocks=2
+   courses/design-patterns/s1/S1-1-Homework.md  density=0  blocks=1
+   courses/java-basics/s3/S3-3-Homework.md  density=0  blocks=1
+   courses/kafka/s1/S1-1-Homework.md  density=0  blocks=2
+   courses/mysql/s1/S1-2-Homework.md  density=0.2  blocks=2
+   courses/mysql/s2/S2-1-Homework.md  density=0.13  blocks=1
+   courses/mysql/s2/S2-2-Homework.md  density=0.2  blocks=1
+   courses/mysql/s3/S3-1-Homework.md  density=0.33  blocks=1
+   courses/mysql/s3/S3-3-Homework.md  density=0.2  blocks=1
+   courses/networks/s2/S2-1-Homework.md  density=0.2  blocks=1
+【E】图示块缺"目的"说明: 3
+   courses/java-basics/s1/S1-3-Homework.md  缺 1 处
+   courses/jvm/s3/S3-1-Homework.md  缺 1 处
+   courses/networks/s1/S1-2-Homework.md  缺 1 处
+【D】合规: 20
+
+===== Interview（已写实 300 个文件）=====
+【A】无例子程序代码块: 282
+   courses/argocd/s1/S1-1-Interview.md
+   courses/argocd/s1/S1-2-Interview.md
+   courses/argocd/s1/S1-3-Interview.md
+   courses/arthas/s1/S1-1-Interview.md
+   courses/arthas/s1/S1-2-Interview.md
+   courses/async-profiler/s1/S1-1-Interview.md
+   courses/caffeine/s1/S1-1-Interview.md
+   courses/caffeine/s1/S1-2-Interview.md
+   courses/chaos/s1/S1-1-Interview.md
+   courses/data-algorithms/s1/S1-1-Interview.md
+   courses/data-algorithms/s1/S1-2-Interview.md
+   courses/data-algorithms/s1/S1-3-Interview.md
+   courses/data-algorithms/s1/S1-4-Interview.md
+   courses/data-algorithms/s2/S2-1-Interview.md
+   courses/data-algorithms/s2/S2-2-Interview.md
+   courses/data-algorithms/s2/S2-3-Interview.md
+   courses/data-algorithms/s2/S2-4-Interview.md
+   courses/data-algorithms/s3/S3-1-Interview.md
+   courses/data-algorithms/s3/S3-2-Interview.md
+   courses/data-algorithms/s3/S3-3-Interview.md
+   courses/data-algorithms/s4/S4-1-Interview.md
+   courses/data-algorithms/s4/S4-2-Interview.md
+   courses/data-algorithms/s4/S4-3-Interview.md
+   courses/data-algorithms/s4/S4-4-Interview.md
+   courses/data-algorithms/s4/S4-5-Interview.md
+   courses/data-algorithms/s4/S4-6-Interview.md
+   courses/data-security/s1/S1-1-Interview.md
+   courses/data-security/s1/S1-2-Interview.md
+   courses/ddd-architecture/s1/S1-1-Interview.md
+   courses/ddd-architecture/s1/S1-2-Interview.md
+   courses/ddd-architecture/s2/S2-1-Interview.md
+   courses/ddd-architecture/s2/S2-2-Interview.md
+   courses/ddd-architecture/s2/S2-3-Interview.md
+   courses/design-patterns/s1/S1-1-Interview.md
+   courses/design-patterns/s1/S1-2-Interview.md
+   courses/design-patterns/s1/S1-3-Interview.md
+   courses/design-patterns/s2/S2-1-Interview.md
+   courses/design-patterns/s2/S2-2-Interview.md
+   courses/dist-data/s1/S1-1-Interview.md
+   courses/dist-data/s1/S1-2-Interview.md
+   courses/dist-data/s2/S2-1-Interview.md
+   courses/dist-data/s2/S2-2-Interview.md
+   courses/dist-theory/s1/S1-1-Interview.md
+   courses/dist-theory/s1/S1-2-Interview.md
+   courses/dist-theory/s1/S1-3-Interview.md
+   courses/dist-theory/s2/S2-1-Interview.md
+   courses/dist-theory/s2/S2-2-Interview.md
+   courses/dist-theory/s2/S2-3-Interview.md
+   courses/docker/s1/S1-1-Interview.md
+   courses/docker/s1/S1-2-Interview.md
+   courses/docker/s1/S1-3-Interview.md
+   courses/docker/s2/S2-1-Interview.md
+   courses/docker/s2/S2-2-Interview.md
+   courses/docker/s2/S2-3-Interview.md
+   courses/ecommerce/s1/S1-1-Interview.md
+   courses/ecommerce/s1/S1-2-Interview.md
+   courses/ecommerce/s2/S2-1-Interview.md
+   courses/ecommerce/s2/S2-2-Interview.md
+   courses/elasticsearch/s1/S1-1-Interview.md
+   courses/elasticsearch/s1/S1-2-Interview.md
+   courses/elasticsearch/s1/S1-3-Interview.md
+   courses/elk/s1/S1-1-Interview.md
+   courses/elk/s1/S1-2-Interview.md
+   courses/elk/s1/S1-3-Interview.md
+   courses/fintech/s1/S1-1-Interview.md
+   courses/fintech/s1/S1-2-Interview.md
+   courses/fintech/s2/S2-1-Interview.md
+   courses/fintech/s2/S2-2-Interview.md
+   courses/flink/s1/S1-1-Interview.md
+   courses/flink/s1/S1-2-Interview.md
+   courses/flink/s1/S1-3-Interview.md
+   courses/flink/s1/S1-4-Interview.md
+   courses/gatling/s1/S1-1-Interview.md
+   courses/gatling/s1/S1-2-Interview.md
+   courses/gatling/s1/S1-3-Interview.md
+   courses/github-actions/s1/S1-1-Interview.md
+   courses/github-actions/s1/S1-2-Interview.md
+   courses/github-actions/s1/S1-3-Interview.md
+   courses/gitlab-ci/s1/S1-1-Interview.md
+   courses/gitlab-ci/s1/S1-2-Interview.md
+   courses/gitlab-ci/s1/S1-3-Interview.md
+   courses/graalvm/s1/S1-1-Interview.md
+   courses/gradle/s1/S1-1-Interview.md
+   courses/gradle/s1/S1-2-Interview.md
+   courses/gradle/s1/S1-3-Interview.md
+   courses/gradle/s1/S1-4-Interview.md
+   courses/grafana/s1/S1-1-Interview.md
+   courses/grafana/s1/S1-2-Interview.md
+   courses/high-availability/s1/S1-1-Interview.md
+   courses/high-availability/s1/S1-2-Interview.md
+   courses/high-availability/s1/S1-3-Interview.md
+   courses/high-concurrency/s1/S1-1-Interview.md
+   courses/high-concurrency/s1/S1-2-Interview.md
+   courses/high-concurrency/s2/S2-1-Interview.md
+   courses/high-concurrency/s2/S2-2-Interview.md
+   courses/idempotent/s1/S1-1-Interview.md
+   courses/idempotent/s1/S1-2-Interview.md
+   courses/istio/s1/S1-1-Interview.md
+   courses/istio/s1/S1-2-Interview.md
+   courses/istio/s1/S1-3-Interview.md
+   courses/istio/s1/S1-4-Interview.md
+   courses/jakarta-ee/s1/S1-1-Interview.md
+   courses/jakarta-ee/s1/S1-2-Interview.md
+   courses/java-basics/s1/S1-1-Interview.md
+   courses/java-basics/s1/S1-2-Interview.md
+   courses/java-basics/s1/S1-3-Interview.md
+   courses/java-basics/s1/S1-4-Interview.md
+   courses/java-basics/s2/S2-1-Interview.md
+   courses/java-basics/s2/S2-2-Interview.md
+   courses/java-basics/s2/S2-3-Interview.md
+   courses/java-basics/s2/S2-4-Interview.md
+   courses/java-basics/s3/S3-1-Interview.md
+   courses/java-basics/s3/S3-2-Interview.md
+   courses/java-basics/s3/S3-3-Interview.md
+   courses/java-modern/s1/S1-1-Interview.md
+   courses/java-modern/s1/S1-2-Interview.md
+   courses/java-modern/s2/S2-1-Interview.md
+   courses/java-modern/s2/S2-2-Interview.md
+   courses/jmeter/s1/S1-1-Interview.md
+   courses/jmeter/s1/S1-2-Interview.md
+   courses/jmeter/s1/S1-3-Interview.md
+   courses/jol/s1/S1-1-Interview.md
+   courses/juc/s1/S1-1-Interview.md
+   courses/juc/s1/S1-2-Interview.md
+   courses/juc/s1/S1-3-Interview.md
+   courses/juc/s2/S2-1-Interview.md
+   courses/juc/s2/S2-2-Interview.md
+   courses/juc/s2/S2-3-Interview.md
+   courses/juc/s3/S3-1-Interview.md
+   courses/juc/s3/S3-2-Interview.md
+   courses/juc/s3/S3-3-Interview.md
+   courses/junit/s1/S1-1-Interview.md
+   courses/junit/s1/S1-2-Interview.md
+   courses/junit/s1/S1-3-Interview.md
+   courses/junit/s1/S1-4-Interview.md
+   courses/jvm/s1/S1-1-Interview.md
+   courses/jvm/s1/S1-2-Interview.md
+   courses/jvm/s2/S2-1-Interview.md
+   courses/jvm/s2/S2-2-Interview.md
+   courses/jvm/s2/S2-3-Interview.md
+   courses/jvm/s3/S3-1-Interview.md
+   courses/jvm/s3/S3-2-Interview.md
+   courses/jwt/s1/S1-1-Interview.md
+   courses/jwt/s1/S1-2-Interview.md
+   courses/jwt/s1/S1-3-Interview.md
+   courses/kafka-streams/s1/S1-1-Interview.md
+   courses/kafka-streams/s1/S1-2-Interview.md
+   courses/kubernetes/s1/S1-1-Interview.md
+   courses/kubernetes/s1/S1-2-Interview.md
+   courses/kubernetes/s1/S1-3-Interview.md
+   courses/kubernetes/s2/S2-1-Interview.md
+   courses/kubernetes/s2/S2-2-Interview.md
+   courses/kubernetes/s3/S3-1-Interview.md
+   courses/kubernetes/s3/S3-2-Interview.md
+   courses/lettuce/s1/S1-1-Interview.md
+   courses/lettuce/s1/S1-2-Interview.md
+   courses/lettuce/s1/S1-3-Interview.md
+   courses/linkerd/s1/S1-1-Interview.md
+   courses/linkerd/s1/S1-2-Interview.md
+   courses/linux-shell/s1/S1-1-Interview.md
+   courses/linux-shell/s1/S1-2-Interview.md
+   courses/loki/s1/S1-1-Interview.md
+   courses/loki/s1/S1-2-Interview.md
+   courses/loki/s1/S1-3-Interview.md
+   courses/maven/s1/S1-1-Interview.md
+   courses/maven/s1/S1-2-Interview.md
+   courses/maven/s2/S2-1-Interview.md
+   courses/maven/s2/S2-2-Interview.md
+   courses/maven/s2/S2-3-Interview.md
+   courses/media-sns/s1/S1-1-Interview.md
+   courses/media-sns/s1/S1-2-Interview.md
+   courses/memcached/s1/S1-1-Interview.md
+   courses/minio/s1/S1-1-Interview.md
+   courses/mockito/s1/S1-1-Interview.md
+   courses/mockito/s1/S1-2-Interview.md
+   courses/mockito/s1/S1-3-Interview.md
+   courses/mockito/s1/S1-4-Interview.md
+   courses/mybatis/s1/S1-1-Interview.md
+   courses/mybatis/s1/S1-2-Interview.md
+   courses/mybatis/s1/S1-3-Interview.md
+   courses/mysql/s1/S1-1-Interview.md
+   courses/mysql/s1/S1-2-Interview.md
+   courses/mysql/s2/S2-1-Interview.md
+   courses/mysql/s2/S2-2-Interview.md
+   courses/mysql/s3/S3-1-Interview.md
+   courses/mysql/s3/S3-2-Interview.md
+   courses/mysql/s3/S3-3-Interview.md
+   courses/nacos/s1/S1-2-Interview.md
+   courses/netty/s1/S1-1-Interview.md
+   courses/netty/s1/S1-2-Interview.md
+   courses/netty/s1/S1-3-Interview.md
+   courses/netty/s2/S2-1-Interview.md
+   courses/netty/s2/S2-2-Interview.md
+   courses/netty/s2/S2-3-Interview.md
+   courses/netty/s3/S3-1-Interview.md
+   courses/netty/s3/S3-2-Interview.md
+   courses/netty/s3/S3-3-Interview.md
+   courses/networks/s1/S1-1-Interview.md
+   courses/networks/s1/S1-2-Interview.md
+   courses/networks/s1/S1-3-Interview.md
+   courses/networks/s2/S2-1-Interview.md
+   courses/networks/s2/S2-2-Interview.md
+   courses/networks/s2/S2-3-Interview.md
+   courses/networks/s2/S2-4-Interview.md
+   courses/networks/s3/S3-1-Interview.md
+   courses/networks/s3/S3-2-Interview.md
+   courses/networks/s3/S3-3-Interview.md
+   courses/networks/s3/S3-4-Interview.md
+   courses/networks/s4/S4-1-Interview.md
+   courses/networks/s4/S4-2-Interview.md
+   courses/networks/s4/S4-3-Interview.md
+   courses/oauth2/s1/S1-1-Interview.md
+   courses/oauth2/s1/S1-2-Interview.md
+   courses/oauth2/s1/S1-3-Interview.md
+   courses/opentelemetry/s1/S1-1-Interview.md
+   courses/opentelemetry/s1/S1-2-Interview.md
+   courses/opentelemetry/s1/S1-3-Interview.md
+   courses/opentelemetry/s1/S1-4-Interview.md
+   courses/postgresql/s1/S1-1-Interview.md
+   courses/postgresql/s1/S1-2-Interview.md
+   courses/power-grid/s1/S1-1-Interview.md
+   courses/power-grid/s1/S1-2-Interview.md
+   courses/prometheus/s1/S1-1-Interview.md
+   courses/prometheus/s1/S1-2-Interview.md
+   courses/prometheus/s1/S1-3-Interview.md
+   courses/prometheus/s1/S1-4-Interview.md
+   courses/redis/s1/S1-1-Interview.md
+   courses/redis/s1/S1-2-Interview.md
+   courses/redis/s2/S2-1-Interview.md
+   courses/redis/s2/S2-2-Interview.md
+   courses/redis/s2/S2-3-Interview.md
+   courses/redisson/s1/S1-1-Interview.md
+   courses/redisson/s1/S1-2-Interview.md
+   courses/redisson/s1/S1-3-Interview.md
+   courses/redisson/s1/S1-4-Interview.md
+   courses/rpc/s1/S1-1-Interview.md
+   courses/rpc/s1/S1-2-Interview.md
+   courses/seata/s1/S1-1-Interview.md
+   courses/seata/s1/S1-2-Interview.md
+   courses/sentinel/s1/S1-1-Interview.md
+   courses/shardingsphere/s1/S1-1-Interview.md
+   courses/shardingsphere/s1/S1-2-Interview.md
+   courses/shiro/s1/S1-1-Interview.md
+   courses/skywalking/s1/S1-1-Interview.md
+   courses/skywalking/s1/S1-2-Interview.md
+   courses/skywalking/s1/S1-3-Interview.md
+   courses/sonar/s1/S1-1-Interview.md
+   courses/spring-ai/s1/S1-1-Interview.md
+   courses/spring-ai/s1/S1-2-Interview.md
+   courses/spring-ai/s2/S2-1-Interview.md
+   courses/spring-ai/s2/S2-2-Interview.md
+   courses/spring-boot/s1/S1-1-Interview.md
+   courses/spring-boot/s1/S1-2-Interview.md
+   courses/spring-boot/s1/S1-3-Interview.md
+   courses/spring-boot/s2/S2-1-Interview.md
+   courses/spring-boot/s2/S2-2-Interview.md
+   courses/spring-boot/s2/S2-3-Interview.md
+   courses/spring-boot/s3/S3-1-Interview.md
+   courses/spring-boot/s3/S3-2-Interview.md
+   courses/spring-core/s1/S1-1-Interview.md
+   courses/spring-core/s1/S1-2-Interview.md
+   courses/spring-core/s2/S2-1-Interview.md
+   courses/spring-core/s2/S2-2-Interview.md
+   courses/spring-mvc/s1/S1-1-Interview.md
+   courses/spring-mvc/s1/S1-2-Interview.md
+   courses/spring-mvc/s2/S2-1-Interview.md
+   courses/spring-mvc/s2/S2-2-Interview.md
+   courses/spring-security/s1/S1-1-Interview.md
+   courses/spring-security/s1/S1-2-Interview.md
+   courses/system-design/s1/S1-1-Interview.md
+   courses/system-design/s1/S1-2-Interview.md
+   courses/system-design/s2/S2-1-Interview.md
+   courses/system-design/s2/S2-2-Interview.md
+   courses/system-design/s3/S3-1-Interview.md
+   courses/system-design/s3/S3-2-Interview.md
+   courses/temporal/s1/S1-1-Interview.md
+   courses/test-containers/s1/S1-1-Interview.md
+   courses/tidb/s1/S1-1-Interview.md
+   courses/tidb/s1/S1-2-Interview.md
+   courses/web-defense/s1/S1-1-Interview.md
+   courses/web-defense/s1/S1-2-Interview.md
+   courses/web-defense/s1/S1-3-Interview.md
+【B】有例子但缺"错误用例"标注: 1
+   courses/gateway/s1/S1-2-Interview.md  blocks=1 目的=true
+【C】例子注释密度<35%: 1
+   courses/openfeign/s1/S1-1-Interview.md  density=0.3  blocks=1
+【E】图示块缺"目的"说明: 6
+   courses/gateway/s1/S1-2-Interview.md  缺 1 处
+   courses/nacos/s1/S1-2-Interview.md  缺 1 处
+   courses/networks/s4/S4-3-Interview.md  缺 1 处
+   courses/openfeign/s1/S1-1-Interview.md  缺 1 处
+   courses/sentinel/s1/S1-1-Interview.md  缺 2 处
+   courses/sentinel/s1/S1-2-Interview.md  缺 1 处
+【D】合规: 16

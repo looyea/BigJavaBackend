@@ -34,6 +34,7 @@
 **最容易错的场景**：循环读 socket
 
 ```java
+// 例子目的：循环读 socket 时正确摆正 flip/compact，避免半包丢失
 buf.clear();                       // 每次读前清空，否则上轮残留挤占空间
 while (in.read(buf) != -1) {       // 读满/读到 -1
     buf.flip();                    // ← 关键：切到读模式，limit 指向刚写入的末尾
@@ -41,6 +42,8 @@ while (in.read(buf) != -1) {       // 读满/读到 -1
     buf.compact();                 // ← 不是 clear！保留没读完的半包，准备追加
 }
 buf.flip();                        // 收尾再 flip 一次处理最后残留
+// 错误用法：忘了 flip → write 时 position 在末尾、limit 不够，写出空/垃圾数据
+// 错误用法：用 clear() 代替 compact() → 未读完的半包被丢弃，下次拼接时数据错乱
 ```
 忘了 `flip` → 写出的是 position 之后的垃圾/空；用 `clear` 代替 `compact` → 半包被丢。**Netty 的 `ByteBuf` 干脆拆成 readerIndex / writerIndex 两个独立指针（s2-2），从设计上消灭了 flip。** 这是它相对 JDK NIO 的第一大改良。
 
@@ -63,9 +66,11 @@ buf.flip();                        // 收尾再 flip 一次处理最后残留
 ## 五、Selector：多路复用的 Java 入口 + 三个经典陷阱
 
 ```java
+// 例子目的：标准 Selector 事件循环，展示三个经典陷阱的正确写法
 Selector sel = Selector.open();
 ssc.configureBlocking(false);                 // ① 注册到 Selector 的 channel 必须非阻塞
 ssc.register(sel, SelectionKey.OP_ACCEPT);    // ② 关心 accept 事件
+// 错误用法：ssc 保持阻塞态就 register → 抛 IllegalBlockingModeException（SelectableChannel 注册前必须 configureBlocking(false)）
 
 while (true) {
     sel.select();                             // ③ 阻塞直到有事件（可带超时）
@@ -77,6 +82,8 @@ while (true) {
         else if (k.isReadable())  { ... }
     }
 }
+// 错误用法：不 it.remove() → selectedKeys 里的旧 key 累积，下轮重复处理已消费事件（逻辑错乱）
+// 错误用法：常驻注册 OP_WRITE → 发送缓冲几乎一直"可写"，select 立即返回→ CPU 100% 空转
 ```
 
 **三大陷阱（面试与线上都常考）**：

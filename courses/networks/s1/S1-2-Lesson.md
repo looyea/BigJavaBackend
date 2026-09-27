@@ -65,14 +65,14 @@ Linux 排障命令：`arp -n` / `ip neigh show`（状态 `REACHABLE/STALE/FAILED
 后端会直接接触的两个场景：
 
 ```bash
-# ① Linux 网卡做 trunk：一个物理口上划出多个 VLAN 子接口
-ip link add link eth0 name eth0.100 type vlan id 100
-ip addr add 10.0.100.8/24 dev eth0.100
+# 例子目的：Linux 网卡做 trunk——一个物理口上划出多个 VLAN 子接口
+ip link add link eth0 name eth0.100 type vlan id 100   # 在 eth0 上创建 VLAN 100 子接口
+ip addr add 10.0.100.8/24 dev eth0.100                  # 给子接口配管理网地址，此后到 10.0.100.0/24 的流量带 tag 100
 # 常用于：机器同时接管理网(100)与业务网(200)，或裸金属交付时的多平面组网
-
-# ② 查看与验证
-bridge vlan show            # 端口所属 VLAN
-cat /proc/net/vlan/eth0.100
+bridge vlan show            # 正确用例：列出端口所属 VLAN，应能看到 eth0.100
+# 正确用法结果：ip addr 可见 eth0.100 带 10.0.100.8/24；发往管理网的帧都带上了 VLAN tag 100
+# 错误用法：上联交换机端口是 access 模式却发了带 tag 的帧 → 交换机直接丢弃该帧，表现为"同节点通、跨节点不通"
+# 错误用法：id 写了 4095（保留值）或 >4094 → ip link 报错 VLAN id out of range，配置不生效
 ```
 
 > **容器与 K8s 里的真实故障**：CNI 用 Linux bridge / OVS / macvlan 组网时，若宿主侧交换机端口是 access 模式却跑了多 VLAN 的 Pod 流量，包会被打上错误 tag 或直接丢弃，表现为"同节点 Pod 通、跨节点 Pod 不通"或"某些端口通某些不通"。定位手段：在两端同时 `tcpdump -i any -e vlan` 看有没有 tag、VLAN ID 对不对。

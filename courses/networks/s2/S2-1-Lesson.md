@@ -46,15 +46,18 @@
 ### Java 里的 UDP
 
 ```java
-// JDK 标准：DatagramSocket（Java 9+ 有 joinGroup 支持组播）
-try (DatagramSocket sock = new DatagramSocket(9876)) {
-    byte[] buf = new byte[1024];
+// 例子目的：用 DatagramSocket 写一个 UDP 回显服务端——收到数据报原路发回（保留报文边界）
+try (DatagramSocket sock = new DatagramSocket(9876)) {        // 绑定本地端口 9876（Java 9+ 有 joinGroup 支持组播）
+    byte[] buf = new byte[1024];                               // 接收缓冲：必须 ≥ 对端可能发来的最大报文
     DatagramPacket p = new DatagramPacket(buf, buf.length);
-    sock.receive(p);                                   // 阻塞直到收到一个数据报（保留边界）
-    String msg = new String(p.getData(), 0, p.getLength(), StandardCharsets.UTF_8);
-    sock.send(new DatagramPacket(msg.getBytes(), msg.length, p.getSocketAddress()));
+    sock.receive(p);                                           // 阻塞直到收到一个数据报（保留边界）
+    String msg = new String(p.getData(), 0, p.getLength(), StandardCharsets.UTF_8);   // 只取实际收到的 p.getLength() 字节
+    sock.send(new DatagramPacket(msg.getBytes(), msg.length, p.getSocketAddress())); // 回发给数据来源地址
 }
-// 虚拟数据报通道（Java 11+，非阻塞可选）：DatagramChannel.open().connect(...)
+// 正确用法结果：客户端 send "hi" 后 receive 到 "hi"；因 UDP 无连接，即使客户端未先连也能直接收发
+// 错误用法：new String(p.getData()) 不传 length → 把整个 1024 字节缓冲（含残存旧数据）都转成字符串，回显内容错乱
+// 错误用法：buf 太小而对方发了更大的报文 → 数据被静默截断（UDP 不重传也不报错，只能看到变短的内容）
+// 错误用法：端口已被占用时 new DatagramSocket(9876) → 抛 BindException: Address already in use
 ```
 
 要点：`receive` 返回即为完整数据报（不会"半个包"，但**缓冲区小于包体会静默截断**，`setReceiveBufferSize` 与 `truncate` 语义要注意）；对未监听端口发送后，本端可能收到 ICMP 端口不可达，导致下一次 `send/receive` 抛 `PortUnreachableException`——**这是 UDP "偶发异常"的常见根因**。

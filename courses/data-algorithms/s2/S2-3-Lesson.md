@@ -10,8 +10,10 @@
 完全二叉树的节点可**紧密塞进数组**，靠下标换算父子，无需指针：
 
 ```
+// 例子目的：堆不需要指针，父子关系由下标算术直接给出
 下标 i 的节点：  parent = (i-1)/2    left = 2i+1    right = 2i+2
 数组:  [0]=1  [1]=2  [2]=3  [3]=5  [4]=4  ...   （小顶堆，堆顶在 index 0）
+→ 应用例：index 1 的父是 (1-1)/2=0（即 1），左孩子是 2×1+1=3（即 5），无需任何遍历
 ```
 
 正因"完全二叉树 + 数组连续存储"，堆天然缓存友好、无指针开销——这是它比同复杂度的树结构常数更小的原因。
@@ -22,12 +24,18 @@
 - **弹出堆顶 poll**：把**最后一个元素**挪到堆顶 → **下沉(sift-down)**：与较小的孩子交换，直到满足堆序。O(log n)。
 
 ```java
-// PriorityQueue 默认小顶堆；自定义用 Comparator
-PriorityQueue<Integer> min = new PriorityQueue<>();
-PriorityQueue<Task> byPri = new PriorityQueue<>((a,b) -> a.priority - b.priority);
-min.offer(x);          // 上浮 O(log n)
-int top = min.peek();  // 只看堆顶 O(1)
-int m   = min.poll();  // 弹出堆顶 O(log n)
+// 例子目的：先造出被比较的对象，再当场入堆 / 看堆顶 / 弹出，把定义与实际使用连起来
+record Task(int priority, String name) {}
+Task x = new Task(5, "日终对账");
+PriorityQueue<Integer> min = new PriorityQueue<>();          // 默认小顶堆（自然序）
+min.offer(x.priority());                                     // 上浮 O(log n)，入堆后堆顶仍是最小值
+int top = min.peek();                                        // 只看堆顶 O(1) → top = 5，不删除
+int m   = min.poll();                                        // 弹出堆顶 O(log n) → m = 5，堆变空
+System.out.println(m + "," + min.size());                     // 正确使用结果：输出 5,0
+// 自定义比较器：稳妥写法是 Integer.compare，不用减法（减法会整型溢出）
+PriorityQueue<Task> byPri = new PriorityQueue<>(Comparator.comparingInt(Task::priority));
+byPri.offer(new Task(1, "告警")); byPri.offer(new Task(9, "报表"));   // 入堆后自动按优先级排序
+System.out.println(byPri.poll().name());                      // 正确用例输出：告警（堆顶是优先级最小的）
 ```
 
 > 用减法写 Comparator 有**整型溢出**风险（金融金额、时间戳），稳妥用 `Integer.compare(a,b)`。
@@ -58,12 +66,15 @@ int m   = min.poll();  // 弹出堆顶 O(log n)
 - 复杂度 O(n log K)、空间 O(K)，可**流式**处理，远胜全排序 O(n log n)。
 
 ```java
-// 10 亿数取最大 100：容量 100 的小顶堆
-PriorityQueue<Long> heap = new PriorityQueue<>(100);
+// 例子目的：10 亿数取最大 100，内存只放 K 个，流式跑完
+long[] stream = {3L, 7L, 1L, 9L, 2L, 8L};              // 实际这里是 10 亿个数的缩影
+int k = 3;
+PriorityQueue<Long> heap = new PriorityQueue<>(k);      // 容量 K 的小顶堆，堆顶是"当前 Top-K 里最小的"
 for (long v : stream) {
-    if (heap.size() < 100) heap.offer(v);
-    else if (v > heap.peek()) { heap.poll(); heap.offer(v); }
+    if (heap.size() < k) heap.offer(v);                          // 未满 K 个直接入堆
+    else if (v > heap.peek()) { heap.poll(); heap.offer(v); }     // 比堆顶大才淘汰堆顶、自己顶上
 }
+System.out.println(heap);                                        // 正确用例输出：[7, 8, 9]（集合内容正确，但迭代顺序不保证有序）
 ```
 
 - 分布式：各分片取局部 Top-K → 汇总再取一次 Top-K（堆/归并）。
@@ -85,7 +96,47 @@ for (long v : stream) {
 
 > 提醒：`PriorityQueue` 只保证 poll 出最值，`iterator()` 不排序；"取全有序"要 poll 到底或再排序。
 
-## 八、本节要点回顾
+## 八、例子：正确用法与错误用法
+
+```java
+// 例子目的：堆的四个真实陷阱——比较器减法溢出、迭代不有序、null 入堆、Top-K 选错堆型
+import java.util.*;
+
+public class HeapDemo {
+    public static void main(String[] args) {
+        // 知识点 1 错误用法：用减法写比较器，金融金额/时间戳相减直接溢出
+        PriorityQueue<Integer> wrong = new PriorityQueue<>((a, b) -> a - b);   // 错误：两个大数相减会绕回负数
+        wrong.offer(Integer.MAX_VALUE - 1);
+        wrong.offer(Integer.MIN_VALUE);
+        System.out.println(wrong.peek());   // 输出 2147483646：本该是最小值的 MIN_VALUE 没当上堆顶，堆序被比较器骗了
+        PriorityQueue<Integer> right = new PriorityQueue<>(Comparator.comparingInt(Integer::compareTo));   // 正确：不自己写减法
+        right.offer(Integer.MAX_VALUE - 1); right.offer(Integer.MIN_VALUE);
+        System.out.println(right.peek());    // 正确使用结果：输出 -2147483648
+
+        // 知识点 2 错误用法：把 PriorityQueue 当有序队列遍历
+        PriorityQueue<Integer> pq = new PriorityQueue<>(List.of(5, 1, 3));   // 入堆后内部数组并不全序
+        System.out.println(pq);                 // 输出形如 [1, 5, 3]：只保证堆顶最小，兄弟无序
+        StringBuilder sb = new StringBuilder();
+        while (!pq.isEmpty()) sb.append(pq.poll()).append(",");   // 正确用法：poll 到底才是升序
+        System.out.println(sb);                 // 输出 1,3,5,
+
+        // 知识点 3 错误用法：往优先队列塞 null
+        try {
+            pq.offer(null);              // 错误：堆化时要与父节点比较 → 抛 NullPointerException
+        } catch (NullPointerException e) {
+            System.out.println("优先队列禁止 null：无法参与堆序比较");   // 输出该行
+        }
+
+        // 知识点 4 错误取向：取最大的 K 个却维护大顶堆 → 每次淘汰不掉小的
+        PriorityQueue<Integer> topK = new PriorityQueue<>(3);            // 正确：小顶堆，堆顶是候选里最小的
+        int[] data = {9, 2, 7, 1, 8, 3};
+        for (int v : data) { if (topK.size() < 3) topK.offer(v); else if (v > topK.peek()) { topK.poll(); topK.offer(v); } }
+        System.out.println(topK.contains(9) + "," + topK.contains(8) + "," + topK.contains(2));   // 正确用例输出：true,true,false（最大的 3 个是 9/8/7）
+    }
+}
+```
+
+## 九、本节要点回顾
 
 1. 堆=完全二叉树 + 堆序性，数组下标直接映射父子；只保证堆顶极值，不保证全局有序。
 2. 插入上浮、弹出下沉各 O(log n)；**建堆 O(n)**（面试点）。

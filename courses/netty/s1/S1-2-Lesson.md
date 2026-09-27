@@ -82,13 +82,47 @@
 
 > 记住这句对照：**"线程数由 EventLoopGroup 决定、与连接数解耦；连接数由 fd/内存决定、可以百万"。** 这就是 Reactor 相对 BIO"一连接一线程"（s1-1 作业 1）的根本胜利。
 
-## 五、三大行业场景钩子
+## 五、例子：主从 Reactor 落地为 Netty ServerBootstrap（正确用法与错误用法）
+
+```java
+// 例子目的：把"boss 只 accept、worker 均摊读写、重活交业务池"的主从 Reactor 写成可运行骨架
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*; import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+class ReactorDemo {
+    public static void main(String[] args) throws Exception {
+        EventLoopGroup boss = new NioEventLoopGroup(1);   // 主 Reactor：只干 accept
+        EventLoopGroup worker = new NioEventLoopGroup();  // 从 Reactor：默认 2×核数，各自独立 epoll 负责一批连接
+        try {
+            new ServerBootstrap()
+                .group(boss, worker)                      // 正确用法：boss/worker 分组，对应主从 Reactor
+                .channel(NioServerSocketChannel.class)    // 监听通道工厂（底层 JDK NIO 或 native epoll）
+                .childHandler(new ChannelInitializer<Channel>() {  // 每 accept 一个新连接就回调装配 pipeline
+                    protected void initChannel(Channel ch) {
+                        // 一个 Channel 终身绑一个 EventLoop（添加的 handler 都在该线程串行执行→无需加锁）
+                        ch.pipeline().addLast(new SimpleChannelInboundHandler<Object>() {
+                            public void channelRead0(ChannelHandlerContext ctx, Object msg) {
+                                // 错误用法：直接在这里同步查库/调 RPC → 一次慢调用拖垮同一 EventLoop 上所有连接
+                                // 正确用法：重活投递到业务线程池，或用 ctx.executor() 之外的 DefaultEventExecutorGroup
+                                ctx.writeAndFlush("ack");  // 写回也回到该 Channel 绑定的 EventLoop，保序无锁
+                            }
+                        });
+                    }
+                })
+                .bind(8080).sync().channel().closeFuture().sync();
+        } finally { boss.shutdownGracefully(); worker.shutdownGracefully(); } // 错误用法：不调 shutdownGracefully → 非守护线程泄漏、进程不退出
+    }
+}
+// 正确使用结果：1 根 boss + N 根 worker 扛住海量连接，线程数与连接数解耦（对比 BIO 一连接一线程）
+```
+
+## 六、三大行业场景钩子
 
 - **电商**：营销/交易网关用 Netty 做前端长连接接入 —— 就是主从 Reactor：boss group accept，几十个 worker EventLoop 均摊数万客户端连接；下单逻辑投递到业务线程池，绝不在 EventLoop 里同步调库存服务（否则一次慢 RPC 拖垮一整批连接）。
 - **金融**：行情推送服务器"1 写 N 读"百万订阅连接，靠 worker group 多 EventLoop 分摊写；对**撮合**这种强顺序、CPU 敏感的计算，反而常回到"单 Reactor 单线程 + 无锁队列"（类 Disruptor）保序，与 Redis 单线程同理 —— 选型看"要不要并行"。
 - **电力**：主站对百万终端的 TCP 接入，单机 Netty 主从 Reactor 扛连接 + 前置多台做水平拆分；EventLoop 数按核数设，避免"worker 比核多"反而增加切换。
 
-## 六、要点回顾
+## 七、要点回顾
 
 1. Reactor = **事件分发器**三角色（Reactor/Acceptor/Handler）；铁律"**IO 线程绝不阻塞**"，重活走业务线程池。
 2. **Reactor 配同步非阻塞（多路复用）、Proactor 配真异步（AIO）**；因 Linux 网络 AIO 不成熟，现实主流是 Reactor。

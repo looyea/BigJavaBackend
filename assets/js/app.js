@@ -1,8 +1,8 @@
 /* 路由 + 页面渲染：首页 / 课程包 / 小节课程 / 小测验 / 作业题 / 面试题 / 地图 / 进度 */
-/* 模块 URL 带版本号：浏览器会强缓存 ES Module 的静态路径，改动 JS 后同步递增 index.html 与本文件的 ?v 以强制刷新 */
-import { CATEGORIES, INDEX, findSection, secFile, secKey } from './data.js?v=13';
-import { renderMarkdown, parseQuiz, stripTitle, renderInline, gradeQuiz } from './md.js?v=13';
-import * as store from './store.js?v=13';
+/* 缓存由 Vite 构建的内容哈希自动管理；开发期 Vite dev server 不强缓存，改完刷新即见 */
+import { CATEGORIES, INDEX, findSection, secFile, secKey } from './data.js';
+import { renderMarkdown, parseQuiz, stripTitle, renderInline, gradeQuiz } from './md.js';
+import * as store from './store.js';
 
 const app = document.getElementById('app');
 const mdCache = new Map();
@@ -142,8 +142,8 @@ function viewPkg(pkgId) {
         <p class="sum">${esc(sec.summary)}</p>
         <div class="stars-line">难度 ${stars(sec.difficulty)} &nbsp; 重要性 ${stars(sec.importance)} &nbsp; ${secStatusTag(sec)}</div>
       </div>`;
-      // 不能用 <a> 包裹整个方框（将与内部的三个链接嵌套，HTML 解析会提前闭合导致布局错乱）
-      return `<div class="sec-box${unlocked ? '' : ' is-locked'}">${main}${blocks}</div>`;
+      // 整框点击靠 data-href + 事件委托实现：不能用 <a> 包裹整个方框（将与内部的三个链接嵌套，HTML 解析会提前闭合导致布局错乱）
+      return `<div class="sec-box${unlocked ? '' : ' is-locked'}" data-href="${base}">${main}${blocks}</div>`;
     }).join('');
 
     return `<section class="stage">
@@ -313,6 +313,17 @@ app.addEventListener('click', (e) => {
   }
 
   if (e.target.id === 'quiz-reset') { clearQuiz(); return; }
+
+  /* 小节整框点击：点方框任意非链接区域即进入课程内容；锁定小节给出解锁提示 */
+  const secBox = e.target.closest('.sec-box');
+  if (secBox && !e.target.closest('a')) {
+    if (secBox.classList.contains('is-locked')) {
+      toast('该小节尚未解锁：请先通过上一节小测（≥ 60 分）；作业题、面试题可直接查看');
+    } else {
+      location.hash = secBox.dataset.href.slice(1);   // data-href 形如 "#/sec/..."，赋值时浏览器会自动补 #
+    }
+    return;
+  }
 
   const sec = currentSection();
   if (!sec) return;

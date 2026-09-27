@@ -1,6 +1,7 @@
 # 自动配置机制与 SpringApplication.run 启动流程
 
-> 本节难度 ★★★★☆ · 重要性 ★★★★★
+> 本节难度：★★★★☆
+> 本节重要性：★★★★★
 > 学习产出：能画出 Boot 启动的六个阶段，说清自动配置候选从哪来、被谁筛掉、Bean 何时就绪。
 
 ## 一、先看全景：一次启动经历了什么
@@ -86,14 +87,41 @@ Started HelloApplication in 1.843 seconds (process running for 2.104)
 | `ConditionEvaluationReport` | 记录每条条件的匹配结果，`--debug` 输出的就是它 |
 | `SpringFactoriesLoader` | Spring 版 SPI，Boot 扩展机制的地基 |
 
-## 七、动手验证（跟着做，别只看）
+## 七、例子：自定义 Bean 覆盖自动装配 + 就绪监听/Runner（正确用法与错误用法）
+
+```java
+// 例子目的：用一段代码展示"自动配置让位于用户配置"与"启动后一次性动作"两个启动期关键机制
+import org.springframework.boot.*; import org.springframework.boot.autoconfigure.*;
+import org.springframework.context.*; import org.springframework.context.event.*;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+
+@SpringBootApplication(exclude = RedisAutoConfiguration.class) // 正确用法：排除整个自动配置类（只能排顶层配置类）
+class BootLifecycleDemo {
+    public static void main(String[] args) {
+        SpringApplication.run(BootLifecycleDemo.class, args);
+    }
+
+    @Bean CommandLineRunner warmUp(CacheService cache) {  // 阶段5：所有单例就绪后执行，做启动预热
+        return args -> { cache.preload(); System.out.println("预热完成"); }; // 正确使用结果：启动日志最后打印"预热完成"
+    }
+
+    @Bean ApplicationListener<ApplicationReadyEvent> readyHook() { // 阶段6：就绪事件，统计启动耗时
+        return ev -> System.out.println("就绪，上下文共 " + ((ConfigurableApplicationContext) ev.getApplicationContext()).getBeanDefinitionCount() + " 个 Bean定义");
+    }
+}
+// 错误用法：想"排除自动配置里的单个 @Bean"→ exclude 做不到（它只排顶层类），应自己定义同类型 Bean 让 @ConditionalOnMissingBean 失效
+// 错误用法：把重量级同步初始化塞进 CommandLineRunner→ 拉长就绪时间→ K8s readinessProbe initialDelay 过短会误判失败反复重启
+// 错误用法：RedisAutoConfiguration 被 exclude 后又注入 RedisTemplate→ NoSuchBeanDefinitionException（排除了却仍依赖）
+```
+
+## 八、动手验证（跟着做，别只看）
 
 1. 在 `main` 第一行打断点，单步跟 `SpringApplication.run`，在 IDE 里确认前面图中的六个阶段分别停在哪一行。
 2. 自定义一个 `ApplicationListener<ApplicationReadyEvent>`，打印启动总耗时与 Bean 总数，理解"就绪"的准确时点。
 3. 用 `--debug` 启动，在条件报告中定位 `RedisAutoConfiguration` 的匹配情况；然后排除它（`@SpringBootApplication(exclude = RedisAutoConfiguration.class)`），再对比报告变化。
 4. 写一个 `BeanPostProcessor` 打印任意一个 Bean 的初始化前后耗时，观察它如何介入实例化流程——这是 APM 探针埋点的原理雏形。
 
-## 八、常见线上问题与对应本节知识点
+## 九、常见线上问题与对应本节知识点
 
 | 现象 | 根因方向 |
 | --- | --- |
@@ -103,7 +131,7 @@ Started HelloApplication in 1.843 seconds (process running for 2.104)
 | 配置中心里的值没生效 | 阶段 2 的属性源顺序，或导入时机晚于使用时机 |
 | 自己 starter 的 Bean 没被创建 | `@AutoConfigureAfter` 缺失导致 `@ConditionalOnBean` 判定失败 |
 
-## 九、关联技术栈
+## 十、关联技术栈
 
 - **框架层**：Spring Framework（`refresh()` 12 步、`BeanPostProcessor`）、Spring Boot Actuator（`/actuator/conditions`）
 - **构建层**：Maven 依赖的 scope 与 `provided`（影响 classpath 判定，进而影响条件装配）

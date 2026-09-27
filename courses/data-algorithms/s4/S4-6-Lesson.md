@@ -7,12 +7,19 @@
 ### 1.1 定义与那个必须背下来的下标约定
 
 ```java
+// 例子目的：建前缀和数组并把"任意闭区间求和"降成一次减法（需先有 a 与 n）
 // pre[0] = 0, pre[i] = a[0] + a[1] + ... + a[i-1]   （长度 n+1，pre[i] 是前 i 个元素之和）
+int[] a = {1, 3, 5}; int n = a.length;                 // 样本数组
 long[] pre = new long[n + 1];
-for (int i = 0; i < n; i++) pre[i + 1] = pre[i] + a[i];
+for (int i = 0; i < n; i++) pre[i + 1] = pre[i] + a[i]; // 逐项累加，pre 变为 [0,1,4,9]
 
 // 闭区间 [l, r] 的和：
-long sum = pre[r + 1] - pre[l];
+int l = 1, r = 2;
+long sum = pre[r + 1] - pre[l];                         // 前 3 个之和 - 前 1 个之和，剩下 a[1]+a[2]
+System.out.println(sum);                                // 正确使用结果：输出 8（即 3+5）
+System.out.println(pre[3] - pre[0]);                    // 全区间 [0,2] → 输出 9，l=0 不需特判
+// 错误用法：把公式写成 pre[r] - pre[l] → 输出 4（少了 a[r]），差一个下标就是全场错
+// 错误用法：pre 声明成长度 n 且访问 pre[n] → 招 ArrayIndexOutOfBoundsException
 ```
 
 **为什么用 `n+1` 长度并且 `pre[0]=0`**：这样 `l=0` 的边界不用特判。若定义 `pre[i]` 含 `a[i]`（即 `pre[i]=a[0..i]`），则区间和要写 `l==0 ? pre[r] : pre[r]-pre[l-1]`——一个三元判断，在多维前缀和里会膨胀成 4 个分支且极易写错。**统一用"前 i 个"的定义是唯一的防错手段。**
@@ -24,6 +31,7 @@ long sum = pre[r + 1] - pre[l];
 这是前缀和 + 哈希表的组合拳，也是"把 O(n²) 降为 O(n)"的教科书例题：
 
 ```java
+// 例子目的：前缀和 + 哈希把"和为 k 的子数组个数"从 O(n²) 降到 O(n)
 // 思路：sum(i..j) = pre(j+1) - pre(i) = k  ⟺  pre(i) = pre(j+1) - k
 // 于是边扫边查"之前出现过多少个前缀和等于 cur - k"
 int subarraySum(int[] a, int k) {
@@ -31,12 +39,15 @@ int subarraySum(int[] a, int k) {
     cnt.put(0L, 1);                     // base：空前缀，否则从下标 0 开始的子数组漏计
     long cur = 0; int ans = 0;
     for (int x : a) {
-        cur += x;
-        ans += cnt.getOrDefault(cur - k, 0);
-        cnt.merge(cur, 1, Integer::sum);
+        cur += x;                                                   // 维护当前前缀和 pre(j+1)
+        ans += cnt.getOrDefault(cur - k, 0);                         // 历史上有多少个前缀与它差 k → 就有多少个合法子数组
+        cnt.merge(cur, 1, Integer::sum);                             // 把当前前缀和计数 +1，供后续元素查询
     }
     return ans;
 }
+// 应用与正确结果：subarraySum(new int[]{1,1,1}, 2) 返 2（下标 [0,1] 与 [1,2]）；subarraySum(new int[]{1,-1,0}, 0) 返 3
+// 错误用法：删掉 cnt.put(0L, 1) → {1,-1,0} 只返 2，丢掉整体和为 0 的那个前缀
+// 错误用法：把 cur 声明成 int 累加大量金额 → 溢出后 getOrDefault 查不到匹配前缀，答案默默错掉（不报错）
 ```
 
 - **`cnt.put(0L, 1)` 是本題唯一陷阱**：忘写则 `k` 恰好等于某个前缀和的那些子数组全部漏掉。
@@ -45,15 +56,22 @@ int subarraySum(int[] a, int k) {
 ### 1.3 高频应用二：二维前缀和（矩阵区域和）
 
 ```java
+// 例子目的：二维前缀和的容斥建表与查表，当场用 2×2 矩阵验证结果
 // pre[i][j] = 左上角 (0,0) 到 (i-1,j-1) 矩形内所有元素之和
+int[][] a = {{1, 2}, {3, 4}}; int m = 2, n = 2;
 int[][] pre = new int[m + 1][n + 1];
 for (int i = 0; i < m; i++)
     for (int j = 0; j < n; j++)
         pre[i + 1][j + 1] = pre[i + 1][j] + pre[i][j + 1] - pre[i][j] + a[i][j];
 //                     ↑ 上方矩形   ↑ 左方矩形   ↑ 两者交集被加了两次，减去
+System.out.println(pre[2][2]);                    // 正确使用结果：输出 10（全矩阵元素之和）
 // 查询矩形 (r1,c1)~(r2,c2)：
-int rect = pre[r2 + 1][j2 + 1] - pre[r1][c2 + 1] - pre[r2 + 1][c1] + pre[r1][c1];
+int r1 = 0, c1 = 0, r2 = 1, c2 = 0;
+int rect = pre[r2 + 1][c2 + 1] - pre[r1][c2 + 1] - pre[r2 + 1][c1] + pre[r1][c1];
 //                                 ↑ 容斥：减掉两块，被重复减掉的左上角要加回
+System.out.println(rect);                          // 正确用例输出：4（只有第一列 1+3）
+// 错误用法：写成 pre[r2+1][j2+1] 这类混用两套变量名 → 编译期就报 cannot find symbol；四个角标必须成套
+// 错误用法：漏掉最后的 + pre[r1][c1] → 输出 0（左上角被多减了一次）
 ```
 
 **容斥原理**是这一族公式的唯一内核：加两次、减一次、再补回来。理解了它，一维/二维/k 维前缀和与差分的符号都是自然推论。
@@ -67,8 +85,15 @@ int rect = pre[r2 + 1][j2 + 1] - pre[r1][c2 + 1] - pre[r2 + 1][c1] + pre[r1][c1]
 差分数组 `d` 满足 `pre` 是 `d` 的前缀和。要给区间 `[l, r]` 整体 `+v`，只需动两个点：
 
 ```java
-d[l] += v;
-d[r + 1] -= v;      // 当 r+1 == n 时越界，需开长一格或判边界
+// 例子目的：区间批量修改只动两个点，最后做一次前缀和还原
+int[] d = new int[n + 1];                            // 必须比原数组多一格，否则 r+1==n 越界
+d[l] += v;                                            // 从 l 开始整体抬高 v
+d[r + 1] -= v;      // 当 r+1 == n 时越界，需开长一格或判边界→此处已多开一格所以合法
+int[] back = new int[n];
+for (int i = 0, cur = 0; i < n; i++) { cur += d[i]; back[i] = cur; }   // 前缀和还原→得到真实区间值
+// 应用（n=5、对 [1,3] 加 2）：back = [0, 2, 2, 2, 0]，净效果恰好只落在 [1,3]
+// 错误用法：d 声明成 new int[n] 且 r=n-1 → d[r+1] 招 ArrayIndexOutOfBoundsException
+// 错误用法：只写 d[l]+=v 不写 d[r+1]-=v → l 之后到末尾全被抬高，变成"后缀加"而不是"区间加"
 ```
 
 因为对 `d` 求前缀和还原时，`+v` 从 `l` 开始一路传导到末尾，而 `r+1` 处的 `-v` 把 `r` 之后的部分抵消回去——**净效果恰好只作用于 `[l, r]`**。m 次区间修改从 O(n·m) 降到 **O(n + m)**。
@@ -76,17 +101,20 @@ d[r + 1] -= v;      // 当 r+1 == n 时越界，需开长一格或判边界
 ### 2.2 场景模板：航班预订统计（LC 1094 拼车 / 1109 航班预订）
 
 ```java
+// 例子目的：用差分把 m 次区间预订从 O(n·m) 压到 O(n+m)
 // bookings[i] = [first, last, seats]，求每个航班的预订座位数
 int[] corpFlights(int[][] bookings, int n) {
     int[] d = new int[n + 1];                 // 多开一格，last+1 == n 时不越界
     for (int[] b : bookings) {
-        d[b[0] - 1] += b[2];
+        d[b[0] - 1] += b[2];                    // 1-based 转 0-based：区间左端打点
         d[b[1]] -= b[2];                      // b[1] 是 1-based 的 last，故其 0-based 后继即 b[1]
     }
     int[] res = new int[n];
-    for (int i = 0, cur = 0; i < n; i++) { cur += d[i]; res[i] = cur; }
+    for (int i = 0, cur = 0; i < n; i++) { cur += d[i]; res[i] = cur; }   // 一次前缀和还原全部累计效果
     return res;
 }
+// 应用与正确结果：corpFlights(new int[][]{{1,2,10},{2,2,15}}, 2) 返 [10, 25]
+// 错误用法：把 d[b[1]] -= b[2] 写成 d[b[1] - 1] -= b[2] → 本应含入的 last 航班被提前抵消，输出 [10, 15]
 ```
 
 ### 2.3 差分的两个进阶形态
@@ -113,19 +141,22 @@ int[] corpFlights(int[][] bookings, int n) {
 ### 3.2 单调性的维护与均摊分析
 
 ```java
-// 每日温度（LC 739）：对每天找下一个更高温度的距离
+// 例子目的：每日温度（LC 739）——对每天找"下一个更高温度的距离"，单调栈均摊 O(n)
 int[] dailyTemperatures(int[] t) {
     int n = t.length, res[] = new int[n];
-    Deque<Integer> stack = new ArrayDeque<>();     // 存下标，栈内温度自底向上严格递减
+    Deque<Integer> stack = new ArrayDeque<>();     // 存下标，栈内温度自底向上严格递减（递减栈配"求更大"）
     for (int i = 0; i < n; i++) {
-        while (!stack.isEmpty() && t[i] > t[stack.peek()]) {   // 当前值是"栈顶元素的下一个更大值"
+        while (!stack.isEmpty() && t[i] > t[stack.peek()]) {   // 当前温度终结了栈顶的等待
             int j = stack.pop();
-            res[j] = i - j;
+            res[j] = i - j;                        // 距离 = 两个下标之差，这就是栈存下标而非值的原因
         }
-        stack.push(i);
+        stack.push(i);                             // 自己也在等右边的更高温度
     }
-    return res;                                    // 栈里剩下的元素没有答案，默认 0
+    return res;                                    // 栈里剩下的元素没有答案，res 默认 0 即正确值
 }
+// 应用与正确结果：dailyTemperatures(new int[]{73,74,75,71,69,72,76,73}) 返 [1,1,4,2,1,1,0,0]
+// 错误用法：把比较写成 t[i] >= t[stack.peek()] → 相等温度也提前弹出，{70,70,71} 的第一天会报距离 1（正确是 2，"下一个严格更高"的语义被破坏）
+// 错误用法：栈里 push(t[i]) 存值而不是存下标 → 弹出时算不出距离 i-j，只能退回 O(n²) 重扫
 ```
 
 **为什么是 O(n) 而不是 O(n²)**：每个下标**最多入栈一次、出栈一次**，`while` 里的 `pop` 总数 ≤ n。这是典型的**均摊分析**（呼应 s1-1）——单次操作可能弹很多，但平摊到每个元素只有常数。
@@ -137,26 +168,29 @@ int[] dailyTemperatures(int[] t) {
 ### 3.3 硬核实战：柱状图中最大的矩形（LC 84）
 
 ```java
-// 枚举每根柱子作为矩形高度，用单调栈找它左右第一个更矮的柱子 → 确定宽度
+// 例子目的：柱状图最大矩形（LC 84）——每根柱子作高度，用单调栈找它左右第一个更矮的柱子来确定宽度
 long largestRectangleArea(int[] h) {
     int n = h.length;
     int[] left = new int[n], right = new int[n];
     Deque<Integer> st = new ArrayDeque<>();
     for (int i = 0; i < n; i++) {                       // 左边界：第一个 < h[i] 的下标
-        while (!st.isEmpty() && h[st.peek()] >= h[i]) st.pop();
-        left[i] = st.isEmpty() ? -1 : st.peek();
+        while (!st.isEmpty() && h[st.peek()] >= h[i]) st.pop();   // >= 把等高柱一路合并到最左，不漏算
+        left[i] = st.isEmpty() ? -1 : st.peek();        // 栈空说明左边全更高，左边界是虚拟的 -1
         st.push(i);
     }
-    st.clear();
+    st.clear();                                         // 复用同一个栈换方向扫，忘了 clear 会带着旧下标全错
     long best = 0;
     for (int i = n - 1; i >= 0; i--) {                  // 右边界：第一个 < h[i] 的下标
         while (!st.isEmpty() && h[st.peek()] >= h[i]) st.pop();
-        int r = st.isEmpty() ? n : st.peek();
-        best = Math.max(best, (long) h[i] * (r - left[i] - 1));
+        int r = st.isEmpty() ? n : st.peek();           // 栈空说明右边全更高，右边界是虚拟的 n
+        best = Math.max(best, (long) h[i] * (r - left[i] - 1));   // 两侧都取不到，宽度 = r - left - 1
         st.push(i);
     }
     return best;
 }
+// 应用与正确结果：largestRectangleArea(new int[]{2,1,5,6,2,3}) 返 10（高 5 与 6 的两柱、宽 2）
+// 错误用法：把 (long) h[i] * ... 的强转删掉 → 柱高×宽度先用 int 相乘，10⁵ 根高 10⁵ 的柱溢出成负数，best 静默出错
+// 错误用法：宽度写成 r - left[i] → 每根柱子都比实际宽 1，{2,1,2} 会返 4（正确是 3）
 ```
 
 - 宽度是 `right - left - 1`（两侧都是"取不到"的边界）。
@@ -172,18 +206,22 @@ long largestRectangleArea(int[] h) {
 ### 4.2 模板：滑动窗口最大值
 
 ```java
+// 例子目的：滑动窗口最大值（LC 239）——单调队列把每窗口 O(k) 降到均摊 O(1)
 int[] maxSlidingWindow(int[] a, int k) {
     int n = a.length, idx = 0;
     int[] res = new int[n - k + 1];
     Deque<Integer> dq = new ArrayDeque<>();            // 存下标；对应值自队头到队尾严格递减
     for (int i = 0; i < n; i++) {
-        while (!dq.isEmpty() && a[dq.peekLast()] <= a[i]) dq.pollLast();  // ① 队尾淘汰"不可能再成为最大值"的
+        while (!dq.isEmpty() && a[dq.peekLast()] <= a[i]) dq.pollLast();  // ① 队尾淘汰：比新元素旧且小的不可能再当最大值
         dq.offerLast(i);
-        if (dq.peekFirst() <= i - k) dq.pollFirst();                      // ② 队头过期出窗
-        if (i >= k - 1) res[idx++] = a[dq.peekFirst()];                    // ③ 队头即当前窗口最大
+        if (dq.peekFirst() <= i - k) dq.pollFirst();                      // ② 队头过期：已滑出窗口的旧下标踢掉
+        if (i >= k - 1) res[idx++] = a[dq.peekFirst()];                    // ③ 读答案：队头即当前窗口最大
     }
     return res;
 }
+// 应用与正确结果：maxSlidingWindow(new int[]{1,3,-1,-3,5,3,6,7}, 3) 返 [3,3,5,5,6,7]
+// 错误用法：把 ② 踢过期放在 ① 淘汰之前 → 队头已是出窗旧值时 a[旧值] 参与比较，窗口 [1,3,-1] 之外仍可能把 -1 当最大读出
+// 错误用法：用 PriorityQueue 代替单调队列 → 堆只能顶出"当前最大"，无法按"下标过期"弹出次大值，堆里积压出窗元素导致读到旧窗口答案（经典错解）
 ```
 
 三个动作的顺序是这一族题的全部细节：**淘汰 → 入队 → 踢过期 → 取答案**。"踢过期"放在入队之后，可保证当前元素一定在队中；若窗口需覆盖"当前元素自己"，顺序写反会取到出窗的旧值。
@@ -227,14 +265,17 @@ int[] maxSlidingWindow(int[] a, int k) {
 ### 5.4 树状数组：`lowbit` 撑起的 O(log n) 前缀和
 
 ```java
-// 支持"单点加 + 前缀和查询"，两者均 O(log n)；比线段树代码量小得多
+// 例子目的：树状数组支持"单点加 + 前缀和查询"，两者均 O(log n)；比线段树代码量小得多
 static class BIT {
     final int n; final long[] t;
-    BIT(int n) { this.n = n; t = new long[n + 1]; }        // 下标从 1 开始
-    void add(int i, long v) { for (; i <= n; i += i & -i) t[i] += v; }
-    long sum(int i) { long s = 0; for (; i > 0; i -= i & -i) s += t[i]; return s; }
-    long range(int l, int r) { return sum(r) - sum(l - 1); }
+    BIT(int n) { this.n = n; t = new long[n + 1]; }        // 下标从 1 开始：t[0] 永不使用，开 n+1 防止 i=n 时越界
+    void add(int i, long v) { for (; i <= n; i += i & -i) t[i] += v; }   // i & -i 取 lowbit，沿覆盖轨道向上跳
+    long sum(int i) { long s = 0; for (; i > 0; i -= i & -i) s += t[i]; return s; }   // 沿拆分轨道向下累加
+    long range(int l, int r) { return sum(r) - sum(l - 1); }              // 区间和 = 两次前缀和相减
 }
+// 应用与正确结果：BIT bit = new BIT(5); bit.add(1, 3); bit.add(3, 2); → bit.sum(3) 返 5、bit.range(2,3) 返 2
+// 错误用法：BIT 从下标 0 开始使用（add(0, v)）→ i & -i == 0，i += 0 原地死循环，线程卡死
+// 错误用法：t 声明成 new int[n+1] 存金额累加 → 大促单日流水破 21 亿后溢出，sum 结果变负（本例用 long 正是为此）
 ```
 
 `i += i & -i` 沿着"lowbit 递增"的轨道跳，覆盖关系恰好构成一棵隐含的树。**用途判据**：前缀和数组需要**动态修改**时用 BIT；纯静态仍用普通前缀和（O(1) 查询更快、代码更短）。求"数组中逆序对个数"= 值域 BIT 从右往左累加已出现的小于当前值的个数，是 BIT 的最高频考点（与归并排序分治解法互为对照，呼应 s3-2/s4-2）。

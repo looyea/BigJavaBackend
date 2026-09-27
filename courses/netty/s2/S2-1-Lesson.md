@@ -5,6 +5,7 @@
 ## 一、启动骨架：一段代码把七大接口全串起来
 
 ```java
+// 例子目的：用一段启动骨架把 Netty 七大接口串起来（boss/worker、Channel、Pipeline、Handler、Future）
 ServerBootstrap b = new ServerBootstrap();
 b.group(bossGroup, workerGroup)                 // ① 两个 EventLoopGroup（主从 Reactor，s1-2）
  .channel(NioServerSocketChannel.class)         // ② Channel 工厂（服务端监听通道）
@@ -19,6 +20,9 @@ b.group(bossGroup, workerGroup)                 // ① 两个 EventLoopGroup（�
    }
  });
 Channel serverCh = b.bind(8080).sync();          // ⑥ bind 返回 ChannelFuture（异步结果，s3-1）
+// 正确使用结果：boss accept 后将新连接注册到 worker，读写在该 worker 的 EventLoop 上串行跑，channel 一生绑一个 EventLoop
+// 错误用法：option/childOption 混用→ .option 只影 boss ServerChannel，把 TCP_NODELAY 误放 option 对所有子连接无效（应用 childOption）
+// 错误用法：childHandler 里只 addLast 解码器忘加业务 handler → 消息传到 Tail 被悄然 release（"我的消息呢"事故）
 ```
 
 **七大核心接口一句话职责**（务必背下这张关系，面试画得出）：
@@ -64,8 +68,11 @@ Pipeline 是一个**侵入式双向链表**，两端各有一个**内置哨兵**
 这是本节最容易写错、面试最爱问的点。
 
 ```java
+// 例子目的：对比 ctx.write 与 ctx.channel().write 两种出站传播起点
 ctx.write(msg);         // 从"当前 handler 的下一个"开始向 Tail→Head 传播出站：只经过【你之后】的出站 handler
 ctx.channel().write(msg); // 从 Tail 开始传播：经过【整条链所有】出站 handler
+// 错误用法：编码器 addLast 在当前 handler 靠 Tail 一侧，却用 ctx.write → 不经过它→ 发出未编码的原始对象（编码器被跳过）
+// 正确用法：让编码器位于 ctx 传播路径上（靠 Head 侧），或明确用 channel().write 跑全链
 ```
 
 - **入站同理**：`ctx.fireChannelRead(msg)` 只把消息交给**下一个**入站 handler；`channel.pipeline().fireChannelRead(msg)` 从 **Head** 重新跑一遍。
@@ -98,8 +105,10 @@ Handler 跑在 EventLoop 上，EventLoop 又承载多个 Channel。**在 handler
 
 1. **把重活丢到业务线程池**：注册 handler 时指定 `EventExecutorGroup`，Netty 就用该组的线程跑这个 handler 的方法，处理完自动切回 Channel 的 EventLoop 继续传播 —— 你不用手写同步：
    ```java
+   // 例子目的：把一个阻塞 handler 挂到独立线程组，避免卡住 EventLoop
    EventExecutorGroup biz = new DefaultEventExecutorGroup(16);
-   pipeline.addLast(biz, new BlockingBizHandler()); // 这个 handler 在 biz 线程执行
+   pipeline.addLast(biz, new BlockingBizHandler()); // 这个 handler 在 biz 线程执行，算完自动切回 EventLoop 继续传播
+   // 错误用法：只写 ctx.executor().execute(task) → 仍在该 Channel 的 EventLoop 上跑，阻塞活照样卡死同事件环所有连接（未逃离阻塞）
    ```
 2. **自己 submit + 回调里回写**：`bizPool.submit(() -> {...; ctx.writeAndFlush(resp); })` —— `writeAndFlush` 会被 Netty 转回 EventLoop 执行，安全。
 

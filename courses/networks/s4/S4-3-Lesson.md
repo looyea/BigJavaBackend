@@ -116,7 +116,29 @@ DOM + CSSOM → Render Tree → Layout(几何) → Paint(绘制) → Composite(�
 - **金融**：H5/App 行情页重"首字节快 + 稳定"，靠就近接入 + TLS 会话复用 + 后端低停顿 GC；全链路 TraceID 满足监管留痕。
 - **电力**：巡检 App 在弱网/偏远，链路每一段都可能退化（DNS 走 HTTPDNS、传输走 BBR/h3、渲染做离线包/骨架屏），核心是"分段测量、分段兜底"。
 
-## 十四、要点回顾
+## 十四、例子：逐段计时定位慢在哪一层（正确用法与错误用法）
+
+```java
+// 例子目的：把一次 HTTP 调用拆成"建连 + 读响应"两段分别计时，用数据定位瓶颈而不靠猜
+import java.net.*;
+import java.net.http.*;
+class TraceDemo {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        long t0 = System.nanoTime();
+        HttpRequest req = HttpRequest.newBuilder(URI.create("https://api.example.com/ping")).build();
+        HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+        long totalMs = (System.nanoTime() - t0) / 1_000_000;     // 包含 DNS+TCP+TLS+服务端+传输 的总耗时
+        System.out.println(resp.statusCode() + " in " + totalMs + "ms");   // 正确使用结果：如 200 in 210ms
+        // 进一步分段靠 curl -w 的各时间戳（s4-2）：connect 大→网络/队列；ttfb 大而 connect 正常→后端/DB/GC
+    }
+}
+// 正确用法结果：totalMs 很大时不直接结论"网络慢"，而是用 curl -w 下钻到具体阶段再优化
+// 错误用法：只看 total 就下结论"带宽不够，升级网络" → 若真因是 ttfb（后端 DB 慢），升级带宽完全无效，钱白花
+// 错误用法：拿单次计时当基准 → 冷启动含 DNS/TLS/慢启动，应预热后取多次的 P50/P99（呼应 s1-1 量化思维）
+```
+
+## 十五、要点回顾
 
 1. 全链顺序：**URL→缓存→DNS→TCP→TLS→(LB)→HTTP→服务端→回传传输→渲染→子资源再来一轮**。
 2. 每段都有对应工具：DNS(`dig`)、建连/TLS(`curl -w` 分段、`ss -lnt`)、传输(`ss -tin`/抓包)、后端(TTFB/trace)、渲染(DevTools Waterfall)。

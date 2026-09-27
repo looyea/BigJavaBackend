@@ -122,7 +122,24 @@ LR → 把结果按 TTL 缓存后返回客户端
 - **金融**：交易入口用**四层 LVS-DR 抗量 + 七层做灰度/风控路由**；同城双活/异地多活靠 GSLB + 健康检查秒级摘除故障机房；DNS 用 HTTPDNS 防劫持（防把用户导向假站）。
 - **电力**：主站海量终端接入前置 LVS-DR 摊连接、后端按终端 ID **一致性哈希** 保证"同一终端稳定落到同一采集节点"（便于状态/去重）；边缘站点用私有 DNS + 静态映射保证断网时本地仍可解析。
 
-## 七、要点回顾
+## 七、例子：用 Java 看 DNS 解析与轮询（正确用法与错误用法）
+
+```java
+// 例子目的：用 InetAddress 解析一个多记录域名，直观看到 DNS 返回多个 IP（GSLB/轮询的错形）
+import java.net.*;
+class DnsDemo {
+    public static void main(String[] args) throws Exception {
+        InetAddress[] all = InetAddress.getAllByName("www.example.com");   // 一个域名可对应多条 A 记录
+        for (InetAddress a : all) System.out.println(a.getHostAddress());  // 正确使用结果：依次打印解析到的多个 IP（多个时即轮询候选）
+        // 应用：客户端多 IP 时自行轮询/取第一个可用；真实 GSLB 会把最优机房的 IP 排在首位
+    }
+}
+// 错误用法 1：把 InetAddress 缓存的 IP 当永久不变 → CDN/GSLB 会按负载重排 IP，长生命周期 JVM 里默认缓存 DNS（networkaddress.cache.ttl 安全默认常为 30s，未配安全策略时可能永久缓存），故障切换后打不到新 IP
+// 错误用法 2：在容器里靠 /etc/hosts 写死域名解析而不用 DNS → 后端 IP 一变就失效，无法水平扩展
+// 错误用法：域名拼写错 getAllByName("not-exist.invalid") → 抛 UnknownHostException（不返回 null）
+```
+
+## 八、要点回顾
 
 1. DNS = **客户端递归 + LR 迭代**问 根→TLD→权威；记录 A/AAAA/CNAME/NS/TXT/SOA；**多级缓存受 TTL 控制**，改记录有生效延迟（切流先调小 TTL）。
 2. **HTTPDNS/DoH** 抗劫持与精准调度；**GSLB** 在 DNS 层按线路/健康/就近返回不同 IP；受 TTL 与 LD 定位误差限制。

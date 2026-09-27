@@ -1,6 +1,7 @@
 # 集合框架全景
 
-> 本节难度 ★★★☆☆ · 重要性 ★★★★★
+> 本节难度：★★★☆☆
+> 本节重要性：★★★★★
 > 学习产出：能在白板上画出 Collection / Map 两大继承树，说清每个实现类的适用场景与复杂度，并解释"为什么 ArrayList 随机访问 O(1) 而中间插入 O(n)"。
 
 ## 一、集合框架是什么（★★☆☆☆）
@@ -63,19 +64,60 @@ Map(键值非Collection): HashMap → LinkedHashMap / TreeMap / Hashtable / Conc
 4. **集合只能存对象**：`List<int[]>` 合法，`List<int>` 不合法；基本类型走 `Integer` 等装箱，有性能与 `==` 缓存坑（`Integer` -128~127 有缓存）。
 5. **equals/hashCode 契约**：放进基于哈希的集合，`equals` 相等必须 `hashCode` 相等——这直接决定下一节 HashMap 的正确性。
 
-## 七、动手题
+## 七、例子：正确用法与错误用法
+
+```java
+// 例子目的：把上面选型结论与五个陷阱全部跑一遍，每个知识点给正确用例（写结果）与错误用例（写异常/后果）
+import java.util.*;
+class CollectionDemo {
+    public static void main(String[] args) {
+        // 知识点 1：ArrayList 预分配容量（正确用法）
+        List<Integer> big = new ArrayList<>(1_000_000);   // 一次性给足容量，避免 1.5 倍扩容反复 arraycopy
+        for (int i = 0; i < 1_000_000; i++) big.add(i);
+        System.out.println(big.size());                    // 正确使用结果：输出 1000000
+
+        // 知识点 2：Arrays.asList 是定长视图（错误用法）
+        List<String> fixed = Arrays.asList("a", "b");
+        try { fixed.add("c"); }                             // 错误用法：视图不支持增删
+        catch (UnsupportedOperationException e) { System.out.println("asList 返回定长视图，add 抛 UnsupportedOperationException"); }
+        List<String> mutable = new ArrayList<>(Arrays.asList("a", "b"));   // 正确：包一层才可增删
+        mutable.add("c");
+        System.out.println(mutable);                        // 正确使用结果：输出 [a, b, c]
+
+        // 知识点 3：fail-fast——遍历时结构性修改（错误用法）
+        List<Integer> xs = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+        try { for (int x : xs) if (x == 2) xs.remove(x); }  // 错误：for-each 中直接 remove
+        catch (ConcurrentModificationException e) { System.out.println("遍历时结构性修改抛 ConcurrentModificationException"); }
+        xs.removeIf(x -> x == 2);                            // 正确：用 removeIf（或 Iterator.remove）
+        System.out.println(xs);                              // 正确使用结果：输出 [1, 3, 4]
+
+        // 知识点 4：List.of 不可变（错误用法）
+        List<Integer> immutable = List.of(1, 2, 3);
+        try { immutable.set(0, 9); }                         // 错误：任何修改都抛异常
+        catch (UnsupportedOperationException e) { System.out.println("List.of 不可变，set 抛 UnsupportedOperationException"); }
+
+        // 知识点 5：Integer 缓存陷阱（错误用法）
+        Integer p = 127, q = 127;                            // -128~127 命中缓存，是同一对象
+        Integer r = 128, s = 128;                            // 超出缓存，是两个不同对象
+        System.out.println((p == q) + "," + (r == s));       // 错误用法的现象：输出 true,false（== 比引用，超缓存就为 false）
+        System.out.println(r.equals(s));                      // 正确比较结果：输出 true（包装类型比值一律用 equals）
+    }
+}
+```
+
+## 八、动手题
 
 1. 给 100 万元素分别用预分配容量与默认扩容的 `ArrayList` 装满，对比耗时，体会拷贝代价。
 2. 写一段在 `for-each` 中 `remove` 触发 CME 的代码，再分别用迭代器和 `removeIf` 修复。
 
-## 八、关联技术栈
+## 九、关联技术栈
 
 - **多态与接口**：骨架实现 `AbstractList`/`AbstractMap`（上一节）
 - **泛型与类型擦除**：`List<T>` 的编译期约束（阶段二 s2-1）
 - **equals/hashCode**：HashMap / HashSet 正确性的根（下一节）
 - **并发集合**：`CopyOnWriteArrayList`、`ConcurrentHashMap`（JUC 专题）
 
-## 九、本节小结
+## 十、本节小结
 
 集合框架 = 两套继承树（Collection 与 Map）+ 若干数据结构实现的排列组合。选型看三件事：**要不要键值、要不要有序、增删还是查多**。记住"接口优先、按场景选实现、警惕几个反直觉 API"，就覆盖了 90% 的日常用图。
 

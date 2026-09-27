@@ -2,58 +2,51 @@
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
-title Big Java Backend - 生产预览 (PROD)
+title Big Java Backend - 生产模式 (Vite build + preview)
 
 rem ============================================================
-rem   Big Java Backend · 大Java后端 —— 生产 / 部署预览启动脚本
-rem   本站「零依赖纯静态、构建即源码」：整个目录即最终可部署产物，
-rem   直接丢给 Nginx / 对象存储 / GitHub Pages / 任意 CDN 即可上线。
-rem   本脚本先在本地模拟这层静态托管，并附带一次内容自检。
+rem   Big Java Backend · 大Java后端 —— 生产模式启动脚本
+rem   先用 Vite 构建出纯静态产物 dist\，再本地预览。
+rem   dist\ 即最终可部署物：整目录交给 Nginx / 对象存储 / GitHub Pages / CDN 即可上线。
+rem   构建过程完全走 Node/npm，脱离 Python。
 rem ============================================================
 
-set "PORT=8080"
-set "URL=http://127.0.0.1:%PORT%/"
-
-set "SRV="
-where py >nul 2>nul      && set "SRV=py -3 -m http.server %PORT%"
-if not defined SRV where python >nul 2>nul  && set "SRV=python -m http.server %PORT%"
-if not defined SRV where python3 >nul 2>nul && set "SRV=python3 -m http.server %PORT%"
-if not defined SRV where node >nul 2>nul    && set "SRV=npx --yes http-server -p %PORT% -c-1 ."
-
-if defined SRV goto :check
-
-echo [错误] 未检测到 Python 或 Node，无法启动静态服务器。
-echo        本项目是纯静态站，任选其一安装后即可运行；
-echo        或用你现有的任意静态服务器（Nginx / Apache / serve 等）托管本目录。
-echo.
-pause
-exit /b 1
-
-:check
-rem 若装有 Node，先跑一次内容 / 结构自检（失败不阻断托管，仅提示）
-where node >nul 2>nul
-if errorlevel 1 (
-  echo [提示] 未检测到 Node，跳过内容自检（scripts/check.mjs 需要 Node）。
-  goto :start
+if not exist "node_modules\vite" (
+  echo [提示] 未检测到依赖，正在执行 npm install ...
+  call npm.cmd install
+  if errorlevel 1 (
+    echo [错误] npm install 失败，请确认已安装 Node 且网络可用。
+    pause
+    exit /b 1
+  )
 )
-echo [1/2] 正在执行内容自检：node scripts\check.mjs ...
-node scripts\check.mjs
-if errorlevel 1 echo [警告] 自检发现告警，请查看上方输出；仍继续启动托管以便预览。
 
-:start
+echo.
+echo [1/3] 内容 / 结构自检： npm run check ...
+call npm.cmd run check
+
+echo.
+echo [2/3] 构建纯静态产物： npm run build （输出到 dist\）...
+call npm.cmd run build
+if errorlevel 1 (
+  echo [错误] 构建失败，已终止，未启动预览服务器。
+  pause
+  exit /b 1
+)
+
 echo.
 echo ============================================================
-echo   Big Java Backend - 大Java后端   生产预览模式 (PROD) 启动中...
-echo   站点    :  %URL%       （浏览器自动打开）
-echo   服务命令:  %SRV%
-echo   部署提示:  本站为纯静态资源，把整个目录交付任意静态服务器即可上线
-echo   停止    :  本窗口按 Ctrl + C
+echo   Big Java Backend - 大Java后端   生产预览 (PROD)
+echo   访问  :  http://localhost:8080        （浏览器自动打开）
+echo   部署  :  dist\ 即纯静态产物，整目录交付任意静态服务器即可上线
+echo   停止  :  本窗口按 Ctrl + C
 echo ============================================================
 echo.
-start "" cmd /c "timeout /t 2 >nul & start %URL%"
+start "" cmd /c "timeout /t 3 >nul & start http://localhost:8080/"
 
-%SRV%
+echo [3/3] 启动本地静态预览服务器 (vite preview) ...
+call npm.cmd run preview
 
 echo.
-echo [生产预览服务已退出]
+echo [生产预览已退出]
 pause

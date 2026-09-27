@@ -122,13 +122,16 @@ FIN_WAIT_2  ───── 收到 FIN ─────▶ TIME_WAIT ◀── LA
 ## 八、Java 侧的可见性速查
 
 ```java
-// 服务端：backlog 与选项（Netty 对应 ChannelOption）
+// 例子目的：服务端 socket 常用选项速查——每个都是一行真实生效的调用（Netty 对应 ChannelOption）
 new ServerSocket(8080, 1024, addr);        // 第二个参数就是 backlog → 进内核与 somaxconn 取 min
 socket.setKeepAlive(true);                 // 内核层保活，参数在 /proc/sys/net/ipv4/tcp_keepalive_*
 socket.setTcpNoDelay(true);                // RPC 必开（s2-3 Nagle）
-socket.setSoTimeout(3000);                 // 读超时：0=永不超时（危险）
+socket.setSoTimeout(3000);                 // 读超时：3 秒无数据抛 SocketTimeoutException（0=永不超时，危险）
 socket.setSoLinger(true, 0);               // 关闭时发 RST：强制断开、丢弃未发数据（慎用）
 socket.shutdownOutput();                   // 半关闭：请求发完等响应（HTTP 客户端常见正确姿势）
+// 正确用法结果：setSoTimeout(3000) 后若对端 3 秒不发数据，read() 抛 SocketTimeoutException 而不永久阻塞，线程可回收
+// 错误用法：backlog 传 0 或负 → new ServerSocket 报 IllegalArgumentException: backlog <=0；传很大也会被内核 somaxconn 截断
+// 错误用法：setSoTimeout 忘设且对端 hang 住 → read() 永久阻塞，连接池被死连接占满耗尽（大量 Tomcat 线程卡住的根因）
 ```
 
 - JDK 没有暴露 `TCP_DEFER_ACCEPT`/`TCP_QUICKACK`/`SO_REUSEPORT`，需要 Netty 的 `NativeOption` 或 `epoll` transport（详见 s4-1 与 netty/s1-3）。

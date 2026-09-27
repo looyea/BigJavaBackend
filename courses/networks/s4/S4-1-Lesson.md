@@ -81,25 +81,29 @@ net.core.default_qdisc           # fq（配 BBR 做 pacing）/ pfifo_fast
 ## 七、C10M / 万兆调优清单（可直接抄）
 
 ```bash
+# 例子目的：C10M / 万兆高并发服务的内参调优清单，每条都是可直接抄的生效命令（需 root）
 # 队列与连接
-sysctl -w net.core.somaxconn=65535
-sysctl -w net.ipv4.tcp_max_syn_backlog=65535
-sysctl -w net.ipv4.tcp_syncookies=1
+sysctl -w net.core.somaxconn=65535                     # 抬高全连接队列封顶（默认 128 会限死 accept 速率）
+sysctl -w net.ipv4.tcp_max_syn_backlog=65535           # 抬高半连接队列
+sysctl -w net.ipv4.tcp_syncookies=1                    # 半连接满时用 cookie 抗 SYN 洪泛
 # 端口与复用
-sysctl -w net.ipv4.ip_local_port_range="1024 65535"
-sysctl -w net.ipv4.tcp_tw_reuse=1
+sysctl -w net.ipv4.ip_local_port_range="1024 65535"    # 拓宽出站临时端口，防高并发新建连接耗尽端口
+sysctl -w net.ipv4.tcp_tw_reuse=1                      # 允许复用 TIME_WAIT 做出站（仅客户端侧，依赖时间戳）
 # 缓冲自动调优封顶
-sysctl -w net.core.rmem_max=16777216
-sysctl -w net.core.wmem_max=16777216
-sysctl -w net.ipv4.tcp_rmem="4096 87380 16777216"
+sysctl -w net.core.rmem_max=16777216                   # 接收缓冲自动调优上限 16MB（需 ≥ BDP）
+sysctl -w net.core.wmem_max=16777216                   # 发送缓冲上限
+sysctl -w net.ipv4.tcp_rmem="4096 87380 16777216"       # min default max 三值
 sysctl -w net.ipv4.tcp_wmem="4096 65536 16777216"
 # 拥塞
-sysctl -w net.core.default_qdisc=fq
-sysctl -w net.ipv4.tcp_congestion_control=bbr
+sysctl -w net.core.default_qdisc=fq                    # 配 BBR 做 pacing
+sysctl -w net.ipv4.tcp_congestion_control=bbr          # 切 BBR（跨丢包链路吞吐更好）
 # conntrack（若用 NAT/iptables）
-sysctl -w net.netfilter.nf_conntrack_max=1048576
+sysctl -w net.netfilter.nf_conntrack_max=1048576       # 抬高连接跟踪表，防高并发下 conntrack 满丢包
 # fd
-ulimit -n 1048576
+ulimit -n 1048576                                      # 单进程 fd 上限（默认 1024 是 C10M 第一道卡）
+# 正确用法结果：sysctl -a 回显新值且 ss -lnt 的 Send-Q 不再停在 128，高并发下 ListenOverflows 不再增长
+# 错误用法：只改应用层 backlog 不改 somaxconn → 内核仍按 128 截断，调了个寂寞（两者取 min）
+# 错误用法：把 tcp_tw_reuse 开到服务端监听侧期待"消灭 TIME_WAIT" → 它只对出站连接生效，服务器被动关闭的 TIME_WAIT 依旧堆积
 ```
 **调优纪律**：① 先**测量**（s4-2 `ss -tin`、重传率、队列溢出计数）再调；② 一次改一组、灰度压测；③ 参数写进镜像/配置管理持久化（别只 `sysctl -w` 重启就丢）；④ 应用层连接池/异步化往往比内核调参收益更大 —— **参数是兜底，架构是根本**。
 

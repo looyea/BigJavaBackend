@@ -26,6 +26,7 @@
 **动机**：哈希只能整串精确匹配；当你要**前缀检索、自动补全、最长前缀匹配**，需要把 key 拆成字符逐层下探。
 
 ```
+// 例子目的：看清"同前缀共用一条路径"的代价与查询成本
 "cat","car","do","dog" →
       root
      /    \
@@ -34,6 +35,7 @@
   a   ...    o
  / \          \
 t   r          g✓
+→ 应用例：查 "dog" 沿 d→o→g 走 3 步命中终止标记✓；查 "cat" 与 "car" 共用 c-a 两段；成本只跟词长有关
 ```
 
 - 查找一个词 O(词长)，与库里多少词无关；天然支持"以某前缀开头的所有词"。
@@ -46,6 +48,7 @@ t   r          g✓
 **动机**：链表查找 O(n)。跳表给链表加**多级稀疏索引**（像地铁图的快慢线），查找时从高层往下跳，期望 O(log n)。
 
 ```
+// 例子目的：从最高层往下"跳"，查找 9 只需经过 L2 一跳 + L1 一跳 + L0 一跳，而不是扫 6 个节点
 L2:  1 ─────────────→ 9
 L1:  1 ──────→ 5 ───→ 9 ──→ 12
 L0:  1 → 3 → 5 → 7 → 9 → 11 → 12
@@ -64,9 +67,19 @@ L0:  1 → 3 → 5 → 7 → 9 → 11 → 12
 - 应用：无向图连通分量、Kruskal 最小生成树、账号合并/好友推荐、商品聚类、判断依赖是否成环。
 
 ```java
+// 例子目的：把"账号合并后判是否同一人"跑起来——先初始化森林，再 union、再 find
 int[] parent;
-int find(int x){ return parent[x]==x ? x : (parent[x]=find(parent[x])); } // 路径压缩
-void union(int a,int b){ parent[find(a)] = find(b); }
+void init(int n) { parent = new int[n]; for (int i = 0; i < n; i++) parent[i] = i; }   // 初始：每人一个组，自己就是代表元
+int find(int x){ return parent[x]==x ? x : (parent[x]=find(parent[x])); }   // 沿父指针爬根，沿途直接挂到根→路径压缩
+void union(int a,int b){ parent[find(a)] = find(b); }                        // 把一个组的根挂到另一个组下 → 两组合一
+
+init(5);                                       // 5 个独立账号 0..4
+union(0, 1);                                   // 合并后 find(0)==find(1)，0 与 1 同人
+union(3, 4);
+System.out.println(find(0) == find(1));         // 正确用例输出：true（同组）
+System.out.println(find(0) == find(3));         // 正确用例输出：false（两个独立的组）
+union(1, 3);                                    // 再合并两组
+System.out.println(find(0) == find(4));         // 正确使用结果：输出 true（链式归并完成）
 ```
 
 - 代价：只支持合并与查询，**不支持拆分**（撤销 union 很难）。图的遍历类问题它管不了，得回 BFS/DFS（s3-1）。
@@ -92,7 +105,49 @@ void union(int a,int b){ parent[find(a)] = find(b); }
 | 动态连通性、分组、判环 | 并查集 | α(n) 近常数，只合并不拆分 |
 | 海量判存、可容忍假阳性 | 布隆过滤器 | 极省内存，"无"绝对可信 |
 
-## 七、本节要点回顾
+## 七、例子：正确用法与错误用法
+
+```java
+// 例子目的：这五个结构在 JDK / 工程里各有一个可直接跑的用例，并把"布隆假阳性 / 并查集不能拆 / 跳表范围"三个坑写清
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;   // 跳表实现的并发有序表（Redis ZSet 同源思路）
+
+public class StructDemo {
+    static int[] parent = new int[6];
+    static int find(int x) { return parent[x] == x ? x : (parent[x] = find(parent[x])); }
+    static void union(int a, int b) { parent[find(a)] = find(b); }   // 错误风险：不做按秩合并时，连续十万次 union 可把树退化成链
+
+    public static void main(String[] args) {
+        for (int i = 0; i < parent.length; i++) parent[i] = i;   // 初始化：每个节点自成一组
+        union(0, 1); union(1, 2);                                 // 逐步合并：{0,1,2} 成为一个连通块
+        System.out.println(find(0) == find(2));                    // 正确用例输出：true，判连通均摊近 O(1)
+        // 错误用法：并查集没有 "拆分" 操作——下句想回退 union(1,2) 根本无法表达
+        // parent[1] = 1;   // 看似拆开了，实则 {0,2} 的连通信息已被压缩破坏，结果不合法
+
+        // 知识点：跳表做有序范围查询（Redis ZSet 的选择）
+        NavigableMap<Double, String> zset = new ConcurrentSkipListMap<>();   // 多层索引链表，并发安全
+        zset.put(1.0, "cat"); zset.put(3.5, "dog"); zset.put(7.2, "ant");      // 按分数写入，内部自动保持有序
+        System.out.println(zset.subMap(1.0, true, 4.0, false).values());   // 正确用例输出：[cat, dog]（顺链表扫描，不旋转）
+        System.out.println(zset.higherKey(1.0));                              // 输出 3.5：后继定位同样 O(log n)
+
+        // 知识点：布隆过滤器只能当粗筛（这里用 BitSet 手写一个迷你版，说明判定语义）
+        BitSet bloom = new BitSet(1 << 16);                       // 位数组代替几千万个位
+        for (String url : List.of("a.com", "b.com")) bloom.set(Math.abs(url.hashCode() & 0xFFFF));   // 插入：置 1
+        boolean maybe = bloom.get(Math.abs("a.com".hashCode() & 0xFFFF));   // 查询命中
+        System.out.println(maybe);                                  // 正确用例输出：true，但这只是"可能存在"
+        System.out.println(bloom.get(Math.abs("z.com".hashCode() & 0xFFFF))); // 输出 false：说"没有"绝对可信
+        // 错误用法：把布隆的 true 当白名单直接放行 → 假阳性会误放无关请求（缓存穿透防护里必须回源精确确认）
+        // 错误用法：标准布隆不支持删除——bloom.clear(idx) 会把共享位清 0，让另一个已存在的元素被误判为"不存在"
+
+        // 知识点：前缀检索用 Trie（JDK 没有内置，用 TreeMap 做"排序 + 前缀区间"替代方案）
+        NavigableSet<String> dict = new TreeSet<>(List.of("cat", "car", "dog"));
+        System.out.println(dict.subMap("ca", true, "ca\uffff", true));   // 正确用例输出：[car, cat]——以 "ca" 开头的全在区间里
+        // 错误用法：拿 HashMap 做前缀检索 → keySet 遍历过滤是 O(n)，词库千万级时直接超时
+    }
+}
+```
+
+## 八、本节要点回顾
 
 1. B+ 树为磁盘 IO 而生：多叉矮胖 + 叶子链表，是数据库索引的标准答案。
 2. Trie 按字符分叉，独门前缀/补全/最长前缀匹配。

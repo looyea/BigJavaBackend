@@ -8,6 +8,7 @@
 所有自平衡树的修复都建立在**局部旋转**上，它不破坏 BST 的中序有序性：
 
 ```
+// 例子目的：一次左旋就把"右偏链"压矮一层，注意中序序列 a,b,c 完全不变
       x                 y
      / \      左旋x     / \
     a   y    ------->  x   c
@@ -64,11 +65,17 @@
 `TreeMap` 是**有序键**的 Map，`TreeSet` 是基于 TreeMap 的有序集，全部 O(log n)，并独有一批**哈希给不了**的能力：
 
 ```java
+// 例子目的：定义订单号→订单的有序表，并当场把"后继/前驱/区间/极值"四个能力都用起来
+record Order(long id, String name) {}
 NavigableMap<Long, Order> tm = new TreeMap<>();
-tm.ceilingKey(t);        // ≥ t 的最小键（后继）
-tm.floorKey(t);          // ≤ t 的最大键（前驱）
-tm.subMap(a, true, b, false);  // 区间 [a,b) 视图 → 范围查询
-tm.firstEntry(); tm.lastEntry();  // 最小/最大
+tm.put(10L, new Order(10, "A"));                     // 写入后内部自动按 key 保持红黑平衡有序
+tm.put(20L, new Order(20, "B"));
+tm.put(30L, new Order(30, "C"));
+tm.ceilingKey(15L);        // ≥ 15 的最小键（后继）→ 结果 20
+tm.floorKey(15L);          // ≤ 15 的最大键（前驱）→ 结果 10
+tm.subMap(10L, true, 30L, false);   // 区间 [10,30) 视图 → 结果是 {10=A, 20=B}，不拷数据而是活视图
+tm.firstEntry(); tm.lastEntry();    // 最小/最大 → 结果 10=A / 30=C
+System.out.println(tm.floorKey(15L));   // 正确使用结果：输出 10（HashMap 做不到的前驱定位）
 ```
 
 **杀手级场景**（都建立在"有序 + 最近匹配"上）：
@@ -78,7 +85,48 @@ tm.firstEntry(); tm.lastEntry();  // 最小/最大
 
 > `TreeMap` vs `HashMap`：要有序/范围/前后最近 → TreeMap(红黑 O(log n))；只要点查 → HashMap(O(1))。这条分界与上一节"哈希不保序"完全对应。
 
-## 六、本节要点回顾
+## 六、例子：正确用法与错误用法
+
+```java
+// 例子目的：把红黑树门面 TreeMap 的阶梯费率正确用法，与"null 键 / 比较器只比单字段"两个错误用法并排写出
+import java.util.*;
+
+public class TreeMapDemo {
+    public static void main(String[] args) {
+        // 知识点 1 正确用法：阶梯费率按金额取"不超过它的最高档"
+        NavigableMap<Integer, Double> rate = new TreeMap<>();
+        rate.put(0, 0.005);      // 0 元起 0.5%
+        rate.put(10_000, 0.008); // 1 万元起 0.8%
+        rate.put(100_000, 0.012); // 10 万元起 1.2%
+        Map.Entry<Integer, Double> e = rate.floorEntry(50_000);   // 找 ≤ 50000 的最大键 → 命中档位 10000
+        System.out.println(e.getKey() + "->" + e.getValue());      // 正确使用结果：输出 10000->0.008
+
+        // 知识点 2 错误用法：TreeMap 不允许 null 键（不像 HashMap）
+        try {
+            rate.put(null, 0.01);          // 错误：无法参与排序比较 → 抛 NullPointerException
+        } catch (NullPointerException ex) {
+            System.out.println("有序表拒绝 null 键：没有定义它与其它键的大小关系");   // 输出该行
+        }
+
+        // 知识点 3 错误用法：比较器只比一个字段 → 逻辑上"相等"的键互相覆盖
+        record Account(String owner, long id) {}
+        NavigableSet<Account> byOwner = new TreeSet<>(Comparator.comparing(Account::owner));  // 错误：只按户主排序
+        byOwner.add(new Account("tom", 1L));
+        byOwner.add(new Account("tom", 2L));   // 第二个 tom 与第一个"比较相等" → 被丢弃（静默丢数据！）
+        System.out.println(byOwner.size());     // 输出 1：而不是预期的 2
+
+        // 正确做法：比较器必须能区分所有业务上不同的元素（主字段 + 兼底字段）
+        NavigableSet<Account> good = new TreeSet<>(
+                Comparator.comparing(Account::owner).thenComparingLong(Account::id));   // 户主相同则比 id
+        good.add(new Account("tom", 1L));
+        good.add(new Account("tom", 2L));       // 不再相等 → 两条均入集
+        System.out.println(good.size());         // 正确使用结果：输出 2
+        System.out.println(good.higher(new Account("tom", 1L)).id());   // 输出 2：后继查询仍可用
+    }
+}
+```
+
+## 七、本节要点回顾
 
 1. 旋转是平衡树唯一的基本动作，O(1) 且保持中序有序。
 2. AVL 严格平衡、查询最快、写代价高；红黑用颜色规则保证"最长≤2×最短"，高度 O(log n)。

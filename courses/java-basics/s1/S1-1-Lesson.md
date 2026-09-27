@@ -1,6 +1,7 @@
 # 面向对象核心与多态真相
 
-> 本节难度 ★★☆☆☆ · 重要性 ★★★★★
+> 本节难度：★★☆☆☆
+> 本节重要性：★★★★★
 > 学习产出：能画出一张方法调用的字节码→运行期分派链路图，说清"重载看编译期、重写看运行期"的底层依据，并避开构造器多态、协变返回、`super`/`this` 的经典坑。
 
 ## 一、面向对象是什么（★★☆☆☆）
@@ -12,12 +13,29 @@ Java 的面向对象不是"封装/继承/多态"三个名词的背诵，而是�
 - **多态**：父类引用指向子类对象，同一句 `p.dog()` 在不同运行期把消息分派给不同实现。多态是**继承 + 重写 + 向上转型**三者合力的结果，缺一不构成运行期多态。
 
 ```java
-abstract class Animal { abstract void sound(); }
-class Dog extends Animal { @Override void sound() { System.out.println("汪"); } }
-class Cat extends Animal { @Override void sound() { System.out.println("喵"); } }
+// 例子目的：定义一个最小多态体系，并当场应用它（feed 依靠分派而非 if-else），最后给出错误用法的后果
+class PolyDemo {
+    abstract static class Animal { abstract void sound(); }                       // 能力契约
+    static class Dog extends Animal { @Override void sound() { System.out.println("汪"); } }
+    static class Cat extends Animal { @Override void sound() { System.out.println("喵"); } }
 
-Animal a = new Dog();   // 向上转型
-a.sound();              // 编译期只看 Animal，运行期跳到 Dog 的实现 → 汪
+    // 应用 1：多态参数——新增子类时 feed 一行不改（开闭原则）
+    static void feed(Animal a) { a.sound(); }                                     // 形参是父类引用，可接任意子类
+
+    public static void main(String[] args) {
+        Animal a = new Dog();                    // 向上转型：静态类型 Animal，实际类型 Dog
+        a.sound();                               // 运行期按实际类型查 vtable → 分派到 Dog
+        // 正确用法结果：下面三行依次输出：汪 / 喵 / 汪
+        feed(a);
+        feed(new Cat());
+        feed((Animal) new Dog());                // 显式转型同样合法，结果不变
+
+        // 错误用法 1：向下转型到错误子类 → 抛 ClassCastException: class Dog cannot be cast to class Cat
+        try { ((Cat) a).sound(); } catch (ClassCastException e) { System.out.println("运行时类型不匹配：" + e.getMessage()); }
+        // 错误用法 2：直接 new 抽象类 → 编译期 cannot instantiate the abstract class Animal
+        // 错误用法 3：重写时把方法名拼错（sound→snd）→ 编译通过但只是新增方法，父类引用调不到子类实现（静默失效）
+    }
+}
 ```
 
 ## 二、它解决了什么问题（★★☆☆☆）
@@ -72,9 +90,12 @@ a.sound();              // 编译期只看 Animal，运行期跳到 Dog 的实�
 1. **构造器里的多态陷阱**：父类构造器中调用被子类重写的方法，此时子类尚未完成初始化，字段还是默认值。绝不要在构造器调用可被重写的方法（Effective Java Item 19）。
 
    ```java
-   class Super { int n = 1; Super(){ print(); } void print(){ System.out.println("super"); } }
+   // 例子目的：复现"构造器里调可重写方法"的经典坑，看它把子类字段读成 0
+   class Super { int n = 1; Super(){ print(); } void print(){ System.out.println("super"); } }   // 构造器里发起分派
    class Sub extends Super { private final int m = 100;
-       @Override void print(){ System.out.println(m); } }   // 打印 0，不是 100
+       @Override void print(){ System.out.println(m); } }   // 错误结果输出：0——父类构造时 Sub 的 m 还未赋值（默认 0）
+   // 正确用法结果：构造完成后正常调用 sub.print() 输出 100；只有"构造期"被重写时才是 0
+   // 错误用法后果：不抛异常，只在构造阶段静默生效，final 字段在初始化前被读成默认值——Effective Java Item 19 禁止构造器调用可重写方法
    ```
 
 2. **字段没有多态**：`a.name` 取的是**静态类型**声明的字段，字段是静态绑定的，只有方法动态绑定。

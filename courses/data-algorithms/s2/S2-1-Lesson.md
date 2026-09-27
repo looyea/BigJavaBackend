@@ -12,10 +12,19 @@
 - **二叉树性质**：第 i 层最多 \(2^{i-1}\) 个节点；高度 h 最多 \(2^h-1\) 个；n 个节点的最小高度 \(\lfloor \log_2 n \rfloor +1\)。
 
 ```java
+// 例子目的：定义二叉树节点，并立即组装出一棵可用的小树（定义必配应用）
 class TreeNode {
     int val; TreeNode left, right;
     TreeNode(int v){ val = v; }
 }
+
+// 应用：手工拼装    2
+//                / \
+//               1   3
+TreeNode root = new TreeNode(2);          // 建根节点，val=2
+root.left = new TreeNode(1);              // 左孩子挂载：中序将出现 1 在 2 之前
+root.right = new TreeNode(3);             // 右孩子挂载：它已是一棵合法 BST
+System.out.println(root.left.val);        // 正确使用结果：输出 1（未挂载时为 null，直接 .val 会招 NullPointerException）
 ```
 
 ## 二、四种遍历：一棵树的四把钥匙
@@ -28,10 +37,12 @@ class TreeNode {
 | 层序 | 逐层，队列驱动 | BFS、按层处理、最短路径 |
 
 ```java
-// 递归三兄弟，一行顺序切换即变体
-void inorder(TreeNode t){ if(t==null) return; inorder(t.left); visit(t); inorder(t.right); }
-
-// 层序：队列（上一节的 FIFO 在这里复用）
+// 例子目的：展示四种遍历在同一棵树上的不同访问次序（接上节拼装的 root）
+void inorder(TreeNode t){ if(t==null) return; inorder(t.left); visit(t); inorder(t.right); }   // 对 BST → 升序 1,2,3
+void preorder(TreeNode t){ if(t==null) return; visit(t); preorder(t.left); preorder(t.right); } // 先根 → 2,1,3（适合序列化）
+void postorder(TreeNode t){ if(t==null) return; postorder(t.left); postorder(t.right); visit(t); } // 后根 → 1,3,2（适合自底向上计算）
+```
+// 例子目的：层序遍历——队列（上一节的 FIFO 在这里复用），sz 快照保证分层
 List<List<Integer>> levelOrder(TreeNode root){
     List<List<Integer>> res = new ArrayList<>();
     if(root==null) return res;
@@ -45,7 +56,7 @@ List<List<Integer>> levelOrder(TreeNode root){
         }
         res.add(level);
     }
-    return res;
+    return res;                                        // 对上面那棵 2/1/3 树 → 正确使用结果 [[2], [1, 3]]
 }
 ```
 
@@ -58,7 +69,11 @@ List<List<Integer>> levelOrder(TreeNode root){
 
 ```java
 // 前序定位根、中序分左右：根在中序的下标 = 左子树大小，据此切两段前序
+// 例子目的 + 应用：由 pre=[2,1,3]、in=[1,2,3] 还原出上一节那棵树
 TreeNode build(int[] pre, int[] in){ return helper(pre,0,pre.length-1,in,0,in.length-1); }
+TreeNode restored = build(new int[]{2,1,3}, new int[]{1,2,3});   // 前序首元素 2 是根，去中序定下标 1 切左[1]/右[3]
+System.out.println(restored.left.val);                            // 正确使用结果：输出 1，还原成功
+// 错误用法：前序+后序（pre=[2,1], post=[1,2]）无法唯一还原 → 孩子归属左还是右歧义，还原结果不合法
 ```
 
 ## 四、BST：中序有序带来一切能力
@@ -71,11 +86,15 @@ TreeNode build(int[] pre, int[] in){ return helper(pre,0,pre.length-1,in,0,in.le
 - **第 K 小**：中序遍历数到第 K 个。
 
 ```java
+// 例子目的：BST 的查找与 floorKey（哈希做不到的"前一个最近键"）
 boolean searchBST(TreeNode t, int v){
-    if(t==null) return false;
-    if(v==t.val) return true;
-    return v < t.val ? searchBST(t.left,v) : searchBST(t.right,v);  // 每步砍一半
+    if(t==null) return false;                         // 走到空 → 未命中，返回 false
+    if(v==t.val) return true;                          // 命中当前节点
+    return v < t.val ? searchBST(t.left,v) : searchBST(t.right,v);  // 每步砍一半，平均 O(log n)
 }
+// 应用：对 root(2, 左 1, 右 3) 查找
+System.out.println(searchBST(root, 3));                // 正确用例输出：true（2→右→3 命中）
+System.out.println(searchBST(root, 9));                // 正确用例输出：false（走到 null）
 // 删除节点：叶子直删；单孩子接上；双孩子→用右子树最小值(中序后继)替换再删那个后继
 ```
 
@@ -100,7 +119,72 @@ BST 的 O(log n) **依赖树够平衡**。若按升序插入 `1,2,3,4,5`，每�
 - **最近公共祖先 LCA**（BST 版可利用有序性 O(log n) 下潜；普通二叉树版用后序回溯）。
 - **直径 / 最大深度 / 路径和**：都在"后序 + 自底向上返回子树信息"的框架里。
 
-## 七、本节要点回顾
+## 七、例子：正确用法与错误用法
+
+```java
+// 例子目的：演示BST 验证的正确写法与"只比父子"的错误写法，以及升序插入退化后的栈溢出后果
+import java.util.*;
+
+class Node {
+    int val; Node left, right;
+    Node(int v) { val = v; }
+}
+
+public class BSTDemo {
+
+    // 知识点 1 正确用法：BST 验证必须传递整棵子树的上下界
+    static boolean valid(Node n, long min, long max) {
+        if (n == null) return true;                            // 空子树天然合法
+        if (n.val <= min || n.val >= max) return false;        // 当前值越出祖先划定的区间 → 不合法
+        return valid(n.left, min, n.val) && valid(n.right, n.val, max);   // 左子树全 < n.val，右子树全 > n.val
+    }
+
+    // 知识点 2 错误用法：只比较直接父子 → 把不合法的树判成合法
+    static boolean validWrong(Node n) {
+        if (n == null) return true;
+        if (n.left != null && n.left.val >= n.val) return false;   // 只看左孩子 < 自己
+        if (n.right != null && n.right.val <= n.val) return false;  // 只看右孩子 > 自己
+        return validWrong(n.left) && validWrong(n.right);
+    }
+
+    static Node insert(Node n, int v) {                       // 按 BST 规则插入（不做任何平衡）
+        if (n == null) return new Node(v);
+        if (v < n.val) n.left = insert(n.left, v); else n.right = insert(n.right, v);
+        return n;
+    }
+
+    public static void main(String[] args) {
+        // 这棵树父子关系局部成立，但 6 在 4 的右子树里却 < 8 → 整棵不合法
+        Node bad = new Node(8);
+        bad.left = new Node(4);
+        bad.left.right = new Node(6);
+        bad.right = new Node(10);
+        System.out.println(valid(bad, Long.MIN_VALUE, Long.MAX_VALUE));     // 正确算法输出：false（6 越界）
+        System.out.println(validWrong(bad));                                 // 错误算法输出：true —— 漏判，这是面试与审代码高频陷阱
+
+        // 知识点 3 错误用法：升序数据建 BST → 退化成链表，树高 = n
+        Node chain = new Node(1);
+        Node cur = chain;
+        for (int i = 2; i <= 200_000; i++) { cur.right = new Node(i); cur = cur.right; }   // 逐次挂右孩子（这里用迭代建树，把溢出留给递归查找）
+        try {
+            System.out.println(search(chain, 200000));                        // 递归下潜 20 万层 → 尚未返回值就抛异常
+        } catch (StackOverflowError e) {
+            System.out.println("退化后果：递归深度=节点数，抛 StackOverflowError");   // 输出该行
+        }
+        // 正确取向：要高度保证 O(log n) 必须用自平衡结构（下一节 AVL/红黑树，或 TreeMap）
+        NavigableMap<Integer, String> tm = new TreeMap<>();                // JDK 红黑树，插入自动旋转
+        for (int i = 1; i <= 200_000; i++) tm.put(i, "v" + i);              // 仍保持有序且高度 ~log n
+        System.out.println(tm.lowerKey(100) + "," + tm.ceilingKey(100));    // 正确用例输出：99,100（floor/ceil 是哈希做不到的）
+    }
+
+    static boolean search(Node n, int v) {
+        if (n == null) return false;
+        return v == n.val || search(v < n.val ? n.left : n.right, v);        // 递归版，仅适用于平衡树
+    }
+}
+```
+
+## 八、本节要点回顾
 
 1. 二叉树递归定义；前中后序 + 层序四把钥匙，中序对 BST 即升序。
 2. 前序+中序 / 后序+中序 能还原树，靠"根在中序里切左右"。

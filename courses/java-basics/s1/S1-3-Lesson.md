@@ -1,6 +1,7 @@
 # HashMap 的深度解剖
 
-> 本节难度 ★★★★☆ · 重要性 ★★★★★
+> 本节难度：★★★★☆
+> 本节重要性：★★★★★
 > 学习产出：能手推一次 `put` 的完整路径（哈希→扰动→定桶→冲突→树化→扩容），解释为什么容量必须是 2 的幂、为什么树化阈值是 8 退化是 6，并说清 HashMap 在并发下为何危险。
 
 ## 一、HashMap 是什么（★★☆☆☆）
@@ -25,10 +26,13 @@ put(key,value) → key==null 落到 0 号桶 → 否则 hash(key) 扰动 → (n-
 ## 三、扰动函数：为什么是 `h ^ (h >>> 16)`（★★★★☆）
 
 ```java
+// 例子目的：复现 JDK HashMap 的扰动函数，看它把高 16 位异或进低位以打散定桶
 static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    int h;                                                        // 声明并复用，避免二次调用 hashCode
+    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);  // null 固定归 0 号桶；非 null 高16位^低16位
 }
+// 正确用法结果：hash("A")= 65 ^ 0 = 65（"A".hashCode()==65 高 16 位为 0，异或后不变）；n=16 时定桶 index = 65 & 15 = 1
+// 错误用法：把扰动写成 (h >>> 16) 不异或（直接丢掉低位）→ 高低位信息丢失，大量 key 冲突到同一桶，链表退化成 O(n)
 ```
 
 定桶只用到低位（`(n-1)&hash`，n=16 时只取低 4 位），若 hashCode 高位有信息、低位区分度差，就会大量冲突。把高 16 位异或进低位，**一次异或让高低位都参与定桶**，以极小代价打散分布。
@@ -40,9 +44,11 @@ static final int hash(Object key) {
 - 扩容时元素新位置只可能是"原位置"或"原位置 + 旧容量"，靠 `hash & oldCap` 是否为 0 判断，无需重算 hash——这是 JDK 8 扩容高效的关键。
 
 ```java
-// resize 中的 split：高位那段决定去留
-if ((e.hash & oldCap) == 0) 留在 loRun（原下标）;
-else 移到 hiRun（原下标 + oldCap）;
+// 例子目的：resize 中的 split——用 (e.hash & oldCap) 判高一位决定去留，无需重算 hash
+if ((e.hash & oldCap) == 0) 留在 loRun（原下标）;   // 新增高位为 0 → 桶位置不变
+else 移到 hiRun（原下标 + oldCap）;            // 新增高位为 1 → 新位置 = 原下标 + 旧容量
+// 正确用法结果：oldCap=16、e.hash=17 时 17&16==16≠0 → 移到 index 1+16=17；e.hash=1 时 1&16==0 → 留在 index 1
+// 错误用法：对每个元素重算 index = hash & (newCap-1) → 不报错但把 O(n) 搬迁变贵，丧失了“一次位判分链”的扩容优化
 ```
 
 ## 五、树化 8、退化 6 的由来（★★★★☆）

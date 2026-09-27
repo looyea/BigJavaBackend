@@ -87,9 +87,15 @@
 ## 九、Java / Linux 侧可观测与可调
 
 ```java
-socket.setTcpNoDelay(true);   // RPC/低延迟必开：关 Nagle（第七节）
+// 例子目的：RPC 客户端必设的三个 socket 选项 + 一次真实写出，解释每个选项对延迟/吞吐的影响
+socket.setTcpNoDelay(true);   // RPC/低延迟必开：关 Nagle（第七节），小报文立即发出而非等攒满 MSS
 socket.setSoTimeout(3000);    // 读超时，防被零窗口/CLOSE_WAIT 卡死
+socket.getOutputStream().write(req);          // 应用：发送一个请求报文
+socket.getOutputStream().flush();             // 配合 TCP_NODELAY 才能真正马上推上链路
 // SO_RCVBUF 不设则内核自动调（tcp_rmem: min default max）
+// 正确用法结果：开了 TCP_NODELAY 后单个小请求的 RT 从可能的 ~40ms（Nagle+延迟ACK 互相等）降到真实 RTT
+// 错误用法：交互式 RPC 不开 TCP_NODELAY（保留 Nagle）又每收一个包就回一个极小包 → Nagle 与延迟 ACK 互相等出经典微秒~毫秒级卡顿
+// 错误用法：setSoTimeout 当"总调用超时"用 → 它只管单次 read 间隔，慢但不连续阻塞的响应会绕过它，需另设业务超时
 ```
 
 ```bash

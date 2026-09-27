@@ -68,6 +68,79 @@ key --hashCode--> 扰动(高16位^低16位) --&(len-1)--> 桶下标 --> 桶内(�
 - **金融**：幂等表 `Map<requestId, result>` 快速判重；分库分表用一致性哈希路由（本质也是哈希定桶）。
 - **电力**：设备实时状态表 `ConcurrentHashMap<deviceId, status>` 高并发读写。
 
+## 八、例子：正确用法与错误用法
+
+```java
+// 例子目的：把"定桶、扰动、扩容预分配、可变 key、LRU"五个知识点各给出可运行的正确用例与错误用例
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;   // 并发哈希表，知识点 4 要用
+
+public class HashDemo {
+
+    // 知识点 1：扰动 + 位与定桶（这就是 JDK HashMap 的算法）
+    static int bucket(Object key, int cap) {
+        int h = key.hashCode();                 // 第一步：取 hashCode
+        h = h ^ (h >>> 16);                     // 扰动：高 16 位异或进低 16 位，让高位也参与定桶
+        return h & (cap - 1);                   // 容量为 2 的幂时，位与等价取模且只花一条指令
+    }
+
+    public static void main(String[] args) {
+        System.out.println(bucket("A", 16) + "," + bucket(17, 16));   // 正确用例输出：1,1 —— 两个 key 同桶形冲突
+
+        // 知识点 2：已知规模预分配容量
+        Map<String, String> good = new HashMap<>((int) (100 / 0.75f) + 1);  // 打算放 100 条 → 算得 134，向上取 2 的幂为 256
+        for (int i = 0; i < 100; i++) good.put("k" + i, "v" + i);            // 全程只一次初始化分配，无 rehash
+        System.out.println(good.get("k42"));                                  // 正确使用结果：输出 v42，查找 O(1)
+
+        Map<String, String> small = new HashMap<>(4);                          // 错误取向：容量给得比规模小很多
+        for (int i = 0; i < 100; i++) small.put("k" + i, "v" + i);             // 结果仍正确，但反复扩容 rehash 搬约 96 次桶
+
+        // 知识点 3 错误用法：拿可变对象当 key，放进入后改哈希字段
+        Key k = new Key(1);
+        Map<Key, String> m = new HashMap<>();
+        m.put(k, "hit");                     // 按当时 hashCode 定桶存入
+        k.id = 999;                          // 错误：放入后修改参与哈希的字段 → hashCode 变了
+        System.out.println(m.get(k));         // 输出 null：到另一个桶里找，对象"泄漏"在表里取不到
+        System.out.println(m.size());         // 输出 1：还在表内，但再也访问不到
+
+        // 正确做法：key 用不可变类型
+        Map<Record, String> safe = new HashMap<>();
+        safe.put(new Record(1), "hit");      // record 字段不可变 → hashCode 稳定
+        System.out.println(safe.get(new Record(1)));   // 正确使用结果：输出 hit（依赖 equals/hashCode 一致）
+
+        // 知识点 4：HashMap 并发读写是错误用法（丢数据 / size 不准）
+        Map<Integer, Integer> shared = new HashMap<>();     // 错误：多线程共用普通 HashMap
+        Map<Integer, Integer> conc = new ConcurrentHashMap<>();   // 正确：分桶 CAS+synchronized，允许并发读写
+        conc.put(1, 1);                                     // 合法写入
+        System.out.println(conc.get(1));                     // 输出 1；注意 ConcurrentHashMap 禁止 null 键值
+        try {
+            conc.put(null, 1);                  // 错误：ConcurrentHashMap 不允许 null → 抛 NullPointerException
+        } catch (NullPointerException e) {
+            System.out.println("并发表禁止 null：无法区分「没有该键」与「值是 null」");   // 输出该行
+        }
+
+        // 知识点 5：LinkedHashMap 做 LRU（访问序 + 淘汰最旧）
+        int cap = 2;
+        Map<String, String> lru = new LinkedHashMap<>(16, 0.75f, true) {   // accessOrder=true：访问即重排
+            @Override protected boolean removeEldestEntry(Map.Entry<String, String> e) {
+                return size() > cap;                                       // 超限则自动淘汰头部最旧项
+            }
+        };
+        lru.put("a", "1"); lru.put("b", "2");   // 现有 [a, b]
+        lru.get("a");                             // 访问 a → a 移到尾部，变为 [b, a]
+        lru.put("c", "3");                        // 超容量 → 淘汰 b
+        System.out.println(lru.keySet());         // 正确用例输出：[a, c]
+    }
+
+    static class Key {                                // 可变且 hashCode 依赖可变字段 → 本例中的反面教材
+        int id; Key(int id) { this.id = id; }
+        @Override public int hashCode() { return id; }
+        @Override public boolean equals(Object o) { return o instanceof Key x && x.id == id; }
+    }
+    record Record(int id) {}                          // 不可变 key：hashCode/equals 由编译器生成且稳定
+}
+```
+
 ## 九、本节要点回顾
 
 1. 哈希=用哈希函数把 key 定到数组桶，O(1) 点查，代价是完全不保序。

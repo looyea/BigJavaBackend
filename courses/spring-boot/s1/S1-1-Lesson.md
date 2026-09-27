@@ -1,6 +1,7 @@
 # Spring Boot 是什么，它解决了什么问题
 
-> 本节难度 ★☆☆☆☆ · 重要性 ★★★★★
+> 本节难度：★☆☆☆☆
+> 本节重要性：★★★★★
 > 学习产出：能独立从零搭建并跑通一个 Spring Boot 4.1 工程，说清 Boot 的定位与边界。
 
 ## 一、这门技术是干什么的
@@ -12,12 +13,15 @@ Spring Boot 是 **Spring 生态的装配与启动层**。它不提供新的业�
 一个直观对比：2013 年前后搭一个能对外提供 HTTP 接口的 Spring 应用，你需要准备 `web.xml`、`applicationContext.xml`、单独安装并配置 Tomcat、手动引入十几个 `pom` 依赖并解决版本冲突。而今天用 Boot，一个 `@SpringBootApplication` 类 + 一个 `main` 方法 + 内嵌 Tomcat 就是一次可执行 `jar`。
 
 ```java
-@SpringBootApplication
+// 例子目的：一个最小可运行的 Boot 应用——一个注解 + main 方法就是一次可执行 jar
+@SpringBootApplication // 组合了 @SpringBootConfiguration + @ComponentScan + @EnableAutoConfiguration
 public class HelloApplication {
     public static void main(String[] args) {
-        SpringApplication.run(HelloApplication.class, args);
+        SpringApplication.run(HelloApplication.class, args); // 启动容器、自动装配、拉起内嵌 Tomcat
     }
 }
+// 正确使用结果：启动类在根包时，其下子包的 Controller/Service 全被扫到，8080 端口拉起
+// 错误用法：把启动类放到子包→ @ComponentScan 只向下扫，同级的 Controller 扫不到→ 404（新手最高频坑）
 ```
 
 ## 二、它解决了什么问题
@@ -59,19 +63,24 @@ Boot 解决的从来不是"写业务代码"的问题，而是 **工程复杂度*
 ### 步骤 2：写第一个接口
 
 ```java
-@RestController
+// 例子目的：写第一个 REST 接口，验证 Boot "零配置即可对外的 HTTP 端点"
+@RestController                         // = @Controller + @ResponseBody，返回值直接写进响应体（非视图）
 class HelloController {
-    @GetMapping("/hello")
+    @GetMapping("/hello")               // 映射 GET /hello
     public Map<String, Object> hello() {
-        return Map.of("msg", "Hello, Big Java Backend", "ts", System.currentTimeMillis());
+        return Map.of("msg", "Hello, Big Java Backend", "ts", System.currentTimeMillis()); // 自动由 Jackson 序列为 JSON
     }
 }
+// 正确使用结果：GET /hello 返回 {"msg":"...","ts":...}，Content-Type 为 application/json
+// 错误用法：类不在启动类所在包及子包下→ 不被 @ComponentScan 扫到→ 接口 404
+// 错误用法：误用 @Controller 又不加 @ResponseBody→ 把 "msg..." 当视图名解析→ 500
 ```
 
 ### 步骤 3：本地运行
 
 ```bash
-mvn spring-boot:run
+# 例子目的：本地启动应用（内嵌 Tomcat，无需外部容器）
+mvn spring-boot:run   # 正确用法：控制台打印 "Tomcat started on port 8080" 即启动成功
 ```
 
 看到类似输出即成功：
@@ -86,8 +95,10 @@ Started HelloApplication in 1.843 seconds (process running for 2.104)
 ### 步骤 4：打成可执行 jar 并运行
 
 ```bash
-mvn clean package -DskipTests
-java -jar target/hello-0.0.1-SNAPSHOT.jar --server.port=9090
+# 例子目的：打成自包含可执行 jar，并用命令行参数覆盖端口
+mvn clean package -DskipTests                       # 产出 target/*.jar（内含依赖与启动器）
+java -jar target/hello-0.0.1-SNAPSHOT.jar --server.port=9090  # --server.port=9090 是一次配置覆盖，服务改跑 9090
+# 错误用法：用普通 mvn package 不配 spring-boot-maven-plugin 重打包→ jar 无 Main-Class，java -jar 报 "no main manifest attribute"
 ```
 
 命令行参数 `--server.port=9090` 已经是一次配置覆盖——这就是 Boot 的配置注入方式之一。

@@ -28,11 +28,14 @@ for (;;) {
 - **`execute()` 不总是新开线程**：语义是"**确保在**该 EventLoop 线程上执行"——
 
 ```java
+// 例子目的：展示 execute() 的真实语义——"调度到该 EventLoop 跑"而非"新开线程并行"
 if (eventLoop.inEventLoop()) {   // 已经在目标线程 → 直接 run，不入队
     runAddTask(task);
 } else {
     taskQueue.add(task);          // 不在 → 投到该 EventLoop 队列，由其线程稍后跑
 }
+// 正确使用结果：任务无论来自哪个线程，最终都在这一个 EventLoop 线程串行执行（无锁保序）
+// 错误用法：误以为 ctx.executor().execute(阻塞活) 能把重活挑离 IO 线程 → 它仍在 EventLoop 跑，照样卡死同组所有连接
 ```
 `inEventLoop()` 还有带 `threadType` 的重载，配合 `DefaultEventExecutorGroup` 判断"是不是那个业务线程"。搞清楚"**execute 是把任务调度到 EventLoop，而不是并行化**"，就不会误以为 `ctx.executor().execute` 能把重活挪走（它挪不开，s2-1 已强调）。
 
@@ -53,10 +56,13 @@ if (eventLoop.inEventLoop()) {   // 已经在目标线程 → 直接 run，不�
 Netty 所有异步操作（`connect/bind/write/read/close`）返回 **`ChannelFuture`**（`Future<Void>` 的增强）。**绝不要 `sync()`/`await()` 阻塞 EventLoop**，用监听器：
 
 ```java
+// 例子目的：用 addListener 回调拿异步写结果，绝不阻塞 EventLoop
 channel.writeAndFlush(msg).addListener((ChannelFuture f) -> {
     if (f.isSuccess()) { /* 写出成功 */ }
     else { f.cause().printStackTrace(); f.channel().close(); }  // 写失败关连接
 });
+// 正确使用结果：不阻塞当前线程，写完在 EventLoop 回调里判断成败/处理异常
+// 错误用法：在同一 EventLoop 线程里写 future.sync()/await() → sync 等的正是在跑的当前线程，永远等不到→自锁死（Netty 抛 "blocking the current eventLoop"）
 ```
 - **`addListener` 的执行线程**：若 future 已完成，监听器**在当前线程**同步跑；未完成则注册，将来由**该 Channel 的 EventLoop**跑。所以监听器里做的仍是 IO 安全级别的事，重活还得再投业务池。
 - **`Promise`** 是 `ChannelFuture` 的"可写端"（`setSuccess/tryFailure/setFailure`）—— 你把异步结果回填给它，别人addListener。自写异步 API、桥接第三方回调常用 `Promise` + `PromiseCombiner`（聚合多个）。
@@ -67,11 +73,14 @@ channel.writeAndFlush(msg).addListener((ChannelFuture f) -> {
 `DefaultChannelGroup` 管理一批 Channel（按 EventLoop **内部分桶**，广播时对每个桶并发 `writeAndFlush`，减少跨线程），做"1 写 N"（聊天室、行情推送、IM 下行、配置广播）：
 
 ```java
+// 例子目的：用 DefaultChannelGroup 对一批连接做"1 写 N"广播
 ChannelGroup group = new DefaultChannelGroup(eventLoopGroup.next()); // 可传 Executor
-group.add(channel);
+group.add(channel);                       // 新连接入组
 ...
-group.writeAndFlush(pushMsg);   // 向组内所有连接广播（自动按 EventLoop 分桶并发）
+group.writeAndFlush(pushMsg);             // 向组内所有连接广播（自动按 EventLoop 分桶并发）
 ChannelGroupFuture f = group.newCloseFuture(); // 或 group.close()
+// 正确使用结果：一条消息高效扇出到上万订阅连接，断开的 Channel 自动从组移除
+// 错误用法：百万连接广播不管背压→ 慢消费者把组内写缓冲堆满→ 直内存 OOM（应用 isWritable()/分组限流丢弃慢连接）
 ```
 - 断开的 Channel 会被**自动移除**（监听 `channelInactive`/`CLOSE`）。
 - 百万连接广播注意**背压**：慢消费者把组内写缓冲堆满 → 配合 `isWritable`（s3-2）或分组限流，否则内存爆。
@@ -81,12 +90,15 @@ ChannelGroupFuture f = group.newCloseFuture(); // 或 group.close()
 进程收到下线信号时，正确顺序呼应 networks/s2-2「先摘流量、再关连接」：
 
 ```java
+// 例子目的：优雅关闭两个 EventLoopGroup，给 in-flight 请求一个 drain 窗口
 // 1)（可选但推荐）先从 LB 摘除 / 标记 not-ready，让新流量不再进来
 // 2) 关闭 worker 与 boss group，触发已 accept 连接的 in-flight 处理收尾
-Future<?> wf = workerGroup.shutdownGracefully(2, 27, TimeUnit.SECONDS); // quietPeriod, timeout
+Future<?> wf = workerGroup.shutdownGracefully(2, 27, TimeUnit.SECONDS); // quietPeriod=2s, timeout=27s
 Future<?> bf = bossGroup.shutdownGracefully();
-wf.await();  // 主线程等两组真正终止
-// boss 关 → ServerChannel 关闭、停止 accept；worker 关 → 不再处理新读，但队列里任务/已注册定时任务会尽力收尾
+wf.await();  // 主线程（非 EventLoop）等两组真正终止
+// boss 关 → ServerChannel 关闭、停止 accept；worker 关 → 不再处理新读，但队列里任务会尽力收尾
+// 正确使用结果：正在处理的请求在 quietPeriod 内平滑跑完再退出，滚动发布零 502
+// 错误用法：shutdownGracefully(0,0,...) → 无 drain 窗口，正在处理的请求被直接砍掉（丢包/半截响应）
 ```
 - **`shutdownGracefully(quietPeriod, timeout, unit)`**：在 `quietPeriod` 内若无新任务则提前结束；到 `timeout` 强制停。给 in-flight 请求一个 drain 窗口（别设 0，否则正在处理的请求被砍）。
 - 关 EventLoopGroup **不会自动关你已建立的连接** —— 要优雅地回 `GOAWAY`/最后一帧再 `channel.close()`（HTTP/2、长连接协议自己实现，呼应 networks/s2-2 第七节）。

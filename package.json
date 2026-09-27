@@ -1,0 +1,20 @@
+{
+  "name": "big-java-backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "大Java后端 · Big Java Backend —— 零框架、纯静态的 Java 后端「打怪升级」学习平台（Vite 驱动 dev/build，产物为纯静态资源）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prod": "vite build && vite preview",
+    "check": "node scripts/check.mjs",
+    "audit-examples": "node scripts/audit-examples.mjs",
+    "scaffold": "node scripts/scaffold.mjs",
+    "outline": "node scripts/outline.mjs"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

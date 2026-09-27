@@ -1,6 +1,7 @@
 # MySQL 体系结构与一条 SQL 的旅程
 
-> 本节难度 ★★★☆☆ · 重要性 ★★★★★
+> 本节难度：★★★☆☆
+> 本节重要性：★★★★★
 > 学习产出：能画出从连接器到存储引擎的完整链路，说清 redo log 与 binlog 为什么需要两套日志。
 
 ## 一、MySQL 是干什么的
@@ -63,7 +64,41 @@ MySQL 是一个 **以 B+ 树聚簇索引为核心的单机事务型关系数据�
 4. **`count(*)` 不等于 `count(列)`**：后者不统计 NULL；`count(1)` 与 `count(*)` 性能基本一致，MySQL 会优化到最小的二级索引树扫描。
 5. **大表 DDL**：8.0 的 `ALGORITHM=INSTANT` 只适用于加列等少数场景，其余需 `pt-online-schema-change` / `gh-ost`。
 
-## 六、动手实验（本机 Docker 即可）
+## 六、例子：建表、索引生效与失效、两阶段提交配置（正确用法与错误用法）
+
+```sql
+-- 例子目的：用真实 DDL/DML 展示主键选型、覆盖索引避免回表、两类典型索引失效，以及双一配置
+-- 建表：主键用单调递增 BIGINT（正确使用结果：页分裂少、碎片低；错误用法：主键用 UUID → 随机写导致页分裂与二级索引膨胀）
+CREATE TABLE t_user (
+  id     BIGINT PRIMARY KEY AUTO_INCREMENT,       -- 聚簇索引，叶子存整行
+  name   VARCHAR(64)  NOT NULL,
+  phone  VARCHAR(20)  NOT NULL,
+  ctime  DATETIME     NOT NULL,
+  KEY idx_name (name)                             -- 二级索引，叶子存的是主键值→命中后需回表
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;          -- utf8mb4：一个字符最多 4 字节（错误用法：对 varchar(255) 整列建索引可能触达 3072 字节上限）
+
+-- 覆盖索引（正例）：查询列全在 idx_name 里，Extra 显示 Using index，免回表
+EXPLAIN SELECT id, name FROM t_user WHERE name = 'u100000';  -- 正确使用结果：type=ref、Extra=Using index
+SELECT * FROM t_user WHERE name = 'u100000';                 -- 错误对照：SELECT * 取未入索引列→需回表，Extra 无 Using index
+
+-- 隐式类型转换使索引失效（错误用法）：phone 是 varchar 却用数字比较→触发 CAST→全表扫描
+SELECT * FROM t_user WHERE phone = 13800000000;   -- 错误结果：type=ALL 全表扫描
+SELECT * FROM t_user WHERE phone = '13800000000'; -- 正确用法：加引号与列类型一致→可走索引
+
+-- 函数/运算使索引失效（错误用法）：对索引列套函数→无法用 B+ 树定位
+SELECT * FROM t_user WHERE DATE(ctime) = '2026-09-27';            -- 错误：type=ALL
+SELECT * FROM t_user WHERE ctime >= '2026-09-27' AND ctime < '2026-09-28'; -- 正确：改写成区间→可走 ctime 索引
+```
+
+```sql
+-- 例子目的：两阶段提交的持久性开关——生产必须"双一"，否则崩溃恢复后主从可能不一致（丢 binlog）
+-- 正确使用结果：redo 与 binlog 每事务都落盘，宕机不丢已提交事务
+SET GLOBAL innodb_flush_log_at_trx_commit = 1;   -- 1：每事务刷 redo（错误：设 2/0 性能好但宕机可能丢 1 秒事务）
+SET GLOBAL sync_binlog = 1;                       -- 1：每事务刷 binlog（错误：设 0 由 OS 决定→主从回档时从库少数据）
+-- 错误用法：只开双一之一 → 仍可能出现 redo/binlog 不一致，恢复时误判回滚/提交
+```
+
+## 七、动手实验（本机 Docker 即可）
 
 1. 启动 MySQL 8：`docker run -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysql:8.0`
 2. 用脚本造 100 万行用户表，分别执行：
@@ -72,7 +107,7 @@ MySQL 是一个 **以 B+ 树聚簇索引为核心的单机事务型关系数据�
 3. 观察一次更新前后 `SHOW ENGINE INNODB STATUS` 中 redo 相关指标与 `SHOW BINARY LOGS`。
 4. 手动 kill -9 mysqld 后重启，观察崩溃恢复日志，理解"未刷盘的脏页如何找回"。
 
-## 七、关联技术栈
+## 八、关联技术栈
 
 - **持久层**：MySQL Connector/J（JDBC 驱动）、HikariCP / Druid 连接池
 - **框架层**：MyBatis / MyBatis-Plus、Spring Data JPA、事务传播（Spring TX）

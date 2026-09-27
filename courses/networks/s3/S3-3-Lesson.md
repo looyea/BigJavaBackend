@@ -92,10 +92,13 @@ TLS 1.3（2018）是一次大重构，**面试区分度极高**：
 ## 七、Java 侧要点与常见失败定位
 
 ```bash
-# 一条命令看清协议/套件/证书链/是否PFS/是否stapling
-openssl s_client -connect host:443 -servername www.example.com -tls1_3 </dev/null
-openssl s_client -connect host:443 </dev/null | sed -n '/Certificate chain/,/---/p'
-curl -vI https://host --tlsv1.2
+# 例子目的：一条命令看清协商的协议版本/套件/证书链/是否 PFS/是否 OCSP stapling
+openssl s_client -connect host:443 -servername www.example.com -tls1_3 </dev/null   # 强制 TLS1.3，-servername 带 SNI
+openssl s_client -connect host:443 </dev/null | sed -n '/Certificate chain/,/---/p'  # 只截证书链段落
+curl -vI https://host --tlsv1.2                     # 看握手与协商结果（HTTP/1.1 HEAD）
+# 正确用法结果：输出含 "Protocol : TLSv1.3"、"Cipher : TLS_AES_256_GCM_SHA384"、证书链层级，即可确认是否 PFS（TLS1.3 默认全 PFS）
+# 错误用法：忘写 -servername（SNI）→ 多域名主机上拿到默认证书，误判成"证书不对"（实际是没带 SNI）
+# 错误用法：服务端只开 TLS1.2 却用 -tls1_3 强连 → 握手中断，回显 handshake failure / alert protocol version，不是证书问题而是版本不兼容
 ```
 - **JDK 信任库 `cacerts`**：Java 不读系统根库，读 `$JAVA_HOME/lib/security/cacerts`。**内部 CA / 自签证书必须 `keytool -importcert` 导入 truststore**，否则 `PKIX path building failed`（`unable to find valid certification path`）。
 - **证书过期 / 域名不匹配 / 缺中间证书** → 浏览器/客户端报 `NET::ERR_CERT_*`、Java 报 `No subject alternative DNS name matching`。

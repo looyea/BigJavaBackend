@@ -2,46 +2,37 @@
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
-title Big Java Backend - 本地开发 (DEV)
+title Big Java Backend - 开发模式 (Vite dev)
 
 rem ============================================================
-rem   Big Java Backend · 大Java后端 —— 本地开发 / 学习启动脚本
-rem   本站是「零依赖纯静态」站：无 npm 安装、无构建，源码目录即站点。
-rem   本脚本自动探测可用的静态服务器（优先 Python，回退 Node）并托管当前目录。
+rem   Big Java Backend · 大Java后端 —— 开发模式启动脚本
+rem   基于 Vite（大前端标准工具链），完全脱离 Python。
+rem   本应用是原生 ES Module 单页站，Vite 直接托管源码目录并提供热更新。
 rem ============================================================
 
-set "PORT=5180"
-set "URL=http://127.0.0.1:%PORT%/"
+rem 依赖自检：首次或缺 node_modules\vite 时自动安装
+if not exist "node_modules\vite" (
+  echo [提示] 未检测到依赖，正在执行 npm install ...
+  call npm.cmd install
+  if errorlevel 1 (
+    echo [错误] npm install 失败，请确认已安装 Node 且网络可用。
+    pause
+    exit /b 1
+  )
+)
 
-set "SRV="
-where py >nul 2>nul      && set "SRV=py -3 -m http.server %PORT%"
-if not defined SRV where python >nul 2>nul  && set "SRV=python -m http.server %PORT%"
-if not defined SRV where python3 >nul 2>nul && set "SRV=python3 -m http.server %PORT%"
-if not defined SRV where node >nul 2>nul    && set "SRV=npx --yes http-server -p %PORT% -c-1 ."
-
-if defined SRV goto :start
-
-echo [错误] 未检测到 Python 或 Node，无法启动静态服务器。
-echo        本项目是纯静态站，任选其一安装后即可运行；
-echo        或用你现有的任意静态服务器（Nginx / Apache / serve 等）托管本目录。
-echo.
-pause
-exit /b 1
-
-:start
 echo.
 echo ============================================================
-echo   Big Java Backend - 大Java后端   本地开发模式 (DEV) 启动中...
-echo   站点    :  %URL%       （浏览器自动打开）
-echo   服务命令:  %SRV%
-echo   热更新  :  改任意文件后，浏览器强制刷新（Ctrl+F5）即见
-echo   停止    :  本窗口按 Ctrl + C
+echo   Big Java Backend - 大Java后端   开发模式 (Vite DEV)
+echo   访问  :  http://localhost:5180        （浏览器自动打开）
+echo   热更新:  改任意源文件后，界面即时刷新
+echo   停止  :  本窗口按 Ctrl + C
 echo ============================================================
 echo.
-start "" cmd /c "timeout /t 2 >nul & start %URL%"
+start "" cmd /c "timeout /t 3 >nul & start http://localhost:5180/"
 
-%SRV%
+call npm.cmd run dev
 
 echo.
-echo [本地开发服务已退出]
+echo [开发模式已退出]
 pause

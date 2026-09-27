@@ -88,14 +88,17 @@ cwnd
 ## 七、Java / 运维可观测
 
 ```bash
-# 拥塞算法与逐连接 cwnd/rtt/retrans
+# 例子目的：查看当前拥塞算法与逐连接 cwnd/rtt/retrans，并示范切到 BBR
 ss -tin                      # cwnd: rto: rtt: retrans: 全在里面
 sysctl net.ipv4.tcp_congestion_control   # 当前算法(常为 cubic)
-sysctl net.ipv4.tcp_available_congestion_control
-# 切 BBR：
+sysctl net.ipv4.tcp_available_congestion_control   # 本内核可用的算法列表
+# 切 BBR（需模块已加载）：
 #   modprobe tcp_bbr
 #   sysctl -w net.core.default_qdisc=fq
 #   sysctl -w net.ipv4.tcp_congestion_control=bbr
+# 正确用法结果：切换后 sysctl net.ipv4.tcp_congestion_control 回显 bbr，新建连接即用 BBR（存量连接不变）
+# 错误用法：只改 tcp_congestion_control=bbr 不配 default_qdisc=fq → BBR 缺 pacing 器，效果大打折扣（不报错但吞吐不达预期）
+# 错误用法：modprobe tcp_bbr 失败就强写 bbr → sysctl 报 cannot create /proc... 或值写不进去（内核未编入该算法）
 ```
 - Java 层没有"拥塞算法"开关（内核态），但连接池的**最大在途/并发**、gRPC/Netty 的 **flow control window** 是在应用层复现"别让对端/网络过载"的同类思想（netty/s3-2 背压）。
 - 自定义协议**必须**定界：不要假设“一次 read = 一条完整消息”，这是新手写 TCP 协议最常踩的坑。

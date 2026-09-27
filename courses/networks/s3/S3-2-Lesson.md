@@ -83,7 +83,33 @@ HPACK 依赖"头部按序到达"来维护动态表；QUIC 允许乱序，若照�
 - **金融**：行情推送（大量并发小消息）用 h2 多流 + 服务端流控天然契合；但对外接入要考虑**监管对加密与可审计**，h3 的可观测/留痕工具要先补齐再上。
 - **电力**：终端海量、链路差、经常 NAT/切网，**QUIC 的连接迁移 + 0-RTT** 直击"频繁重连 + 建连慢"痛点；但嵌入式终端要评估 UDP 栈与 QUIC 库的内存/CPU 占用（往往比精简 TCP 重）。
 
-## 七、要点回顾
+## 七、例子：JDK HttpClient 用 HTTP/2（正确用法与错误用法）
+
+```java
+// 例子目的：用 JDK 11+ HttpClient 显式协商 HTTP/2，当场看版本并感受多流复用
+import java.net.*;
+import java.net.http.*;
+import java.net.http.HttpClient.Version;
+class H2Demo {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newBuilder()          // 声明优先用 HTTP/2
+            .version(Version.HTTP_2)                         // 底层靠 ALPN 在 TLS 握手中协商（s3-3）
+            .connectTimeout(java.time.Duration.ofSeconds(3))
+            .build();
+        HttpResponse<String> resp = client.send(            // 同步发送（异步为 sendAsync）
+            HttpRequest.newBuilder(URI.create("https://api.example.com/ping")).build(),
+            HttpResponse.BodyHandlers.ofString());
+        System.out.println(resp.version());                  // 正确使用结果：服务端支持时输出 HTTP_2，否则回退 HTTP_1_1
+        System.out.println(resp.statusCode());               // 正常输出 200
+        // 连接复用的体现：同一 client 实例发多个请求会共用一条 TCP 上的多个 stream，不会每请求新建连接
+    }
+}
+// 错误用法 1：对新 client 设了 .version(HTTP_2) 却每次 new HttpClient() → 连接不复用，每请求重建 TLS+握手，把 h2 多路复用优势全抵消（高频 GC/端口耗尽）
+// 错误用法 2：对端只监听明文 h2c（prior knowledge）却用 https:// + HTTP_2 → ALPN 不存在，静默降级到 HTTP/1.1，期待的多路复用根本没生效
+// 错误用法：指望 Java HttpClient 自动用 0-RTT/Server Push → JDK 未暴露这两能力，它们需专用 h3 库（如 netty-incubator-codec-quic）
+```
+
+## 八、要点回顾
 
 1. h2 = **二进制分帧 + 单连接多路复用（流）+ HPACK 头压缩 + 双向流控 + 优先级**；消灭应用层 HOL 与头部冗余。
 2. **Server Push 已近乎废弃**，用 preload 替代。

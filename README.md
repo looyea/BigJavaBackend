@@ -1,8 +1,8 @@
 # 大Java后端 · Big Java Backend ☕
 
-一个**可运行、可打卡、可扩展**的 Java 后端「打怪升级」学习平台。**零依赖纯静态**——原生 ES Module + 自写
-Markdown 渲染器，无框架、无构建、无后端进程；多套暗色/护眼主题。专为「想按资深架构师的标准，系统刷完 Java
-后端技术栈，并在本地边学边往 GitHub 提交」的你而做。
+一个**可运行、可打卡、可扩展**的 Java 后端「打怪升级」学习平台。**运行时零第三方依赖**——原生 ES Module + 自写
+Markdown 渲染器，无 UI 框架、无后端进程；开发 / 构建走 **Vite**（`npm run dev` / `npm run build`），产物为纯静态资源，
+**彻底脱离 Python**；多套暗色/护眼主题。专为「想按资深架构师的标准，系统刷完 Java 后端技术栈，并在本地边学边往 GitHub 提交」的你而做。
 
 覆盖方向：Java 语言核心与进阶 · Spring 全家桶 / Jakarta EE / GraalVM · 计算机与算法基础（数据结构算法 · 计算机网络 · Netty）· 数据库与缓存 · 持久层与连接池 · 中间件 · 微服务治理 · 构建运维与 CI/CD · 测试与质量 · 性能调优工具 · 安全 · 高并发/高可用/分布式 ID/幂等 等架构专题 · 电商 / 金融 / 电力 / SNS 行业实战（各分区完成度见第九节）。
 
@@ -36,45 +36,44 @@ Markdown 渲染器，无框架、无构建、无后端进程；多套暗色/护�
 
 ## 二、环境要求
 
-- **只需一个静态 HTTP 服务器**：Python 3（自带 `http.server`）或 Node（`npx http-server`）任一即可。
-  **本项目无 npm 依赖、无安装、无构建**——站点就是源码目录本身。
+- **Node.js ≥ 18**（推荐 20+；本机 v24 直接满足）与随附的 **npm**。首次使用在项目根执行一次 `npm install`
+  安装开发依赖（**仅 Vite**，约 11 个包）。
+- **运行时零第三方依赖**：页面逻辑是原生 ES Module + 自写 Markdown 渲染器，不含 Vue/React 等框架；
+  `node_modules` 只服务于开发与构建工具链（Vite），不进产物、不参与运行时。
 - 现代浏览器（支持 ES Modules：近两年的 Chrome / Edge / Firefox 皆可）。
-- ⚠️ **必须经 `http://` 访问，不能直接双击 `index.html`（`file://`）**：ES Module 的 `import` 与运行时 `fetch`
-  在 `file://` 下会被浏览器同源策略拦截。
-- （可选）**作者工具** `scripts/*.mjs` 需要 **Node ≥ 18**，仅在你增删课程内容时使用，运行网站本身不需要。
+- **完全脱离 Python**：开发、构建、本地预览、部署全流程走 npm + Vite（`npm run dev` / `npm run build` / `npm run preview`）。
+- ⚠️ 无论开发还是预览，都经 `http://` 访问（Vite 已替你起好服务器），**不要直接双击 `index.html`（`file://`）**——
+  ES Module 的 `import` 与运行时 `fetch` 在 `file://` 下会被同源策略拦截。
 
-> ⚠️ Windows PowerShell 若报「禁止运行脚本」：直接调用 `python` / 用 `npm.cmd`，或以管理员执行
-> `Set-ExecutionPolicy RemoteSigned` 解锁。
+> ⚠️ Windows PowerShell 若报「禁止运行脚本」：用 `npm.cmd` 代替 `npm`（两个 BAT 已内置 `npm.cmd`），
+> 或以管理员执行 `Set-ExecutionPolicy RemoteSigned` 解锁。
 
 ## 三、安装与运行
 
-无需安装。在项目根目录任选一种起一个静态服务器：
-
 ```bash
-# Python（推荐，多数环境零安装即具备）
-python -m http.server 5180
+npm install        # 首次：安装开发依赖（Vite）
 
-# —— 或 —— Node（无需全局安装）
-npx --yes http-server -p 5180 -c-1 .
+npm run dev        # 开发：Vite 热更新服务   → http://localhost:5180
+npm run build      # 构建：输出纯静态产物到 dist/
+npm run preview    # 预览构建产物            → http://localhost:8080
+npm run prod       # 一键：build 完再 preview（等价 build + preview）
 ```
 
-然后浏览器打开 **http://127.0.0.1:5180/** 。改文件后刷新即生效（`http.server` / `-c-1` 默认不强缓存）。
+- **开发模式**（`npm run dev`）：改任意源文件，浏览器即时热更新（HMR），无需手动刷新。
+- **生产模式**（`npm run build`）：Vite 把 `index.html` + JS/CSS 打包、按内容哈希命名，输出到 `dist/`；
+  构建末尾自动把运行时按需 `fetch` 的 `courses/`、`progress/` 复制进 `dist/`（见 `vite.config.js` 的 `copy-content` 插件）。
+  `dist/` 即**纯静态产物**，无任何后端。
 
-### 一键启动（两个 BAT）
+### 该打开哪个地址？（含一键 BAT）
 
-Windows 下直接双击，或在命令行执行 `run-dev.bat` / `run-prod.bat`（脚本会自动探测 Python → Node 并打开浏览器）：
-
-| 脚本 | 用途 | 浏览器访问地址 | 说明 |
+| 命令 / 脚本 | 模式 | 浏览器访问地址 | 说明 |
 | --- | --- | --- | --- |
-| `run-dev.bat` | 日常学习 / 边写边改 | **http://127.0.0.1:5180** | 起静态服务并自动开浏览器；强刷新即见改动 |
-| `run-prod.bat` | 部署前本地验收 | **http://127.0.0.1:8080** | 先跑一次内容自检 `node scripts/check.mjs`，再托管整站 |
+| `npm run dev` ／ `run-dev.bat` | 开发（Vite + HMR） | **http://localhost:5180** | 日常学习 / 边写边改；BAT 会在缺依赖时自动 `npm install` |
+| `npm run prod` ／ `run-prod.bat` | 生产（构建 + 预览） | **http://localhost:8080** | 先 `npm run check` 自检、再 `build`、最后 `preview` |
 
-> 本项目是**纯静态站、构建即源码**：所谓「生产部署」就是把整个目录当作静态资源丢到 Nginx / 对象存储 / GitHub Pages /
-> 任意 CDN，没有额外的编译产物。`run-prod.bat` 只是在本地模拟这层静态托管，并附带一次骨架 / 小测契约自检。
-
-- **手机或另一台电脑预览**（连同一 Wi-Fi）：照常起服务（Python `http.server` 默认监听 `0.0.0.0`），再用
-  `http://<你电脑的局域网IP>:5180` 访问（IP 用 `ipconfig` 查看）。
-- 打不开先自查两点：①端口是否被占用（换一个端口）；②是否误用了 `file://`（必须走 `http://`）。
+- **内容脚本**：`npm run check`（结构 / 小测自检）· `npm run scaffold`（补齐四件套占位）· `npm run outline`（重生成《教学大纲.md》）。
+- **手机 / 另一台电脑预览**（连同一 Wi-Fi）：Vite 配置已开 `host`，起服务后用 `http://<你电脑的局域网IP>:5180` 访问（IP 用 `ipconfig` 查看）。
+- **部署上线**：`npm run build` 后把 `dist/` 整目录交给 Nginx / 对象存储 / GitHub Pages / 任意 CDN；因 `base` 为相对路径，可放置于任意子路径。
 
 ## 四、学习进度与每日打卡（浏览器 + Markdown + GitHub）
 
@@ -89,25 +88,37 @@ Windows 下直接双击，或在命令行执行 `run-dev.bat` / `run-prod.bat`�
 
 - **加深某节**：直接编辑对应 `courses/<包>/<阶段>/Sx-y-Lesson.md`（正文）/ `-Quiz.md` / `-Homework.md` / `-Interview.md`。
 - **加一节课 / 一阶段 / 一个包 / 一个分区**：**只改 `assets/js/data.js`** 这一处骨架——增补 `CATEGORIES → packages → stages → sections`。
-- 然后（需 Node）：
+- 然后（需 Node，走 npm 脚本）：
 
   ```bash
-  node scripts/scaffold.mjs   # 按 data.js 为所有小节补齐四件套占位（幂等，只建缺失的）
-  node scripts/outline.mjs     # 由 data.js 重新生成《教学大纲.md》
-  node scripts/check.mjs       # 自检：包 / 小节 id 唯一、重要级与难度取值合法、小测可解析判分
+  npm run scaffold   # 按 data.js 为所有小节补齐四件套占位（幂等，只建缺失的）
+  npm run outline     # 由 data.js 重新生成《教学大纲.md》
+  npm run check       # 自检：包 / 小节 id 唯一、重要级与难度取值合法、小测可解析判分
   ```
 
-- ⚠️ **改完任何 `assets/js/*.js` 或 `assets/css/*.css`，都要同步递增 `index.html` 里 `<link>/<script>` 以及
-  `app.js`、`store.js` 中 `import` 的 `?v=` 版本号**（浏览器强缓存 ES Module 的静态路径，不 bump 会看到旧逻辑）。当前全站 `?v=13`。
+- **缓存与版本交给 Vite**：构建按文件内容生成哈希名自动失效缓存，开发期 dev server 不强缓存，改完即时生效——
+  **不再需要手动维护 `?v=` 版本号**（该机制已随脱离 Python 静态托管一并移除）。
 - **正文详略对齐重要级**（见 `app.js` 的 `depthOf`）：5 核心精讲 → 4 重点标准 → 3 标准概览 → 2 简明速览 → 1 了解即可；
   首页卡片右上角标签按此着色（红 → 绿，越重要越红）。
+
+### 例子程序硬性规范（`BigJavaBackend.md`「例子程序说明」）
+
+课文 / 作业 / 面试题中出现的**每一个例子程序**都必须满足以下五条，新写与回填时逐条对照：
+
+1. **必带注释**：例子开头注释说明「这个例子目的是什么」。
+2. **行注释讲影响与结果**：关键语句后用行注释给出该语句当前产生的影响 / 输出 / 状态变化。
+3. **定义必配应用**：给了定义（如 `record` 声明）就必须给出实际使用它的代码，不允许只定义不使用。
+4. **逐知识点正确用例**：每个知识点 / 每种使用场景都要有对应的正确案例，并在注释中写明正确的使用结果是什么。
+5. **必备错误用例**：同时给出错误用例，并用注释说明该错误会产生什么结果、抛出什么异常。
+
+> 自检：`npm run audit-examples`（`scripts/audit-examples.mjs`）会扫描全部已写实课文 / 作业 / 面试题，按「有无例子 / 例子内是否标注错误用例 / 注释密度」输出统计，违规明细写入 `scripts/_audit.txt`。
 
 ## 六、提交到 GitHub（首次）
 
 ```bash
 git init                 # 若尚未初始化
 git add -A
-git commit -m "feat: Big Java Backend 学习平台（零依赖静态框架 + 15 分区 / 86 课程包骨架）"
+git commit -m "feat: Big Java Backend 学习平台（Vite 驱动的纯静态框架 + 15 分区 / 86 课程包骨架）"
 git branch -M main
 git remote add origin https://github.com/<你的用户名>/<仓库名>.git
 git push -u origin main
@@ -118,36 +129,41 @@ git push -u origin main
 
 | 层 | 选型 |
 | --- | --- |
-| 外壳 | 原生 HTML + CSS + **JavaScript ES Modules**（无框架、无构建、零第三方依赖） |
+| 外壳 | 原生 HTML + CSS + **JavaScript ES Modules**（无 UI 框架、运行时零第三方依赖） |
 | Markdown 渲染 | 自写解析器 `assets/js/md.js`（含小测解析 `parseQuiz` / 判分 `gradeQuiz`） |
 | 路由 | `location.hash` 手写路由（`app.js`）：`#/` · `#/map` · `#/progress` · `#/pkg/:id` · `#/sec/:pkg/:stage/:id[/quiz\|homework\|interview]` |
 | 骨架数据源 | `assets/js/data.js`（唯一事实源，驱动首页 / 地图 / 解锁链路） |
 | 课程内容 | `courses/**/*.md` 四件套（课文 / 小测 / 作业 / 面试题） |
 | 进度 | `localStorage` 主 + Markdown 导入导出（`progress/progress.md`） |
 | 主题 | CSS 自定义属性 ×4：深色 `dark` / 护眼 `eye` / 藏青 `navy` / 纸白 `paper`（`themes.css`） |
-| 作者工具 | Node ESM 脚本：`scaffold` / `outline` / `check`（可选，仅增删内容时用） |
-| 运行 | 任意静态 HTTP 服务器（`python -m http.server` / `npx http-server`） |
+| 开发 / 构建 | **Vite 5**（`npm run dev` / `build` / `preview` / `prod`），构建后由自定义插件复制 courses/progress 到 dist |
+| 内容工具 | Node ESM 脚本：`scaffold` / `outline` / `check`（已封装为 npm 脚本） |
+| 运行 / 部署 | 开发预览用 Vite；产物 `dist/` 为纯静态资源，交付任意静态服务器（Nginx / Pages / CDN）即可 |
 
 ## 八、目录速览
 
 ```
 BigJavaBackend/
+├─ package.json               # npm 脚本：dev/build/preview/prod/check/scaffold/outline（devDep：Vite）
+├─ vite.config.js             # Vite 配置：端口 5180/8080、相对 base、构建后复制 courses/progress 到 dist
 ├─ index.html                 # 唯一页面外壳：加载主题 CSS 与 ES Module 入口
 ├─ assets/
 │  ├─ js/data.js              # ★ 唯一骨架事实源：分区 → 包 → 阶段 → 小节
 │  ├─ js/app.js               # 路由 + 各视图渲染（首页 / 包 / 小节 / 小测 / 作业 / 面试题 / 地图 / 进度）
 │  ├─ js/store.js             # 进度：localStorage 主 + Markdown 导入导出 + 主题
 │  ├─ js/md.js                # 自写 Markdown 渲染器 + 小测解析 / 判分
-│  ├─ css/main.css            # 布局与组件（含详略标签五级配色）
+│  ├─ css/main.css            # 布局与组件（含详略标签五级配色、正文 18px）
 │  └─ css/themes.css          # 四套暗色 / 护眼主题变量
 ├─ courses/                   # 86 个课程包（内容层，纯 Markdown）
 │  └─ <包id>/<阶段id>/Sx-y-{Lesson,Quiz,Homework,Interview}.md
 ├─ progress/progress.md       # 仓库自带进度种子（网站可导入 / 首启自动读取）
-├─ scripts/                   # 作者工具（Node，可选）：scaffold / outline / check .mjs
+├─ scripts/                   # 内容工具（Node）：scaffold / outline / check .mjs（经 npm 脚本调用）
+├─ dist/                      # npm run build 的纯静态产物（已 .gitignore）
+├─ node_modules/              # 开发依赖（npm install 生成；已 .gitignore）
 ├─ BigJavaBackend.md          # 原始需求规格（课程设计初衷）
-├─ 教学大纲.md                # 由 outline.mjs 从 data.js 生成的全课程大纲
-├─ run-dev.bat                # 一键起本地静态服务（DEV，:5180）
-└─ run-prod.bat               # 内容自检 + 静态托管（PROD，:8080）
+├─ 教学大纲.md                # 由 npm run outline 从 data.js 生成的全课程大纲
+├─ run-dev.bat                # 开发：缺依赖自动 npm install → npm run dev（:5180）
+└─ run-prod.bat               # 生产：npm run check → build → preview（:8080）
 ```
 
 ## 九、内容完成度说明
@@ -155,9 +171,21 @@ BigJavaBackend/
 > 平台骨架已全线贯通：**15 个大技术分区 / 86 个课程包 / 300 个小节**，每小节均已生成 **课文 + 小测 + 作业 + 面试题**
 > 四件套（共 1200 个 Markdown 文件）；结构、解锁链路与小测判分契约经 `scripts/check.mjs` 自检通过。
 >
-> **正文写实进度：已完成 46 / 300 节。** 其中「**计算机与算法基础**」分区 **3 个包全部满配**（数据结构与算法 17 节、
-> 计算机网络 14 节、Netty 9 节——逐节撰写正文、深讲原理并配行业实践），另有 `java-basics`（3/11）、`spring-boot`（2/8）、
-> `mysql`（1/7）部分完成；其余课程包正文为占位待写（骨架、阶段 / 小节顺序与四件套均已就位，按第五节流程填充即可）。
+> **正文写实进度：已完成 170 / 300 节（四件套同步写实）。** 已满配包：「**计算机与算法基础**」分区 3 包（数据结构与算法 17、
+> 计算机网络 14、Netty 9）、`java-basics` 11、`java-modern` 4、`juc` 9、`jvm` 7、
+> `mysql` 7、`redis` 5、`lettuce` 3、`redisson` 4、`caffeine` 2、
+> `spring-boot` 8、`spring-core` 4、`spring-mvc` 4、`spring-ai` 4、`jakarta-ee` 2、`graalvm` 1、
+> 「**分布式系统**」`dist-theory` 6、`dist-data` 4；
+> 「**架构设计**」`design-patterns` 5、`ddd-architecture` 5、`system-design` 6；
+> 「**数据库与缓存**」`postgresql` 2、`tidb` 2、`minio` 1、`memcached` 1；
+> 「**持久层与连接池**」`mybatis` 3、`spring-data-jpa` 2、`druid` 1、`hikaricp` 1；
+> 「**中间件**」`rocketmq` 3、`rabbitmq` 1、`kafka` 2；
+> 「**定时与调度**」`job-scheduling` 2；
+> 「**微服务治理**」`spring-cloud-alibaba` 1、`nacos` 2、`gateway` 2、`openfeign` 1、`sentinel` 2。
+> 其余课程包正文为占位待写。
+>
+> **例子程序规范回填**：按上文五条硬性规范对已写实课文做了逐包审计与回填（补目的注释、行注释影响 / 结果、
+> 正确用例与错误用例及异常说明），已覆盖全部 170 个写实包。`node scripts/audit-examples.mjs` 复核：**【A】无例子 / 【B】缺错误用例 / 【C】注释密度<35% 三项均为 0**；`node scripts/check.mjs` 全部小测自动判分满分 100 通过。本 README 随每轮任务结束更新。
 
 - **15 个分区一览**（首页分组顺序，与 `data.js` 的 `CATEGORIES` 一致）：
 

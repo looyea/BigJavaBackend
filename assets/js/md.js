@@ -67,10 +67,10 @@ export function renderMarkdown(md) {
       continue;
     }
 
-    if (/^\s*>\s?/.test(line)) {                      // 引用块
+    if (/^\s*>\s?/.test(line)) {                      // 引用块：保留源文件换行，每行独立展示（难度/重要性/学习产出等各占一行）
       const buf = [];
       while (i < lines.length && /^\s*>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^\s*>\s?/, '')); i++; }
-      html.push(`<blockquote>${inline(buf.join(' '))}</blockquote>`);
+      html.push(`<blockquote>${buf.map((t) => (t.trim() ? inline(t) : '<br>')).join('<br>')}</blockquote>`);
       continue;
     }
 
@@ -214,11 +214,13 @@ export function parseQuiz(src) {
       if (bm && (inlineAnswer || inReferenceList)) bullets.push(bm[1].trim());
     });
 
-    const answer = inlineAnswer || answerMap[no] || '';
+    const answer0 = inlineAnswer || answerMap[no] || '';
     const isChoice = options.length >= 2;
     const isJudge = isChoice && options.every((o) => /^(正确|错误|对|错|√|×|true|false)$/i.test(o.text));
     const blank = /_{3,}|＿{2,}/.test(stem) || FILL_HINT.test(stem);
     const kind = isChoice ? (isJudge ? 'judge' : (/多选/.test(stem) ? 'multi' : 'single')) : (blank ? 'fill' : 'short');
+    /* 选择题答案统一归一为去分隔的大写字母串（如 "A、B、D" → "ABD"），与末尾答案段的归一保持一致 */
+    const answer = isChoice ? answer0.replace(/[^A-Ha-h]/g, '').toUpperCase().split('').sort().join('') : answer0;
 
     questions.push({
       no,

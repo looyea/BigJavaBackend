@@ -79,13 +79,44 @@ PoolArena（默认 2×CPU 核数，线程取模绑一个 arena，减少争用）
 - 省拷贝、省内存，是 scatter/gather（s1-3）在用户态的对应物。
 - 注意：Composite 也参与引用计数，`release` 会释放各组件；需要实体化时 `copy()`/`compress()` 才变成单个 buf。
 
-## 六、三大行业场景钩子
+## 六、例子：ByteBuf 双指针、引用计数与 CompositeByteBuf（正确用法与错误用法）
+
+```java
+// 例子目的：演示读写双指针免 flip、retain/release 配对、Composite 零拷贝，并暴露典型泄漏错误
+import io.netty.buffer.*;
+public class ByteBufDemo {
+    public static void main(String[] args) {
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(16);  // 池化分配，refCnt=1
+        buf.writeBytes(new byte[]{1,2,3,4});               // 写：只推 writerIndex→ 4
+        buf.writeBytes(new byte[]{5,6});                   // 再写 2 字节→ writerIndex=6
+        byte[] r = new byte[2];
+        buf.readBytes(r);                                  // 读：只推 readerIndex→ 2，与 writer 互不干扰（无需 flip）
+        System.out.println(buf.readableBytes());           // 正确使用结果：输出 4（writerIndex-readerIndex=6-2）
+
+        ByteBuf shared = buf.retain();                     // 引用+1 → refCnt=2，表示又多一个持有者
+        buf.release();                                     // 你释放自己这份 → refCnt=1，内存不归还不释放
+        // 正确使用结果：refCnt 降到 0 才真正归还池；上面因 retain 使 release 后仍为 1，shared 仍可安读
+        shared.release();                                  // 最后一个持有者释放 → refCnt=0，归还池
+        // 错误用法：shared.release() 后再访问 shared.readByte() → IllegalReferenceCountException(refCnt=0 已被回收)
+        // 错误用法：retain() 了却忘 release() → 被 GC 时 refCnt>0，日志报 "LEAK: ByteBuf.release() was not called..."（池化内存不归还，长跑 OOM）
+
+        ByteBuf header = Unpooled.wrappedBuffer(new byte[]{(byte)0x80, 0x01});
+        ByteBuf body = Unpooled.wrappedBuffer(new byte[]{9,9,9});
+        CompositeByteBuf comp = Unpooled.compositeBuffer();
+        comp.addComponents(true, header, body);            // 正确用法：逻辑拼接，零拷贝；true 自动推 writerIndex
+        System.out.println(comp.readableBytes());          // 正确使用结果：输出 5（header 2 + body 3，数据不搬运）
+        // 错误用法：新建大 buf 把 header/body 逐个 copy 进去拼接 → 多一次分配+拷贝（高并发下就是性能黑洞，应用 Composite）
+    }
+}
+```
+
+## 七、三大行业场景钩子
 
 - **电商**：大促网关每秒百万 msg，`PooledByteBufAllocator` + arena 数≈核数是默认性能底盘；曾因某 handler `retain()` 后异常分支漏 `release()`，池化内存不归还，RSS 缓慢爬升数小时 OOM —— 靠预发 `PARANOID` 复现 + finally 修。
 - **金融**：行情快照大 buf 高频广播，`CompositeByteBuf` 把"帧头 + 变长 payload"零拷贝拼装给上万订阅连接，省掉上万次 payload 深拷贝；对跨线程投递的 buf 严守"交接即转所有权、下游负责 release"。
 - **电力**：终端小报文海量但尺寸小，池化 smallSubpage 复用极致；嵌入式设备内存有限，用 `-Dio.netty.allocator.type=unpooled` 或调小 arena/chunk，牺牲一点吞吐换更低的常驻内存。
 
-## 七、要点回顾
+## 八、要点回顾
 
 1. **ByteBuf 读写双指针**（readerIndex/writerIndex）消灭 flip；`slice` 零拷贝视图、`copy` 深拷贝。
 2. **堆/堆外 × 池化/非池化**四象限；生产默认**池化 + 偏 direct**，省拷贝、稳 GC。

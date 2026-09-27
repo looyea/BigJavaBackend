@@ -7,6 +7,7 @@
 Netty 内置 HTTP 编解码（s2-3 第五节），实现文件服务/网关不用手撕报文：
 
 ```java
+// 例子目的：搭一个最小完整的 HTTP/1.1 服务，展示内置编解码 pipeline 的正确装配
 EventLoopGroup boss = new NioEventLoopGroup(1);
 EventLoopGroup worker = new NioEventLoopGroup();      // 默认 2×核
 try {
@@ -29,9 +30,12 @@ try {
 } finally {
     boss.shutdownGracefully(); worker.shutdownGracefully();   // 优雅关闭 s3-1
 }
+// 正确使用结果：能收发 HTTP/1.1 请求，大响应流式写不撑爆内存
+// 错误用法：HttpObjectAggregator 不设上限（传巨大值）→ 恶意超大报⽂把内存堆爆（必须给合理 MAX）
 ```
 
 ```java
+// 例子目的：处理 keep-alive 语义——回完该关的连接再关，不踩半关
 class HttpBizHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) {
         boolean keepAlive = HttpUtil.isKeepAlive(req);                 // HTTP/1.1 默认长连接 s3-1(networks)
@@ -43,6 +47,8 @@ class HttpBizHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if (!keepAlive) f.addListener(ChannelFutureListener.CLOSE);    // 回完再关，不踩半关（networks/s2-2）
     }
     // keep-alive 下的空闲连接回收靠 IdleStateHandler（s3-2），HTTP 层超时靠读空闲
+    // 错误用法：不分 keep-alive 与否都写完就 close → 长连接退化成每请求重建 TCP，吞吐骤降
+    // 错误用法：忘了设 CONTENT_LENGTH → 客户端不知道响应边界而一直等/挂死
 }
 ```
 **要点**：`HttpObjectAggregator` 上限必设（防大包）、`ChunkedWriteHandler` 让大响应流式写不 OOM、**keep-alive 复用连接**（HTTP/1.1）→ 但要处理**应用层队头阻塞**（一条 pipeline 上的请求串行，networks/s3-1）、以及空闲连接回收。
@@ -52,6 +58,7 @@ class HttpBizHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 RPC = 长连接 + 自定义二进制协议 + 请求/响应关联（`requestId`）+ 异步 future。串起全包知识：
 
 ```java
+// 例子目的：用 requestId + Promise 表把乱序到达的响应关联回各自的异步调用
 // —— 协议帧（s2-3）——
 // [magic 2B][totalLen 4B][flag/type 1B][requestId 8B][bodyLen 4B][序列化 body]
 // 定界：new LengthFieldBasedFrameDecoder(MAX, offsetOf(totalLen), 4, lenAdjust, 0)
@@ -74,6 +81,9 @@ class RpcClient {
     }
 }
 // 收到响应 handler：按 requestId 取出 Promise，setSuccess(result) → 唤醒等待方
+// 正确使用结果：一条多路复用连接上并发多个 RPC，响应乱序也能靠 id 准确回填各自 Promise
+// 错误用法：invoke 中 writeAndFlush 失败却不清理 pending 表→ 该 requestId 的 Promise 永挂→ 内存泄漏 + 调用方永不返回（需超时 tryFailure）
+// 错误用法：把 RpcDispatcherHandler 里的服务调用直接跑在 EventLoop → 一次慢调用卡住该事件环所有 RPC 连接（应挂 bizGroup）
 ```
 关键设计：
 - **`requestId` + `Promise` 表**把"多路复用的乱序响应"关联回各自的调用（呼应 networks/s3-2 HTTP/2 的 stream 思想）。
