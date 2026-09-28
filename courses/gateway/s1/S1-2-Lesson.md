@@ -15,7 +15,7 @@ spring:
         - id: order-route
           uri: lb://order-service
           predicates:
-            - Path=/api/orders/**
+            - Path=/api/orders/**              # 目的：命中订单路径的请求才进限流桶
           filters:
             - name: RequestRateLimiter
               args:
@@ -29,7 +29,7 @@ spring:
 @Bean
 public KeyResolver userKeyResolver() {
     return exchange -> {
-        String userId = exchange.getRequest().getHeaders().getFirst("X-User-Id");
+        String userId = exchange.getRequest().getHeaders().getFirst("X-User-Id");  // 说明：取网关认证后注入的用户标识
         return Mono.justOrEmpty(userId).defaultIfEmpty("anonymous");  // 结果：每用户独立桶
     };
 }
@@ -52,7 +52,7 @@ public KeyResolver userKeyResolver() {
 @Component
 public class GatewayBlockHandler implements RequestOriginParser {
     public Mono<Void> handle(HttpServletRequest req, HttpServletResponse resp, BlockException ex) {
-        resp.setStatus(429);
+        resp.setStatus(429);                                                   // 结果：明确告知调用方被限流
         resp.setContentType("application/json;charset=UTF-8");
         resp.getWriter().write("{\"code\":429,\"msg\":\"请求过于频繁\"}");  // 输出
         return Mono.empty();  // 结果：不转发到后端
@@ -73,11 +73,11 @@ spring:
         - id: inventory-route
           uri: lb://inventory-service
           predicates:
-            - Path=/api/inventory/**
+            - Path=/api/inventory/**           # 说明：库存接口统一纳入熔断保护
           filters:
             - name: CircuitBreaker
               args:
-                name: inventoryCB
+                name: inventoryCB                # 目的：熔断器实例名（Resilience4j key）
                 fallbackUri: forward:/fallback/inventory  # 结果：熔断后走降级
 ```
 

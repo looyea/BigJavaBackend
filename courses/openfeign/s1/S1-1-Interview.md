@@ -26,10 +26,10 @@
 ```java
 // 目的：对敏感操作（转账/退款）加签名防篡改
 @Component
-public class SignInterceptor implements RequestInterceptor {
+public class SignInterceptor implements RequestInterceptor {   // 说明：对所有 Feign 接口出栈前统一执行
     public void apply(RequestTemplate template) {
-        String body = new String(template.body(), StandardCharsets.UTF_8);
-        String sign = HmacUtils.hmacSha256(secret, body + template.request().timestamp());
+        String body = new String(template.body(), StandardCharsets.UTF_8);   // 目的：取请求体原文参与签名
+        String sign = HmacUtils.hmacSha256(secret, body + template.request().timestamp());  // 结果：签名覆盖 body+时间戳，防偷换与重放
         template.header("X-Sign", sign);  // 结果：下游验签确保未被中间篡改
     }
 }

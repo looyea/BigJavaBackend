@@ -24,6 +24,7 @@ public Mono<ResponseEntity<ProductVO>> productFallback(@RequestParam Long id) {
     if (cached != null) return Mono.just(ResponseEntity.ok(cached));
     return Mono.just(ResponseEntity.status(503).build());  // 结果：无缓存才报错
 }
+// 错误用法：降级吞掉异常返回 200+空 body → 调用方误以为成功 → 比显式 503 更糟的数据不一致
 ```
 
 ## 题 4：网关认证 vs 微服务各自认证的区别？

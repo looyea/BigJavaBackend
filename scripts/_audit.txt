@@ -1,19 +1,21 @@
-已写实课文数 = 170
+已写实课文数 = 300
 
-===== Lesson（已写实 170 个文件）=====
+===== Lesson（已写实 300 个文件）=====
 【A】无例子程序代码块: 0
-【B】有例子但缺"错误用例"标注: 1
-   courses/dist-data/s1/S1-2-Lesson.md  blocks=1 目的=true
-【C】例子注释密度<35%: 1
-   courses/gateway/s1/S1-2-Lesson.md  density=0.33  blocks=7
-【E】图示块缺"目的"说明: 86
+【B】有例子但缺"错误用例"标注: 0
+【C】例子注释密度<35%: 0
+【E】图示块缺"目的"说明: 105
    courses/data-algorithms/s1/S1-4-Lesson.md  缺 1 处
    courses/data-algorithms/s2/S2-1-Lesson.md  缺 4 处
    courses/druid/s1/S1-1-Lesson.md  缺 1 处
    courses/gateway/s1/S1-1-Lesson.md  缺 2 处
    courses/gateway/s1/S1-2-Lesson.md  缺 2 处
    courses/graalvm/s1/S1-1-Lesson.md  缺 2 处
+   courses/grafana/s1/S1-1-Lesson.md  缺 2 处
+   courses/grafana/s1/S1-2-Lesson.md  缺 3 处
    courses/hikaricp/s1/S1-1-Lesson.md  缺 1 处
+   courses/istio/s1/S1-1-Lesson.md  缺 3 处
+   courses/istio/s1/S1-3-Lesson.md  缺 2 处
    courses/jakarta-ee/s1/S1-1-Lesson.md  缺 1 处
    courses/jakarta-ee/s1/S1-2-Lesson.md  缺 1 处
    courses/java-basics/s1/S1-1-Lesson.md  缺 2 处
@@ -70,11 +72,26 @@
    courses/networks/s4/S4-2-Lesson.md  缺 3 处
    courses/networks/s4/S4-3-Lesson.md  缺 3 处
    courses/openfeign/s1/S1-1-Lesson.md  缺 1 处
+   courses/opentelemetry/s1/S1-1-Lesson.md  缺 3 处
+   courses/opentelemetry/s1/S1-2-Lesson.md  缺 3 处
+   courses/opentelemetry/s1/S1-3-Lesson.md  缺 3 处
+   courses/opentelemetry/s1/S1-4-Lesson.md  缺 2 处
+   courses/prometheus/s1/S1-1-Lesson.md  缺 2 处
+   courses/prometheus/s1/S1-2-Lesson.md  缺 2 处
+   courses/prometheus/s1/S1-3-Lesson.md  缺 1 处
+   courses/prometheus/s1/S1-4-Lesson.md  缺 2 处
    courses/rabbitmq/s1/S1-1-Lesson.md  缺 1 处
    courses/rocketmq/s1/S1-1-Lesson.md  缺 4 处
    courses/rocketmq/s1/S1-2-Lesson.md  缺 2 处
+   courses/rpc/s1/S1-1-Lesson.md  缺 2 处
+   courses/rpc/s1/S1-2-Lesson.md  缺 2 处
+   courses/seata/s1/S1-1-Lesson.md  缺 3 处
+   courses/seata/s1/S1-2-Lesson.md  缺 3 处
    courses/sentinel/s1/S1-1-Lesson.md  缺 2 处
    courses/sentinel/s1/S1-2-Lesson.md  缺 1 处
+   courses/skywalking/s1/S1-1-Lesson.md  缺 4 处
+   courses/skywalking/s1/S1-2-Lesson.md  缺 1 处
+   courses/skywalking/s1/S1-3-Lesson.md  缺 3 处
    courses/spring-ai/s1/S1-2-Lesson.md  缺 1 处
    courses/spring-ai/s2/S2-1-Lesson.md  缺 1 处
    courses/spring-boot/s1/S1-1-Lesson.md  缺 1 处
@@ -93,10 +110,10 @@
    courses/spring-mvc/s1/S1-1-Lesson.md  缺 1 处
    courses/spring-mvc/s1/S1-2-Lesson.md  缺 1 处
    courses/spring-mvc/s2/S2-2-Lesson.md  缺 1 处
-【D】合规: 168
+【D】合规: 300
 
 ===== Homework（已写实 300 个文件）=====
-【A】无例子程序代码块: 249
+【A】无例子程序代码块: 248
    courses/argocd/s1/S1-1-Homework.md
    courses/argocd/s1/S1-2-Homework.md
    courses/argocd/s1/S1-3-Homework.md
@@ -207,7 +224,6 @@
    courses/juc/s3/S3-1-Homework.md
    courses/juc/s3/S3-2-Homework.md
    courses/juc/s3/S3-3-Homework.md
-   courses/junit/s1/S1-1-Homework.md
    courses/junit/s1/S1-2-Homework.md
    courses/junit/s1/S1-3-Homework.md
    courses/junit/s1/S1-4-Homework.md
@@ -401,10 +417,10 @@
    courses/java-basics/s1/S1-3-Homework.md  缺 1 处
    courses/jvm/s3/S3-1-Homework.md  缺 1 处
    courses/networks/s1/S1-2-Homework.md  缺 1 处
-【D】合规: 20
+【D】合规: 21
 
 ===== Interview（已写实 300 个文件）=====
-【A】无例子程序代码块: 282
+【A】无例子程序代码块: 265
    courses/argocd/s1/S1-1-Interview.md
    courses/argocd/s1/S1-2-Interview.md
    courses/argocd/s1/S1-3-Interview.md
@@ -453,12 +469,7 @@
    courses/dist-theory/s2/S2-1-Interview.md
    courses/dist-theory/s2/S2-2-Interview.md
    courses/dist-theory/s2/S2-3-Interview.md
-   courses/docker/s1/S1-1-Interview.md
-   courses/docker/s1/S1-2-Interview.md
    courses/docker/s1/S1-3-Interview.md
-   courses/docker/s2/S2-1-Interview.md
-   courses/docker/s2/S2-2-Interview.md
-   courses/docker/s2/S2-3-Interview.md
    courses/ecommerce/s1/S1-1-Interview.md
    courses/ecommerce/s1/S1-2-Interview.md
    courses/ecommerce/s2/S2-1-Interview.md
@@ -487,10 +498,7 @@
    courses/gitlab-ci/s1/S1-2-Interview.md
    courses/gitlab-ci/s1/S1-3-Interview.md
    courses/graalvm/s1/S1-1-Interview.md
-   courses/gradle/s1/S1-1-Interview.md
-   courses/gradle/s1/S1-2-Interview.md
    courses/gradle/s1/S1-3-Interview.md
-   courses/gradle/s1/S1-4-Interview.md
    courses/grafana/s1/S1-1-Interview.md
    courses/grafana/s1/S1-2-Interview.md
    courses/high-availability/s1/S1-1-Interview.md
@@ -573,7 +581,6 @@
    courses/maven/s1/S1-2-Interview.md
    courses/maven/s2/S2-1-Interview.md
    courses/maven/s2/S2-2-Interview.md
-   courses/maven/s2/S2-3-Interview.md
    courses/media-sns/s1/S1-1-Interview.md
    courses/media-sns/s1/S1-2-Interview.md
    courses/memcached/s1/S1-1-Interview.md
@@ -619,9 +626,6 @@
    courses/oauth2/s1/S1-1-Interview.md
    courses/oauth2/s1/S1-2-Interview.md
    courses/oauth2/s1/S1-3-Interview.md
-   courses/opentelemetry/s1/S1-1-Interview.md
-   courses/opentelemetry/s1/S1-2-Interview.md
-   courses/opentelemetry/s1/S1-3-Interview.md
    courses/opentelemetry/s1/S1-4-Interview.md
    courses/postgresql/s1/S1-1-Interview.md
    courses/postgresql/s1/S1-2-Interview.md
@@ -629,7 +633,6 @@
    courses/power-grid/s1/S1-2-Interview.md
    courses/prometheus/s1/S1-1-Interview.md
    courses/prometheus/s1/S1-2-Interview.md
-   courses/prometheus/s1/S1-3-Interview.md
    courses/prometheus/s1/S1-4-Interview.md
    courses/redis/s1/S1-1-Interview.md
    courses/redis/s1/S1-2-Interview.md
@@ -640,10 +643,6 @@
    courses/redisson/s1/S1-2-Interview.md
    courses/redisson/s1/S1-3-Interview.md
    courses/redisson/s1/S1-4-Interview.md
-   courses/rpc/s1/S1-1-Interview.md
-   courses/rpc/s1/S1-2-Interview.md
-   courses/seata/s1/S1-1-Interview.md
-   courses/seata/s1/S1-2-Interview.md
    courses/sentinel/s1/S1-1-Interview.md
    courses/shardingsphere/s1/S1-1-Interview.md
    courses/shardingsphere/s1/S1-2-Interview.md
@@ -687,15 +686,32 @@
    courses/web-defense/s1/S1-1-Interview.md
    courses/web-defense/s1/S1-2-Interview.md
    courses/web-defense/s1/S1-3-Interview.md
-【B】有例子但缺"错误用例"标注: 1
-   courses/gateway/s1/S1-2-Interview.md  blocks=1 目的=true
-【C】例子注释密度<35%: 1
-   courses/openfeign/s1/S1-1-Interview.md  density=0.3  blocks=1
-【E】图示块缺"目的"说明: 6
+【B】有例子但缺"错误用例"标注: 0
+【C】例子注释密度<35%: 0
+【E】图示块缺"目的"说明: 25
    courses/gateway/s1/S1-2-Interview.md  缺 1 处
+   courses/grafana/s1/S1-1-Interview.md  缺 1 处
+   courses/grafana/s1/S1-2-Interview.md  缺 1 处
+   courses/istio/s1/S1-1-Interview.md  缺 1 处
+   courses/istio/s1/S1-2-Interview.md  缺 1 处
+   courses/istio/s1/S1-3-Interview.md  缺 1 处
    courses/nacos/s1/S1-2-Interview.md  缺 1 处
    courses/networks/s4/S4-3-Interview.md  缺 1 处
    courses/openfeign/s1/S1-1-Interview.md  缺 1 处
+   courses/opentelemetry/s1/S1-1-Interview.md  缺 1 处
+   courses/opentelemetry/s1/S1-2-Interview.md  缺 1 处
+   courses/opentelemetry/s1/S1-3-Interview.md  缺 1 处
+   courses/opentelemetry/s1/S1-4-Interview.md  缺 2 处
+   courses/prometheus/s1/S1-1-Interview.md  缺 3 处
+   courses/prometheus/s1/S1-2-Interview.md  缺 2 处
+   courses/prometheus/s1/S1-4-Interview.md  缺 2 处
+   courses/rpc/s1/S1-1-Interview.md  缺 2 处
+   courses/rpc/s1/S1-2-Interview.md  缺 1 处
+   courses/seata/s1/S1-1-Interview.md  缺 1 处
+   courses/seata/s1/S1-2-Interview.md  缺 1 处
    courses/sentinel/s1/S1-1-Interview.md  缺 2 处
    courses/sentinel/s1/S1-2-Interview.md  缺 1 处
-【D】合规: 16
+   courses/skywalking/s1/S1-1-Interview.md  缺 2 处
+   courses/skywalking/s1/S1-2-Interview.md  缺 1 处
+   courses/skywalking/s1/S1-3-Interview.md  缺 2 处
+【D】合规: 35

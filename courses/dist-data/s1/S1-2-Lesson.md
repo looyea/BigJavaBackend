@@ -37,6 +37,7 @@ class GtidSessionGuard {
             .findFirst().orElse(null);
         return r != null ? ROUTE(r) : MASTER;                                     // 输出：没有安全从库就回退主库——可用性换正确性的自动降级
     }
+    // 反例：只看 Seconds_Behind_Master==0 就放行读从库 → 大事务开始回放前它显示 0 → 路由到未追平的从库读到旧数据
 }
 ```
 

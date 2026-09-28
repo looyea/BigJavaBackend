@@ -171,7 +171,7 @@ BigJavaBackend/
 > 平台骨架已全线贯通：**15 个大技术分区 / 86 个课程包 / 300 个小节**，每小节均已生成 **课文 + 小测 + 作业 + 面试题**
 > 四件套（共 1200 个 Markdown 文件）；结构、解锁链路与小测判分契约经 `scripts/check.mjs` 自检通过。
 >
-> **正文写实进度：已完成 170 / 300 节（四件套同步写实）。** 已满配包：「**计算机与算法基础**」分区 3 包（数据结构与算法 17、
+> **正文写实进度：300 / 300 节全部完成（四件套同步写实）。** 已满配包：「**计算机与算法基础**」分区 3 包（数据结构与算法 17、
 > 计算机网络 14、Netty 9）、`java-basics` 11、`java-modern` 4、`juc` 9、`jvm` 7、
 > `mysql` 7、`redis` 5、`lettuce` 3、`redisson` 4、`caffeine` 2、
 > `spring-boot` 8、`spring-core` 4、`spring-mvc` 4、`spring-ai` 4、`jakarta-ee` 2、`graalvm` 1、
@@ -181,11 +181,19 @@ BigJavaBackend/
 > 「**持久层与连接池**」`mybatis` 3、`spring-data-jpa` 2、`druid` 1、`hikaricp` 1；
 > 「**中间件**」`rocketmq` 3、`rabbitmq` 1、`kafka` 2；
 > 「**定时与调度**」`job-scheduling` 2；
-> 「**微服务治理**」`spring-cloud-alibaba` 1、`nacos` 2、`gateway` 2、`openfeign` 1、`sentinel` 2。
-> 其余课程包正文为占位待写。
+> 「**微服务治理**」`spring-cloud-alibaba` 1、`nacos` 2、`gateway` 2、`openfeign` 1、`sentinel` 2、`seata` 2、`rpc` 2；
+> 「**可观测性**」`opentelemetry` 4、`prometheus` 4、`grafana` 2、`skywalking` 3、`istio` 4；
+> 「**服务网格与数据分片**」`linkerd` 2、`shardingsphere` 2；
+> 「**构建、运维与云原生**」`maven` 5、`gradle` 4、`docker` 6、`kubernetes` 7、`gitlab-ci` 3、`github-actions` 3、`argocd` 3、`elk` 3、`loki` 3、`linux-shell` 2；
+> 「**测试**」`junit` 4、`mockito` 4、`test-containers` 1、`jmeter` 3、`gatling` 3、`sonar` 1、`chaos` 1；
+> 「**性能调优工具**」`arthas` 2、`async-profiler` 1、`jol` 1；
+> 「**安全**」`spring-security` 2、`shiro` 1、`oauth2` 3、`jwt` 3、`web-defense` 3、`data-security` 2；
+> 「**其他补充**」`elasticsearch` 3、`temporal` 1、`flink` 4、`kafka-streams` 2；
+> 「**专题**」`high-concurrency` 4、`high-availability` 3、`idempotent` 2、`ecommerce` 4、`fintech` 4、`power-grid` 2、`media-sns` 2。
+> 至此全部 86 个课程包 / 300 个小节的「课文 + 小测 + 作业 + 面试题」四件套正文写实完成。
 >
 > **例子程序规范回填**：按上文五条硬性规范对已写实课文做了逐包审计与回填（补目的注释、行注释影响 / 结果、
-> 正确用例与错误用例及异常说明），已覆盖全部 170 个写实包。`node scripts/audit-examples.mjs` 复核：**【A】无例子 / 【B】缺错误用例 / 【C】注释密度<35% 三项均为 0**；`node scripts/check.mjs` 全部小测自动判分满分 100 通过。本 README 随每轮任务结束更新。
+> 正确用例与错误用例及异常说明），已覆盖全部 300 个写实节。`node scripts/audit-examples.mjs` 复核：**课文与面试题的【A】无例子 / 【B】缺错误用例 / 【C】注释密度<35% 三项均为 0**；`node scripts/check.mjs` 全部小测自动判分满分 100 通过。本 README 随每轮任务结束更新。
 
 - **15 个分区一览**（首页分组顺序，与 `data.js` 的 `CATEGORIES` 一致）：
 
