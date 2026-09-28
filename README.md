@@ -168,32 +168,33 @@ BigJavaBackend/
 
 ## 九、内容完成度说明
 
-> 平台骨架已全线贯通：**15 个大技术分区 / 86 个课程包 / 300 个小节**，每小节均已生成 **课文 + 小测 + 作业 + 面试题**
-> 四件套（共 1200 个 Markdown 文件）；结构、解锁链路与小测判分契约经 `scripts/check.mjs` 自检通过。
+> 平台骨架已全线贯通：**15 个大技术分区 / 86 个课程包 / 343 个小节**，每小节均已生成 **课文 + 小测 + 作业 + 面试题**
+> 四件套（共 1372 个 Markdown 文件）；结构、解锁链路与小测判分契约经 `scripts/check.mjs` 自检通过。
 >
-> **正文写实进度：300 / 300 节全部完成（四件套同步写实）。** 已满配包：「**计算机与算法基础**」分区 3 包（数据结构与算法 17、
+> **正文写实进度：343 / 343 节全部完成（四件套同步写实）。** 本轮按「详略分档下限」对各包做了小节补齐（核心精讲档 ≥6 节且 ≥2 阶段、
+> 重点标准档 ≥3 节），总小节数 300 → 343。已满配包：「**计算机与算法基础**」分区 3 包（数据结构与算法 17、
 > 计算机网络 14、Netty 9）、`java-basics` 11、`java-modern` 4、`juc` 9、`jvm` 7、
-> `mysql` 7、`redis` 5、`lettuce` 3、`redisson` 4、`caffeine` 2、
-> `spring-boot` 8、`spring-core` 4、`spring-mvc` 4、`spring-ai` 4、`jakarta-ee` 2、`graalvm` 1、
-> 「**分布式系统**」`dist-theory` 6、`dist-data` 4；
-> 「**架构设计**」`design-patterns` 5、`ddd-architecture` 5、`system-design` 6；
-> 「**数据库与缓存**」`postgresql` 2、`tidb` 2、`minio` 1、`memcached` 1；
-> 「**持久层与连接池**」`mybatis` 3、`spring-data-jpa` 2、`druid` 1、`hikaricp` 1；
-> 「**中间件**」`rocketmq` 3、`rabbitmq` 1、`kafka` 2；
-> 「**定时与调度**」`job-scheduling` 2；
-> 「**微服务治理**」`spring-cloud-alibaba` 1、`nacos` 2、`gateway` 2、`openfeign` 1、`sentinel` 2、`seata` 2、`rpc` 2；
+> `mysql` 7、`redis` 6、`lettuce` 3、`redisson` 6、`caffeine` 2、
+> `spring-boot` 8、`spring-core` 6、`spring-mvc` 4、`spring-ai` 4、`jakarta-ee` 2、`graalvm` 1、
+> 「**分布式系统**」`dist-theory` 6、`dist-data` 6；
+> 「**架构设计**」`design-patterns` 5、`ddd-architecture` 6、`system-design` 6；
+> 「**数据库与缓存**」`postgresql` 3、`tidb` 2、`minio` 1、`memcached` 1；
+> 「**持久层与连接池**」`mybatis` 6、`spring-data-jpa` 3、`druid` 1、`hikaricp` 3；
+> 「**中间件**」`rocketmq` 3、`rabbitmq` 1、`kafka` 3；
+> 「**定时与调度**」`job-scheduling` 3；
+> 「**微服务治理**」`spring-cloud-alibaba` 3、`nacos` 3、`gateway` 3、`openfeign` 1、`sentinel` 3、`seata` 3、`rpc` 3；
 > 「**可观测性**」`opentelemetry` 4、`prometheus` 4、`grafana` 2、`skywalking` 3、`istio` 4；
-> 「**服务网格与数据分片**」`linkerd` 2、`shardingsphere` 2；
-> 「**构建、运维与云原生**」`maven` 5、`gradle` 4、`docker` 6、`kubernetes` 7、`gitlab-ci` 3、`github-actions` 3、`argocd` 3、`elk` 3、`loki` 3、`linux-shell` 2；
+> 「**服务网格与数据分片**」`linkerd` 2、`shardingsphere` 3；
+> 「**构建、运维与云原生**」`maven` 6、`gradle` 4、`docker` 6、`kubernetes` 7、`gitlab-ci` 3、`github-actions` 3、`argocd` 3、`elk` 3、`loki` 3、`linux-shell` 2；
 > 「**测试**」`junit` 4、`mockito` 4、`test-containers` 1、`jmeter` 3、`gatling` 3、`sonar` 1、`chaos` 1；
-> 「**性能调优工具**」`arthas` 2、`async-profiler` 1、`jol` 1；
-> 「**安全**」`spring-security` 2、`shiro` 1、`oauth2` 3、`jwt` 3、`web-defense` 3、`data-security` 2；
+> 「**性能调优工具**」`arthas` 3、`async-profiler` 3、`jol` 1；
+> 「**安全**」`spring-security` 3、`shiro` 1、`oauth2` 3、`jwt` 3、`web-defense` 6、`data-security` 3；
 > 「**其他补充**」`elasticsearch` 3、`temporal` 1、`flink` 4、`kafka-streams` 2；
-> 「**专题**」`high-concurrency` 4、`high-availability` 3、`idempotent` 2、`ecommerce` 4、`fintech` 4、`power-grid` 2、`media-sns` 2。
-> 至此全部 86 个课程包 / 300 个小节的「课文 + 小测 + 作业 + 面试题」四件套正文写实完成。
+> 「**专题**」`high-concurrency` 6、`high-availability` 6、`idempotent` 6、`ecommerce` 4、`fintech` 4、`power-grid` 2、`media-sns` 2。
+> 至此全部 86 个课程包 / 343 个小节的「课文 + 小测 + 作业 + 面试题」四件套正文写实完成。
 >
 > **例子程序规范回填**：按上文五条硬性规范对已写实课文做了逐包审计与回填（补目的注释、行注释影响 / 结果、
-> 正确用例与错误用例及异常说明），已覆盖全部 300 个写实节。`node scripts/audit-examples.mjs` 复核：**课文与面试题的【A】无例子 / 【B】缺错误用例 / 【C】注释密度<35% 三项均为 0**；`node scripts/check.mjs` 全部小测自动判分满分 100 通过。本 README 随每轮任务结束更新。
+> 正确用例与错误用例及异常说明），已覆盖全部 343 个写实节。`node scripts/audit-examples.mjs` 复核：**课文与面试题的【A】无例子 / 【B】缺错误用例 / 【C】注释密度<35% 三项均为 0**；`node scripts/check.mjs` 全部小测自动判分满分 100 通过。本 README 随每轮任务结束更新。
 
 - **15 个分区一览**（首页分组顺序，与 `data.js` 的 `CATEGORIES` 一致）：
 
@@ -201,20 +202,20 @@ BigJavaBackend/
 | --- | --- | --- | --- |
 | 1 | 计算机与算法基础 | 3 | 40 |
 | 2 | Java 基础语言 | 4 | 31 |
-| 3 | 相关框架 | 6 | 23 |
-| 4 | 分布式系统 | 2 | 10 |
-| 5 | 架构设计与方法论 | 3 | 16 |
-| 6 | 数据库与缓存 | 9 | 27 |
-| 7 | 持久层与连接池 | 4 | 7 |
-| 8 | 中间件 | 4 | 8 |
-| 9 | 微服务治理 | 14 | 33 |
-| 10 | 构建、运维与 CI/CD | 10 | 39 |
+| 3 | 相关框架 | 6 | 25 |
+| 4 | 分布式系统 | 2 | 12 |
+| 5 | 架构设计与方法论 | 3 | 17 |
+| 6 | 数据库与缓存 | 9 | 31 |
+| 7 | 持久层与连接池 | 4 | 13 |
+| 8 | 中间件 | 4 | 10 |
+| 9 | 微服务治理 | 14 | 41 |
+| 10 | 构建、运维与 CI/CD | 10 | 40 |
 | 11 | 测试 | 7 | 17 |
-| 12 | 性能调优工具 | 3 | 4 |
-| 13 | 安全 | 6 | 14 |
+| 12 | 性能调优工具 | 3 | 7 |
+| 13 | 安全 | 6 | 19 |
 | 14 | 其他补充 | 4 | 10 |
-| 15 | 专题 | 7 | 21 |
-| | **合计 15 分区** | **86** | **300** |
+| 15 | 专题 | 7 | 30 |
+| | **合计 15 分区** | **86** | **343** |
 
 - **详略分档**：每个包按 `importance(1-5)` 落到「核心精讲 / 重点标准 / 标准概览 / 简明速览 / 了解即可」五档；首页卡片标签
   红 → 绿着色区分，重要级越高讲解越深入，越要求源码、场景与行业实践。

@@ -84,13 +84,15 @@ function viewHome() {
       return `<a class="pkg-card" href="#/pkg/${pkg.id}">
         <h3>${esc(pkg.name)}${tag}</h3>
         <p class="desc">${esc(pkg.desc)}</p>
-        <div class="meta">
-          <span>阶段 ${pkg.stages.length} · 小节 ${st.total}</span>
-          <span>重要性 ${stars(pkg.importance)}</span>
-        </div>
-        <div class="meta" style="margin-top:4px">
-          <span class="depth-tag depth-${pkg.importance}">${dName}</span>
-          <span>已过关 ${st.done}/${st.total}</span>
+        <div class="card-foot">
+          <div class="meta">
+            <span>阶段 ${pkg.stages.length} · 小节 ${st.total}</span>
+            <span>重要性 ${stars(pkg.importance)}</span>
+          </div>
+          <div class="meta">
+            <span class="depth-tag depth-${pkg.importance}">${dName}</span>
+            <span>已过关 ${st.done}/${st.total}</span>
+          </div>
         </div>
       </a>`;
     }).join('');

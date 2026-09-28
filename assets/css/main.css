@@ -62,13 +62,15 @@ a:hover { text-decoration: underline; }
   grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
 }
 .pkg-card {
-  display: block; padding: 14px 16px; color: inherit;
+  display: flex; flex-direction: column; padding: 14px 16px; color: inherit;
   background: var(--bg-card); border: 1px solid var(--line);
   border-radius: 10px; box-shadow: var(--shadow);
 }
 .pkg-card:hover { text-decoration: none; border-color: var(--accent); transform: translateY(-2px); }
 .pkg-card h3 { margin: 0 0 6px; font-size: 16px; }
-.pkg-card .desc { margin: 0 0 10px; font-size: 13px; color: var(--text-soft); min-height: 56px; }
+.pkg-card .desc { margin: 0 0 10px; font-size: 13px; color: var(--text-soft); }
+.pkg-card .card-foot { margin-top: auto; padding-top: 8px; }
+.pkg-card .card-foot .meta + .meta { margin-top: 4px; }
 .pkg-card .meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); }
 .pkg-card.locked { opacity: .55; }
 

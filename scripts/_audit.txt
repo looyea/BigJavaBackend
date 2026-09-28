@@ -1,6 +1,6 @@
-已写实课文数 = 300
+已写实课文数 = 343
 
-===== Lesson（已写实 300 个文件）=====
+===== Lesson（已写实 343 个文件）=====
 【A】无例子程序代码块: 0
 【B】有例子但缺"错误用例"标注: 0
 【C】例子注释密度<35%: 0
@@ -110,30 +110,37 @@
    courses/spring-mvc/s1/S1-1-Lesson.md  缺 1 处
    courses/spring-mvc/s1/S1-2-Lesson.md  缺 1 处
    courses/spring-mvc/s2/S2-2-Lesson.md  缺 1 处
-【D】合规: 300
+【D】合规: 343
 
-===== Homework（已写实 300 个文件）=====
-【A】无例子程序代码块: 248
+===== Homework（已写实 343 个文件）=====
+【A】无例子程序代码块: 291
    courses/argocd/s1/S1-1-Homework.md
    courses/argocd/s1/S1-2-Homework.md
    courses/argocd/s1/S1-3-Homework.md
    courses/arthas/s1/S1-1-Homework.md
    courses/arthas/s1/S1-2-Homework.md
+   courses/arthas/s1/S1-3-Homework.md
    courses/async-profiler/s1/S1-1-Homework.md
+   courses/async-profiler/s1/S1-2-Homework.md
+   courses/async-profiler/s1/S1-3-Homework.md
    courses/chaos/s1/S1-1-Homework.md
    courses/data-security/s1/S1-1-Homework.md
    courses/data-security/s1/S1-2-Homework.md
+   courses/data-security/s1/S1-3-Homework.md
    courses/ddd-architecture/s1/S1-1-Homework.md
    courses/ddd-architecture/s1/S1-2-Homework.md
    courses/ddd-architecture/s2/S2-2-Homework.md
+   courses/ddd-architecture/s2/S2-4-Homework.md
    courses/design-patterns/s1/S1-2-Homework.md
    courses/design-patterns/s1/S1-3-Homework.md
    courses/design-patterns/s2/S2-1-Homework.md
    courses/design-patterns/s2/S2-2-Homework.md
    courses/dist-data/s1/S1-1-Homework.md
    courses/dist-data/s1/S1-2-Homework.md
+   courses/dist-data/s1/S1-3-Homework.md
    courses/dist-data/s2/S2-1-Homework.md
    courses/dist-data/s2/S2-2-Homework.md
+   courses/dist-data/s2/S2-3-Homework.md
    courses/dist-theory/s1/S1-1-Homework.md
    courses/dist-theory/s1/S1-2-Homework.md
    courses/dist-theory/s1/S1-3-Homework.md
@@ -167,6 +174,7 @@
    courses/flink/s1/S1-4-Homework.md
    courses/gateway/s1/S1-1-Homework.md
    courses/gateway/s1/S1-2-Homework.md
+   courses/gateway/s1/S1-3-Homework.md
    courses/gatling/s1/S1-1-Homework.md
    courses/gatling/s1/S1-2-Homework.md
    courses/gatling/s1/S1-3-Homework.md
@@ -186,12 +194,23 @@
    courses/high-availability/s1/S1-1-Homework.md
    courses/high-availability/s1/S1-2-Homework.md
    courses/high-availability/s1/S1-3-Homework.md
+   courses/high-availability/s2/S2-1-Homework.md
+   courses/high-availability/s2/S2-2-Homework.md
+   courses/high-availability/s2/S2-3-Homework.md
    courses/high-concurrency/s1/S1-1-Homework.md
    courses/high-concurrency/s1/S1-2-Homework.md
+   courses/high-concurrency/s1/S1-3-Homework.md
    courses/high-concurrency/s2/S2-1-Homework.md
    courses/high-concurrency/s2/S2-2-Homework.md
+   courses/high-concurrency/s2/S2-3-Homework.md
+   courses/hikaricp/s1/S1-2-Homework.md
+   courses/hikaricp/s1/S1-3-Homework.md
    courses/idempotent/s1/S1-1-Homework.md
    courses/idempotent/s1/S1-2-Homework.md
+   courses/idempotent/s1/S1-3-Homework.md
+   courses/idempotent/s1/S1-4-Homework.md
+   courses/idempotent/s2/S2-1-Homework.md
+   courses/idempotent/s2/S2-2-Homework.md
    courses/istio/s1/S1-1-Homework.md
    courses/istio/s1/S1-2-Homework.md
    courses/istio/s1/S1-3-Homework.md
@@ -214,6 +233,7 @@
    courses/jmeter/s1/S1-3-Homework.md
    courses/job-scheduling/s1/S1-1-Homework.md
    courses/job-scheduling/s1/S1-2-Homework.md
+   courses/job-scheduling/s1/S1-3-Homework.md
    courses/jol/s1/S1-1-Homework.md
    courses/juc/s1/S1-1-Homework.md
    courses/juc/s1/S1-2-Homework.md
@@ -238,6 +258,7 @@
    courses/jwt/s1/S1-2-Homework.md
    courses/jwt/s1/S1-3-Homework.md
    courses/kafka/s1/S1-2-Homework.md
+   courses/kafka/s1/S1-3-Homework.md
    courses/kafka-streams/s1/S1-1-Homework.md
    courses/kafka-streams/s1/S1-2-Homework.md
    courses/kubernetes/s1/S1-1-Homework.md
@@ -259,6 +280,7 @@
    courses/maven/s2/S2-1-Homework.md
    courses/maven/s2/S2-2-Homework.md
    courses/maven/s2/S2-3-Homework.md
+   courses/maven/s2/S2-4-Homework.md
    courses/media-sns/s1/S1-1-Homework.md
    courses/media-sns/s1/S1-2-Homework.md
    courses/memcached/s1/S1-1-Homework.md
@@ -270,10 +292,14 @@
    courses/mybatis/s1/S1-1-Homework.md
    courses/mybatis/s1/S1-2-Homework.md
    courses/mybatis/s1/S1-3-Homework.md
+   courses/mybatis/s2/S2-1-Homework.md
+   courses/mybatis/s2/S2-2-Homework.md
+   courses/mybatis/s2/S2-3-Homework.md
    courses/mysql/s1/S1-1-Homework.md
    courses/mysql/s3/S3-2-Homework.md
    courses/nacos/s1/S1-1-Homework.md
    courses/nacos/s1/S1-2-Homework.md
+   courses/nacos/s1/S1-3-Homework.md
    courses/netty/s1/S1-1-Homework.md
    courses/netty/s1/S1-2-Homework.md
    courses/netty/s1/S1-3-Homework.md
@@ -304,6 +330,7 @@
    courses/opentelemetry/s1/S1-4-Homework.md
    courses/postgresql/s1/S1-1-Homework.md
    courses/postgresql/s1/S1-2-Homework.md
+   courses/postgresql/s1/S1-3-Homework.md
    courses/power-grid/s1/S1-1-Homework.md
    courses/power-grid/s1/S1-2-Homework.md
    courses/prometheus/s1/S1-1-Homework.md
@@ -311,17 +338,24 @@
    courses/prometheus/s1/S1-3-Homework.md
    courses/prometheus/s1/S1-4-Homework.md
    courses/rabbitmq/s1/S1-1-Homework.md
+   courses/redis/s2/S2-4-Homework.md
+   courses/redisson/s2/S2-1-Homework.md
+   courses/redisson/s2/S2-2-Homework.md
    courses/rocketmq/s1/S1-1-Homework.md
    courses/rocketmq/s1/S1-2-Homework.md
    courses/rocketmq/s1/S1-3-Homework.md
    courses/rpc/s1/S1-1-Homework.md
    courses/rpc/s1/S1-2-Homework.md
+   courses/rpc/s1/S1-3-Homework.md
    courses/seata/s1/S1-1-Homework.md
    courses/seata/s1/S1-2-Homework.md
+   courses/seata/s1/S1-3-Homework.md
    courses/sentinel/s1/S1-1-Homework.md
    courses/sentinel/s1/S1-2-Homework.md
+   courses/sentinel/s1/S1-3-Homework.md
    courses/shardingsphere/s1/S1-1-Homework.md
    courses/shardingsphere/s1/S1-2-Homework.md
+   courses/shardingsphere/s1/S1-3-Homework.md
    courses/shiro/s1/S1-1-Homework.md
    courses/skywalking/s1/S1-1-Homework.md
    courses/skywalking/s1/S1-2-Homework.md
@@ -340,17 +374,23 @@
    courses/spring-boot/s3/S3-1-Homework.md
    courses/spring-boot/s3/S3-2-Homework.md
    courses/spring-cloud-alibaba/s1/S1-1-Homework.md
+   courses/spring-cloud-alibaba/s1/S1-2-Homework.md
+   courses/spring-cloud-alibaba/s1/S1-3-Homework.md
    courses/spring-core/s1/S1-1-Homework.md
    courses/spring-core/s1/S1-2-Homework.md
+   courses/spring-core/s1/S1-3-Homework.md
    courses/spring-core/s2/S2-1-Homework.md
    courses/spring-core/s2/S2-2-Homework.md
+   courses/spring-core/s2/S2-3-Homework.md
    courses/spring-data-jpa/s1/S1-2-Homework.md
+   courses/spring-data-jpa/s1/S1-3-Homework.md
    courses/spring-mvc/s1/S1-1-Homework.md
    courses/spring-mvc/s1/S1-2-Homework.md
    courses/spring-mvc/s2/S2-1-Homework.md
    courses/spring-mvc/s2/S2-2-Homework.md
    courses/spring-security/s1/S1-1-Homework.md
    courses/spring-security/s1/S1-2-Homework.md
+   courses/spring-security/s1/S1-3-Homework.md
    courses/system-design/s1/S1-1-Homework.md
    courses/system-design/s1/S1-2-Homework.md
    courses/system-design/s3/S3-1-Homework.md
@@ -362,6 +402,9 @@
    courses/web-defense/s1/S1-1-Homework.md
    courses/web-defense/s1/S1-2-Homework.md
    courses/web-defense/s1/S1-3-Homework.md
+   courses/web-defense/s2/S2-1-Homework.md
+   courses/web-defense/s2/S2-2-Homework.md
+   courses/web-defense/s2/S2-3-Homework.md
 【B】有例子但缺"错误用例"标注: 29
    courses/caffeine/s1/S1-1-Homework.md  blocks=1 目的=true
    courses/data-algorithms/s1/S1-1-Homework.md  blocks=1 目的=false
@@ -419,14 +462,17 @@
    courses/networks/s1/S1-2-Homework.md  缺 1 处
 【D】合规: 21
 
-===== Interview（已写实 300 个文件）=====
-【A】无例子程序代码块: 265
+===== Interview（已写实 343 个文件）=====
+【A】无例子程序代码块: 308
    courses/argocd/s1/S1-1-Interview.md
    courses/argocd/s1/S1-2-Interview.md
    courses/argocd/s1/S1-3-Interview.md
    courses/arthas/s1/S1-1-Interview.md
    courses/arthas/s1/S1-2-Interview.md
+   courses/arthas/s1/S1-3-Interview.md
    courses/async-profiler/s1/S1-1-Interview.md
+   courses/async-profiler/s1/S1-2-Interview.md
+   courses/async-profiler/s1/S1-3-Interview.md
    courses/caffeine/s1/S1-1-Interview.md
    courses/caffeine/s1/S1-2-Interview.md
    courses/chaos/s1/S1-1-Interview.md
@@ -449,11 +495,13 @@
    courses/data-algorithms/s4/S4-6-Interview.md
    courses/data-security/s1/S1-1-Interview.md
    courses/data-security/s1/S1-2-Interview.md
+   courses/data-security/s1/S1-3-Interview.md
    courses/ddd-architecture/s1/S1-1-Interview.md
    courses/ddd-architecture/s1/S1-2-Interview.md
    courses/ddd-architecture/s2/S2-1-Interview.md
    courses/ddd-architecture/s2/S2-2-Interview.md
    courses/ddd-architecture/s2/S2-3-Interview.md
+   courses/ddd-architecture/s2/S2-4-Interview.md
    courses/design-patterns/s1/S1-1-Interview.md
    courses/design-patterns/s1/S1-2-Interview.md
    courses/design-patterns/s1/S1-3-Interview.md
@@ -461,8 +509,10 @@
    courses/design-patterns/s2/S2-2-Interview.md
    courses/dist-data/s1/S1-1-Interview.md
    courses/dist-data/s1/S1-2-Interview.md
+   courses/dist-data/s1/S1-3-Interview.md
    courses/dist-data/s2/S2-1-Interview.md
    courses/dist-data/s2/S2-2-Interview.md
+   courses/dist-data/s2/S2-3-Interview.md
    courses/dist-theory/s1/S1-1-Interview.md
    courses/dist-theory/s1/S1-2-Interview.md
    courses/dist-theory/s1/S1-3-Interview.md
@@ -488,6 +538,7 @@
    courses/flink/s1/S1-2-Interview.md
    courses/flink/s1/S1-3-Interview.md
    courses/flink/s1/S1-4-Interview.md
+   courses/gateway/s1/S1-3-Interview.md
    courses/gatling/s1/S1-1-Interview.md
    courses/gatling/s1/S1-2-Interview.md
    courses/gatling/s1/S1-3-Interview.md
@@ -504,12 +555,23 @@
    courses/high-availability/s1/S1-1-Interview.md
    courses/high-availability/s1/S1-2-Interview.md
    courses/high-availability/s1/S1-3-Interview.md
+   courses/high-availability/s2/S2-1-Interview.md
+   courses/high-availability/s2/S2-2-Interview.md
+   courses/high-availability/s2/S2-3-Interview.md
    courses/high-concurrency/s1/S1-1-Interview.md
    courses/high-concurrency/s1/S1-2-Interview.md
+   courses/high-concurrency/s1/S1-3-Interview.md
    courses/high-concurrency/s2/S2-1-Interview.md
    courses/high-concurrency/s2/S2-2-Interview.md
+   courses/high-concurrency/s2/S2-3-Interview.md
+   courses/hikaricp/s1/S1-2-Interview.md
+   courses/hikaricp/s1/S1-3-Interview.md
    courses/idempotent/s1/S1-1-Interview.md
    courses/idempotent/s1/S1-2-Interview.md
+   courses/idempotent/s1/S1-3-Interview.md
+   courses/idempotent/s1/S1-4-Interview.md
+   courses/idempotent/s2/S2-1-Interview.md
+   courses/idempotent/s2/S2-2-Interview.md
    courses/istio/s1/S1-1-Interview.md
    courses/istio/s1/S1-2-Interview.md
    courses/istio/s1/S1-3-Interview.md
@@ -534,6 +596,7 @@
    courses/jmeter/s1/S1-1-Interview.md
    courses/jmeter/s1/S1-2-Interview.md
    courses/jmeter/s1/S1-3-Interview.md
+   courses/job-scheduling/s1/S1-3-Interview.md
    courses/jol/s1/S1-1-Interview.md
    courses/juc/s1/S1-1-Interview.md
    courses/juc/s1/S1-2-Interview.md
@@ -558,6 +621,7 @@
    courses/jwt/s1/S1-1-Interview.md
    courses/jwt/s1/S1-2-Interview.md
    courses/jwt/s1/S1-3-Interview.md
+   courses/kafka/s1/S1-3-Interview.md
    courses/kafka-streams/s1/S1-1-Interview.md
    courses/kafka-streams/s1/S1-2-Interview.md
    courses/kubernetes/s1/S1-1-Interview.md
@@ -581,6 +645,7 @@
    courses/maven/s1/S1-2-Interview.md
    courses/maven/s2/S2-1-Interview.md
    courses/maven/s2/S2-2-Interview.md
+   courses/maven/s2/S2-4-Interview.md
    courses/media-sns/s1/S1-1-Interview.md
    courses/media-sns/s1/S1-2-Interview.md
    courses/memcached/s1/S1-1-Interview.md
@@ -592,6 +657,9 @@
    courses/mybatis/s1/S1-1-Interview.md
    courses/mybatis/s1/S1-2-Interview.md
    courses/mybatis/s1/S1-3-Interview.md
+   courses/mybatis/s2/S2-1-Interview.md
+   courses/mybatis/s2/S2-2-Interview.md
+   courses/mybatis/s2/S2-3-Interview.md
    courses/mysql/s1/S1-1-Interview.md
    courses/mysql/s1/S1-2-Interview.md
    courses/mysql/s2/S2-1-Interview.md
@@ -600,6 +668,7 @@
    courses/mysql/s3/S3-2-Interview.md
    courses/mysql/s3/S3-3-Interview.md
    courses/nacos/s1/S1-2-Interview.md
+   courses/nacos/s1/S1-3-Interview.md
    courses/netty/s1/S1-1-Interview.md
    courses/netty/s1/S1-2-Interview.md
    courses/netty/s1/S1-3-Interview.md
@@ -629,6 +698,7 @@
    courses/opentelemetry/s1/S1-4-Interview.md
    courses/postgresql/s1/S1-1-Interview.md
    courses/postgresql/s1/S1-2-Interview.md
+   courses/postgresql/s1/S1-3-Interview.md
    courses/power-grid/s1/S1-1-Interview.md
    courses/power-grid/s1/S1-2-Interview.md
    courses/prometheus/s1/S1-1-Interview.md
@@ -639,13 +709,20 @@
    courses/redis/s2/S2-1-Interview.md
    courses/redis/s2/S2-2-Interview.md
    courses/redis/s2/S2-3-Interview.md
+   courses/redis/s2/S2-4-Interview.md
    courses/redisson/s1/S1-1-Interview.md
    courses/redisson/s1/S1-2-Interview.md
    courses/redisson/s1/S1-3-Interview.md
    courses/redisson/s1/S1-4-Interview.md
+   courses/redisson/s2/S2-1-Interview.md
+   courses/redisson/s2/S2-2-Interview.md
+   courses/rpc/s1/S1-3-Interview.md
+   courses/seata/s1/S1-3-Interview.md
    courses/sentinel/s1/S1-1-Interview.md
+   courses/sentinel/s1/S1-3-Interview.md
    courses/shardingsphere/s1/S1-1-Interview.md
    courses/shardingsphere/s1/S1-2-Interview.md
+   courses/shardingsphere/s1/S1-3-Interview.md
    courses/shiro/s1/S1-1-Interview.md
    courses/skywalking/s1/S1-1-Interview.md
    courses/skywalking/s1/S1-2-Interview.md
@@ -663,16 +740,22 @@
    courses/spring-boot/s2/S2-3-Interview.md
    courses/spring-boot/s3/S3-1-Interview.md
    courses/spring-boot/s3/S3-2-Interview.md
+   courses/spring-cloud-alibaba/s1/S1-2-Interview.md
+   courses/spring-cloud-alibaba/s1/S1-3-Interview.md
    courses/spring-core/s1/S1-1-Interview.md
    courses/spring-core/s1/S1-2-Interview.md
+   courses/spring-core/s1/S1-3-Interview.md
    courses/spring-core/s2/S2-1-Interview.md
    courses/spring-core/s2/S2-2-Interview.md
+   courses/spring-core/s2/S2-3-Interview.md
+   courses/spring-data-jpa/s1/S1-3-Interview.md
    courses/spring-mvc/s1/S1-1-Interview.md
    courses/spring-mvc/s1/S1-2-Interview.md
    courses/spring-mvc/s2/S2-1-Interview.md
    courses/spring-mvc/s2/S2-2-Interview.md
    courses/spring-security/s1/S1-1-Interview.md
    courses/spring-security/s1/S1-2-Interview.md
+   courses/spring-security/s1/S1-3-Interview.md
    courses/system-design/s1/S1-1-Interview.md
    courses/system-design/s1/S1-2-Interview.md
    courses/system-design/s2/S2-1-Interview.md
@@ -686,6 +769,9 @@
    courses/web-defense/s1/S1-1-Interview.md
    courses/web-defense/s1/S1-2-Interview.md
    courses/web-defense/s1/S1-3-Interview.md
+   courses/web-defense/s2/S2-1-Interview.md
+   courses/web-defense/s2/S2-2-Interview.md
+   courses/web-defense/s2/S2-3-Interview.md
 【B】有例子但缺"错误用例"标注: 0
 【C】例子注释密度<35%: 0
 【E】图示块缺"目的"说明: 25
