@@ -1,7 +1,7 @@
 # 扩展生态与选型（PostGIS/pgvector）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：了解 PostgreSQL 扩展机制的设计哲学，掌握 PostGIS 地理查询与 pgvector 向量检索的核心用法，能判断何时 PG 优于 MySQL 或其他专用引擎。
 
 ## 一、PostgreSQL 扩展机制

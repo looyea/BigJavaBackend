@@ -1,7 +1,7 @@
 # 参数解析与返回值处理
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：讲清 `HandlerMethodArgumentResolver` 如何把 HTTP 世界的数据变成方法形参、`HandlerMethodReturnValueHandler` 如何把返回值写回响应；理解 `@RequestBody`/`@ResponseBody` 背后 `HttpMessageConverter` 的两段式工作；能定制类型转换与全局响应包装。
 
 ## 一、入参：RequestResponseBodyMethodProcessor 之前的分工

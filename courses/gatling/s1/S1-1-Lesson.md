@@ -1,7 +1,7 @@
 # Gatling DSL 与场景编排
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能读懂并写出 Gatling 仿真骨架（protocol→scenario→injection→assertions），用 feeder/chain-exec 编排带关联的业务链路，并说清 `exitHereIfFailed`、`tryOnce`、`group` 对结果口径的影响。
 
 ## 一、骨架四段：一个仿真就是一个函数
@@ -56,4 +56,4 @@ HTML 报告开箱含分位曲线与请求分布；`assertions` 写 SLA（如 `gl
 
 ## 六、关联技术
 
-异步模型与容量结论解读在 [异步模型、指标与容量结论](S1-2-Lesson.md)；与 JMeter 的对向比较在 [与 JMeter 选型对比（关联）](S1-3-Lesson.md)；压测时服务端瓶颈下钻见 [Arthas 方法级观测与调用链耗时](../../arthas/s1/S1-1-Lesson.md)。
+异步模型与容量结论解读在 [异步模型、指标与容量结论](S1-2-Lesson.md)；与 JMeter 的对向比较在 [与 JMeter 选型对比（关联）](S1-3-Lesson.md)；压测时服务端瓶颈下钻见 [方法级观测与调用链耗时](../../arthas/s1/S1-1-Lesson.md)。

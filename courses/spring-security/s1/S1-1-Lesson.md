@@ -1,7 +1,7 @@
 # 安全过滤器链执行顺序
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：能在脑中画出一次请求穿过 Spring Security 过滤器链的完整时序（SecurityContextHolder 何时写入、异常在哪被翻译成 401/403），会配 SecurityFilterChain 并把自定义 JWT 过滤器放到正确位置，识破 permitAll/ignoring 滥用的经典越权事故。
 
 ## 一、一个入口，一条有序链

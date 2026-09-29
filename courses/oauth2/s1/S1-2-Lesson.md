@@ -1,7 +1,7 @@
 # 授权码 + PKCE、scope 与令牌存储
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：能完整推导 PKCE 防授权码拦截的原理（code_verifier / code_challenge / S256），写对 redirect_uri 精确校验与 state 防 CSRF；会用 scope 做最小授权，并给出 access/refresh 令牌在 Web、移动端各自的安全存储方案。
 
 ## 一、PKCE：给授权码加一道"只有原始发起者能解的锁"

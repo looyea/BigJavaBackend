@@ -1,7 +1,7 @@
 # OAuth2/JWT 集成与 CSRF、方法级安全落地（关联）
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 Spring Security 从"能登录"推进到"资源服务正确校验令牌 + 权限点落到方法 + 无状态下想清楚 CSRF"。**OAuth2 资源服务器（resource server）** 用 `oauth2ResourceServer()` 校验访问令牌：要么**本地用 JWT 自包含校验**（配 `jwk-set-uri` 拿授权服务器公钥验签、校验 iss/aud/exp、把 claim 映射成权限），要么**走 Token Introspection** 调授权服务器内省（适合可吊销的不透明令牌）。**方法级安全**用 `@EnableMethodSecurity` + `@PreAuthorize("hasAuthority(...)"/hasRole/spel)` 把权限点收敛到方法，比只靠 URL 匹配更细。**CSRF** 只在"浏览器自动携带的 Cookie 会话"下才需要防护；纯 `Bearer Token`（前端存 localStorage/手动带 `Authorization` 头）的无状态 API，攻击者无法让浏览器自动附带该头，可安全关闭 CSRF——但一旦混用 Cookie 就必须开、且要正确配置 Token 仓库。要点：JWT 验签靠公钥不是密钥、别把对称密钥下发到资源服务；`hasRole('ADMIN')` 实际比对 `ROLE_ADMIN`，与 claim 里的权限命名要对齐；令牌放 Redis 黑名单可补 JWT"签发后难吊销"的短板。识破"资源服务器用对称密钥验签把密钥泄露到各服务""无状态 API 却硬开 CSRF 又没配 Token 仓库导致 POST 全 403""`@PreAuthorize` 用了却没 `@EnableMethodSecurity` 静默失效""JWT 过期就以为安全、却忘了服务端无法主动吊销"等坑。
 
 ## 一、资源服务器：JWT 本地自校验
@@ -49,4 +49,4 @@ Cookie 会话(浏览器自动带) ──▶ 必须开 CSRF, 否则跨站伪造�
 
 ## 五、关联课程
 
-安全过滤器链里 `BearerTokenAuthenticationFilter`、CSRF 过滤器等的执行次序见 [安全过滤器链执行顺序](../s1/S1-1-Lesson.md)；Authorities 如何从认证对象流到授权决策、权限模型设计承接 [认证授权模型与权限设计](../s1/S1-2-Lesson.md)；令牌传输必须走 HTTPS/TLS、字段级加密与合规落地见 [HTTPS/TLS、脱敏与合规落地](../../data-security/s1/S1-3-Lesson.md)；令牌防篡改与接口签名、防重放的取舍见 [接口签名、防重放与 KMS](../../data-security/s1/S1-2-Lesson.md)。
+安全过滤器链里 `BearerTokenAuthenticationFilter`、CSRF 过滤器等的执行次序见 [安全过滤器链执行顺序](../s1/S1-1-Lesson.md)；Authorities 如何从认证对象流到授权决策、权限模型设计承接 [认证授权模型与权限设计](../s1/S1-2-Lesson.md)；令牌传输必须走 HTTPS/TLS、字段级加密与合规落地见 [HTTPS/TLS、脱敏与合规落地（关联）](../../data-security/s1/S1-3-Lesson.md)；令牌防篡改与接口签名、防重放的取舍见 [接口签名、防重放与 KMS](../../data-security/s1/S1-2-Lesson.md)。

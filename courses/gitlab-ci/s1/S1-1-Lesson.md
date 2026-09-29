@@ -1,7 +1,7 @@
 # 流水线模型：Stage/Job/Script 与 Runner
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能用 .gitlab-ci.yml 表达 Stage/Job 分层与 needs DAG 依赖，会用 rules 控制自动/手动执行，理解 Runner 与 executor（shell/docker）的选型差异，能看懂一次流水线从入队到执行的完整链路。
 
 ## 一、骨架：Stage 定序，Job 是执行单元

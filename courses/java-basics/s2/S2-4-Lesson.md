@@ -1,7 +1,7 @@
 # 数值精度、日期时间与字符编码
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：彻底告别三大会毁线上的基础坑——① 金额用 `double` 算错账、② 用旧的 `Date/Calendar/SimpleDateFormat`（线程不安全、时区/夏令时算错）、③ 编码不一致导致的乱码。掌握 `BigDecimal` 正确构造与舍入、`java.time` 的Instant/本地时间/带区时间三分法与 UTC 存储策略、UTF-8 与 UTF-16 `char` 的关系及 `String.length()` 陷阱。
 
 ## 一、金额与精度：BigDecimal（★★★★★）

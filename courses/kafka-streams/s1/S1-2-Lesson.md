@@ -1,7 +1,7 @@
 # 状态存储、精确一次与与 Flink 对比（关联）
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能讲清 Kafka Streams 状态存储（State Store）的类型（KeyValue / Window / Session）、本地 RocksDB 与 changelog 的关系、Interactive Queries 就近读状态；掌握三种处理语义 at-least-once、以及基于 Kafka 事务的 effectively-once(EOS) 的实现原理与代价；能用 Processor API 写自定义有状态算子；并能在"库 vs 引擎"的维度上把 KS 与 Flink 在状态规模、EOS、再平衡、适用边界上做选型论证。
 
 ## 一、状态存储：类型与就近查询

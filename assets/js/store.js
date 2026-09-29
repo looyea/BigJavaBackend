@@ -17,6 +17,9 @@ function save() {
   localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
 }
 
+/** 本机是否已有作答记录（播种 progress.md 前的判据，不能拿整个 localStorage 是否非空来判） */
+export const hasLocalProgress = () => localStorage.getItem(LS_PROGRESS) !== null;
+
 /* ---------- 状态查询 ---------- */
 
 export const sectionRecord = (sec) => progress[secKey(sec)] || null;
@@ -59,7 +62,8 @@ export function siteStats() {
     const s = pkgStats(p.id);
     total += s.total; done += s.done;
   });
-  return { total, done, sections: Object.keys(progress).filter((k) => progress[k].passed).length };
+  /* 只统计仍存在于骨架中的小节：旧进度文件里被删除的小节不应虚增全站过关数 */
+  return { total, done, sections: Object.keys(progress).filter((k) => progress[k].passed && INDEX.section[k]).length };
 }
 
 /* ---------- 过关写入 ---------- */

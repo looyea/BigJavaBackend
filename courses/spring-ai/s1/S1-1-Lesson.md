@@ -1,7 +1,7 @@
 # ChatClient、Prompt 模板与结构化输出
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：理解 Spring AI 用 `ChatClient` 统一多家大模型 API 的抽象价值；会用 `Prompt`/`PromptTemplate` 组织系统/用户/上下文消息；掌握把模型自由文本输出**稳定映射为 Java POJO**（结构化输出）的机制与坑。
 
 ## 一、Spring AI 的定位：AI 应用的 Spring 化抽象

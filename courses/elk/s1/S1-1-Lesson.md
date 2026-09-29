@@ -1,7 +1,7 @@
 # ELK 组件与数据流
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能说清 E/L/K 与 Beats 各自的职责边界，画出一条日志从应用磁盘到 Kibana 检索的完整数据流，理解 ES 写入的"近实时"机理，并识别采集链路里的典型配置错误。
 
 ## 一、四个角色各管什么
@@ -68,4 +68,4 @@ output.elasticsearch:
 
 ## 六、关联技术
 
-索引滚动与冷热见下一节 [ILM 与冷热架构](S1-2-Lesson.md)；倒排索引原理在 [Elasticsearch s1-1](../../elasticsearch/s1/S1-1-Lesson.md)；全文索引 vs 标签索引的取舍在 [ELK vs Loki](S1-3-Lesson.md)。
+索引滚动与冷热见下一节 [索引生命周期 ILM 与冷热架构](S1-2-Lesson.md)；倒排索引原理在 [Elasticsearch s1-1](../../elasticsearch/s1/S1-1-Lesson.md)；全文索引 vs 标签索引的取舍在 [ELK vs Loki：全文索引取舍（关联）](S1-3-Lesson.md)。

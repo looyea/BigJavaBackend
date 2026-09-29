@@ -1,7 +1,7 @@
 # Service 四种类型、Ingress 与 DNS
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：掌握 ClusterIP/NodePort/LoadBalancer/Headless 四种 Service 的适用边界，理解 Ingress 的七层入口模型与 kube-proxy 数据路径，能解释集群内 DNS 名称解析全过程。
 
 ## 一、Service：给"牛马 Pod"一个稳定门牌

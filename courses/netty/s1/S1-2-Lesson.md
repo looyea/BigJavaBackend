@@ -1,4 +1,8 @@
-# Reactor 模式：从单线程到主从多 Reactor · 讲义
+# Reactor 模式：从单线程到主从多 Reactor
+
+> 本节难度：★★★☆☆
+> 重要程度：★★★★☆
+> 学习产出：Reactor 与 Proactor 的分界、单线程/线程池/主从三层模型的责任切分，Netty 与 Redis/Nginx 模型对比，以及“为什么一个 Channel 只能绑一个 EventLoop”。
 
 > 上一节（s1-1）我们得到结论：高并发网络的事实标准是"IO 多路复用（epoll）"。但多路复用只解决"**一个线程怎么同时盯很多 fd**"，它把"谁就绪了"告诉你之后，**接下来谁来 accept、谁来读、谁来算、谁来写、怎么编排这些角色** —— 这就是本节 Reactor 要回答的。Reactor 是 Netty、Redis、Nginx、Node.js、gRPC 共同的线程骨架。（重要度 4/5，重点标准）
 

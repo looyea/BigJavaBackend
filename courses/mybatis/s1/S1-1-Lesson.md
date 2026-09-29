@@ -1,7 +1,7 @@
 # MyBatis 执行流程与一级二级缓存
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：掌握 MyBatis 从 SqlSessionFactory → SqlSession → Executor → StatementHandler → ResultSetHandler 的完整执行链路，以及一级/二级缓存的作用域、失效规则与生产陷阱。
 
 ## 一、整体架构与核心组件

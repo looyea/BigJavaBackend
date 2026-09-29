@@ -1,7 +1,7 @@
 # 插件机制与拦截器实战
 
 > 本节难度：★★★★★
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能吃透 MyBatis 插件（Interceptor）的运行机制并手写实用的分页/多租户插件。MyBatis 只在四个对象上开放了可拦截的"接缝"，即 **四大拦截点**：`Executor`（update/query/flushCache，缓存与调度层）、`StatementHandler`（prepare/parameterize/batch，SQL 语句准备）、`ParameterHandler`（setParameters，参数设值）、`ResultSetHandler`（handleResultSets，结果映射）。拦截器实现 `Interceptor`（`intercept`/`plugin`/`setProperties`）+ `@Intercepts({@Signature(type,method,args)})` 声明拦谁、拦哪个方法；`plugin()` 里用 `Plugin.wrap(target, this)` 生成**动态代理**把目标层层包起来，多个插件按配置顺序**责任链式**从外到内嵌套。手写分页插件的典型做法：拦 `Executor.query`，取出原 `BoundSql` 与 `RowBounds`，改写 SQL 追加 `LIMIT ? OFFSET ?`（或用 `StatementHandler.prepare` 改语句）、先跑 count 再跑数据查询；多租户插件则在 SQL 上自动拼接 `tenant_id = ?` 条件。要理解 **`intercept` 里 Invocation 的 proceed 机制**、属性注入 `setProperties`、以及"改 SQL 要处理 count 与 order by、别名、子查询"的边界。MyBatis-Plus 的分页/多租户/乐观锁/防全表更新都是这套拦截器机制的工业级实现。识破"忘写 @Signature 拦截不生效""直接字符串拼 LIMIT 未参数化注入风险""分页未先关原 order by 导致 count 慢""插件顺序错让结果被覆盖"等坑。
 
 ## 一、四大拦截点与责任链

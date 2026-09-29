@@ -1,7 +1,7 @@
 # 与 ELK 选型对比（关联）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能从 Loki 视角系统对比两套栈的运维心智、查询范式与成本模型，判断一类日志该进哪条管道，并给出"从 ELK 迁移到 Loki（或双栈并存）"的落地方法。
 
 ## 一、同一枚硬币的两面
@@ -62,4 +62,4 @@ output:
 
 ## 六、关联技术
 
-Loki 内部机制见 [架构与标签模型](S1-1-Lesson.md)、[LogQL 与 Grafana](S1-2-Lesson.md)；ELK 侧成本与全文能力的细节在 [ELK 组件与数据流](../../elk/s1/S1-1-Lesson.md)、[ILM 与冷热](../../elk/s1/S1-2-Lesson.md)；ES 全文索引原理深挖在 [Elasticsearch 倒排索引](../../elasticsearch/s1/S1-1-Lesson.md)。
+Loki 内部机制见 [Loki 架构与标签模型](S1-1-Lesson.md)、[LogQL 与 Grafana 集成](S1-2-Lesson.md)；ELK 侧成本与全文能力的细节在 [ELK 组件与数据流](../../elk/s1/S1-1-Lesson.md)、[索引生命周期 ILM 与冷热架构](../../elk/s1/S1-2-Lesson.md)；ES 全文索引原理深挖在 [Elasticsearch 倒排索引](../../elasticsearch/s1/S1-1-Lesson.md)。

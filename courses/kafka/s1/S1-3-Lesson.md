@@ -1,7 +1,7 @@
 # 可靠性语义、幂等与消息不丢不重
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：能把 Kafka 的"消息不丢不重"拆成**生产端 acks、broker 副本、消费端提交时机**三段链路的乘积，并理解端到端语义的现实取舍。生产端 `acks=0`（不等待，吞吐最高但 leader 挂就丢）、`acks=1`（leader 落盘即确认，leader 崩溃且未同步给 follower 则丢）、`acks=all/-1`（等 **ISR** 全部确认）——但 `-1` 只有在 broker 侧 **`min.insync.replicas>=2` 且 `replication.factor>=3`** 时才真正防丢：否则 ISR 缩到 1 时 `all` 形同虚设，或 broker 直接抛 `NotEnoughReplicasException` 拒写（宁可暂时不可用也不丢数据）；`unclean.leader.election.enable=false` 禁止落后太多的非 ISR 副本上位当 leader，用可用性换数据不丢。**幂等 Producer**（`enable.idempotence=true`，新版默认开）给每个 partition 的消息带 producer 单调 **sequence**，broker 据此去重，专门解决**重试导致的分区内重复**（把 network 重试产生的 at-least-once 收敛成分区内 exactly-once），约束是 `acks=all`、`retries` 大、`max.in.flight.requests<=5`。跨分区、"消费-处理-生产"原子的 **exactly-once（EOS）** 要靠**事务**（`transactional.id` + read-process-write）。消费端"不丢"靠 `enable.auto.commit=false` 的**先处理再手动提交 offset**；一旦处理失败就不提交、让消息重投，而重投必然带来重复，于是**消费幂等**（业务唯一键/去重表/`upsert`）是兜底。工业常态取舍：与其追高成本的全链路 EOS，不如 **生产幂等/至少一次 + 消费幂等** 逼近 effectively-once。识破"只设 `acks=-1` 不管 `min.insync.replicas`""auto.commit 处理前提交→处理失败消息永久丢""以为幂等 Producer 能跨分区去重""消费不幂等遇重投重复扣款/重复发货"等坑——金融支付事件、电商订单状态流、电力告警链路尤其致命。
 
 ## 一、acks 与副本：不丢的地基

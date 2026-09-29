@@ -2,23 +2,51 @@
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function inline(s) {
+/**
+ * 站内相对 .md 链接 → hash 路由。
+ * 以当前课文路径为基准做纯词法解析（只处理 ./ 与 ../），再按
+ * courses/<课程包>/<阶段>/<小节编号-种类>.md 的命名规则还原为 #/sec/包/阶段/小节[/种类]，
+ * 使跨课程互链打开的是渲染后的课程页，而不是裸 Markdown 源文件。
+ * 识别不了（外链、图片、非四件套命名）返回 null，交回默认链接逻辑。
+ */
+function internalRoute(href, srcPath) {
+  const path = String(href).split('#')[0];
+  if (!/\.md$/i.test(path) || /^[a-z][a-z0-9+.-]*:/i.test(path)) return null;
+  const segs = (srcPath ? srcPath.split('/').slice(0, -1) : []).concat(path.split('/'));
+  const abs = [];
+  for (const s of segs) {
+    if (!s || s === '.') continue;
+    if (s === '..') abs.pop(); else abs.push(s);
+  }
+  const file = /^([Ss]\d+-\d+)-(Lesson|Quiz|Homework|Interview)\.md$/i.exec(abs[abs.length - 1] || '');
+  const stage = abs[abs.length - 2], pkg = abs[abs.length - 3];
+  if (!file || !stage || !pkg) return null;
+  const kind = file[2].toLowerCase();
+  return `#/sec/${pkg.toLowerCase()}/${stage.toLowerCase()}/${file[1].toLowerCase()}${kind === 'lesson' ? '' : '/' + kind}`;
+}
+
+function inline(s, srcPath) {
   let out = esc(s);
-  out = out.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
-  // 先处理加粗：非贪婪匹配，允许内文包含 *（如 **`count(*)` 不等于 ..**）
+  const code = [];                    // 行内代码先摘出，避免其中的 * [ ] ( ) 被后续规则二次改写
+  out = out.replace(/`([^`]+)`/g, (_, c) => `\u0000${code.push(`<code>${c}</code>`) - 1}\u0000`);
+  // 加粗：非贪婪匹配，允许内文包含 *（如 **`count(*)` 不等于 ..**）
   out = out.replace(/\*\*([^*]*(?:\*(?!\*)[^*]*)*)\*\*/g, '<strong>$1</strong>');
   out = out.replace(/(^|[^*<])\*([^*<>]+)\*/g, '$1<em>$2</em>');
-  out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-  out = out.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img alt="$1" src="$2">');
-  return out;
+  out = out.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img alt="$1" src="$2">');   // 图片必须先于链接，否则只剩一个裸感叹号加文字链接
+  out = out.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, href) => {
+    const route = internalRoute(href, srcPath);
+    if (route) return `<a href="${route}">${t}</a>`;
+    return `<a href="${href.replace(/"/g, '%22')}" target="_blank" rel="noopener">${t}</a>`;
+  });
+  return out.replace(/\u0000(\d+)\u0000/g, (_, i) => code[+i]);
 }
 
 function splitRow(line) {
   return line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim());
 }
 
-/** 行内 Markdown（题干、选项、解析等短文本用） */
-export const renderInline = inline;
+/** 行内 Markdown（题干、选项、解析等短文本用，不涉及站内课文链接） */
+export const renderInline = (s) => inline(s);
 
 /** 去掉正文首部的一级标题，页面头部由课程目录统一提供，避免重复 h1 */
 export function stripTitle(md) {
@@ -30,7 +58,8 @@ export function stripTitle(md) {
   return lines.join(NL);
 }
 
-export function renderMarkdown(md) {
+/** md 为正文，srcPath 为这份正文的来源文件路径（用于把站内相对链接换算成路由） */
+export function renderMarkdown(md, srcPath) {
   const lines = md.replace(/\r\n/g, '\n').split('\n');
   const html = [];
   let i = 0;
@@ -54,7 +83,7 @@ export function renderMarkdown(md) {
       const lv = h[1].length;
       const txt = h[2].trim();
       const id = `h-${anchor++}`;
-      html.push(`<h${lv} id="${id}">${inline(txt)}</h${lv}>`);
+      html.push(`<h${lv} id="${id}">${inline(txt, srcPath)}</h${lv}>`);
       i++;
       continue;
     }
@@ -70,7 +99,7 @@ export function renderMarkdown(md) {
     if (/^\s*>\s?/.test(line)) {                      // 引用块：保留源文件换行，每行独立展示（难度/重要性/学习产出等各占一行）
       const buf = [];
       while (i < lines.length && /^\s*>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^\s*>\s?/, '')); i++; }
-      html.push(`<blockquote>${buf.map((t) => (t.trim() ? inline(t) : '<br>')).join('<br>')}</blockquote>`);
+      html.push(`<blockquote>${buf.map((t) => (t.trim() ? inline(t, srcPath) : '<br>')).join('<br>')}</blockquote>`);
       continue;
     }
 
@@ -80,8 +109,8 @@ export function renderMarkdown(md) {
       const rows = [];
       while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { rows.push(splitRow(lines[i])); i++; }
       html.push(
-        '<table><thead><tr>' + head.map((c) => `<th>${inline(c)}</th>`).join('') + '</tr></thead><tbody>' +
-        rows.map((r) => '<tr>' + r.map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') +
+        '<table><thead><tr>' + head.map((c) => `<th>${inline(c, srcPath)}</th>`).join('') + '</tr></thead><tbody>' +
+        rows.map((r) => '<tr>' + r.map((c) => `<td>${inline(c, srcPath)}</td>`).join('') + '</tr>').join('') +
         '</tbody></table>'
       );
       continue;
@@ -93,7 +122,7 @@ export function renderMarkdown(md) {
       while (i < lines.length && /^\s*[-*+]\s+(.*)$/.test(lines[i])) {
         buf.push(lines[i].replace(/^\s*[-*+]\s+/, '')); i++;
       }
-      html.push('<ul>' + buf.map((t) => `<li>${inline(t)}</li>`).join('') + '</ul>');
+      html.push('<ul>' + buf.map((t) => `<li>${inline(t, srcPath)}</li>`).join('') + '</ul>');
       continue;
     }
 
@@ -103,7 +132,7 @@ export function renderMarkdown(md) {
       while (i < lines.length && /^\s*\d+[.)]\s+(.*)$/.test(lines[i])) {
         buf.push(lines[i].replace(/^\s*\d+[.)]\s+/, '')); i++;
       }
-      html.push('<ol>' + buf.map((t) => `<li>${inline(t)}</li>`).join('') + '</ol>');
+      html.push('<ol>' + buf.map((t) => `<li>${inline(t, srcPath)}</li>`).join('') + '</ol>');
       continue;
     }
 
@@ -114,7 +143,7 @@ export function renderMarkdown(md) {
       && !/^(#{1,6}\s|\s*[-*+]\s|\s*\d+[.)]\s|\s*>|\s*```|\s*\|)/.test(lines[i])) {
       buf.push(lines[i]); i++;
     }
-    html.push(`<p>${inline(buf.join(' '))}</p>`);
+    html.push(`<p>${inline(buf.join(' '), srcPath)}</p>`);
   }
 
   return { html: html.join('\n'), headings: collectHeadings(md) };

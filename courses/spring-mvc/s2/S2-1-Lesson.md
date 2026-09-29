@@ -1,7 +1,7 @@
 # REST 设计、全局异常与统一返回
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能设计符合资源语义、幂等、可版本演进的 REST API；用 `@RestControllerAdvice` 建立分层的全局异常处理与统一错误契约；理解 RFC 7807 Problem Details 并在 Spring 6 里落地。
 
 ## 一、REST 的资源建模：URL 是名词，动作是 HTTP 动词

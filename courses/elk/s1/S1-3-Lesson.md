@@ -1,7 +1,7 @@
 # ELK vs Loki：全文索引取舍（关联）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能从索引原理层面解释两套系统的成本/性能差异，用一天的日志量把两边的资源账算出来，给出"什么日志进 ELK、什么日志进 Loki、什么时候双写"的决策框架。
 
 ## 一、分野只有一句话
@@ -63,4 +63,4 @@ level:ERROR AND app:payment-gateway AND message:"connection timeout"
 
 ## 六、关联技术
 
-Loki 的标签模型与 LogQL 细节在 [Loki s1-1/s1-2](../../loki/s1/S1-1-Lesson.md)；ELK 侧成本来源在 [ILM 与冷热](S1-2-Lesson.md)；结构化日志（JSON 字段一致性）是两边共同的地基，见 [ELK 组件与数据流](S1-1-Lesson.md) 作业 2。
+Loki 的标签模型与 LogQL 细节在 [Loki s1-1/s1-2](../../loki/s1/S1-1-Lesson.md)；ELK 侧成本来源在 [索引生命周期 ILM 与冷热架构](S1-2-Lesson.md)；结构化日志（JSON 字段一致性）是两边共同的地基，见 [ELK 组件与数据流](S1-1-Lesson.md) 作业 2。

@@ -1,7 +1,7 @@
 # 网关限流、熔断与统一认证
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：在 SCG 上落地 RequestRateLimiter 限流、Sentinel 熔断和 OAuth2/JWT 统一认证。
 
 ## 一、RequestRateLimiter 限流

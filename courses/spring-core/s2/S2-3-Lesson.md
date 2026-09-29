@@ -1,7 +1,7 @@
 # Spring 事件机制与初始化回调
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能区分并使用 Spring 的两类"时机钩子"——**事件机制**（`ApplicationEvent` + `@EventListener`，配合 `ApplicationEventPublisher` 解耦"发生了某事"与"谁关心"，支持 `@Async` 异步、`@Order` 排序、`@TransactionalEventListener` 绑定事务阶段）与**初始化回调**（`@PostConstruct`、`InitializingBean.afterPropertiesSet`、`@Bean(initMethod)` 三种，语义与优先级要分清），并理解容器生命周期事件（`ContextRefreshedEvent`/`ApplicationReadyEvent`）适合做预热、注册、启动自检。关键取舍：事件默认**同步**且在发布者同一线程、同一事务上下文执行，滥用 `@TransactionalEventListener(phase=AFTER_COMMIT)` 才做提交后异步；初始化回调里不要依赖尚未注入完成的兄弟 bean。识破"用事件做同步阻塞把主链路拖慢""在 @PostConstruct 里访问未就绪的 bean""事件监听器抛异常把业务回滚"等坑。
 
 ## 一、事件机制：发布/订阅解耦

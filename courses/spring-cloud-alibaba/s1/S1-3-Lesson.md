@@ -1,7 +1,7 @@
 # SCA 落地与自建/开源选型边界（关联）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把"要不要用 Spring Cloud Alibaba、还是留在 Netflix 栈、还是自建中间件"从技术信仰拉回到**成本、合规、团队能力**的工程决策。先认清 **Spring Cloud Netflix 的现状**：Hystrix 已停止维护、Eureka/Ribbon/Zuul 1.x 进入维护模式，官方栈转向 Spring Cloud Gateway（替 Zuul）、Spring Cloud LoadBalancer（替 Ribbon）、Spring Cloud CircuitBreaker + Resilience4j（替 Hystrix），Spring Sleuth 也并入 Micrometer Tracing——继续抱旧 Netflix 件等于背技术债。**SCA 的一体化优势**是 Nacos（注册+配置）、Sentinel（流控/熔断）、Seata（分布式事务）、Dubbo（调用）出自同一体系、与阿里生态和国产云亲和，落地时**用 SCA BOM 把 Boot/Cloud/Alibaba 三套版本锁在官方兼容矩阵上**，避免混合栈运行期类冲突。**自建 vs 开源的 ROI 边界**：自研注册中心/配置中心/限流框架看似可控，但要养专门团队、造监控与故障排查、扛稳定性事故，除非有强定制/极致规模/合规隔离诉求，多数公司 **ROI 为负**；成熟开源组件胜在社区、生态、可招聘、文档全，代价是必须吃透运维。**国产化（信创）与运维成本是落地的关键变量**：国产栈（Nacos/Sentinel/Seata/Dubbo 均源自国内）在信创合规、与国产中间件/云适配上更顺，中文社区与招聘也更易；反之全球化团队、跨云一致性诉求下可能倾向国际主流栈。决策矩阵：阿里系/国内团队优先 SCA；已在 Netflix 老栈的先评估迁移成本、用 Gateway/LoadBalancer/Resilience4j 替换停滞件；只有确有强定制能力与诉求的超大厂才考虑部分自建。识破"无脑追新栈不核算迁移成本""把选型当信仰而非权衡""BOM 版本不对齐导致混合栈冲突""小团队硬上自研中间件拖垮业务迭代"等坑——电力/政务信创项目、金融自主可控、电商快速交付，各自的最优解并不相同。
 
 ## 一、版本对齐：落地第一道坎

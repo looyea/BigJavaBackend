@@ -1,7 +1,7 @@
 # 大 Key、热 Key 与内存治理
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：大 Key 与热 Key 是两码事——**大 Key**（单 key 体积/元素数超限）伤害的是"一次操作的耗时"（单线程 O(n) 命令卡住所有人 + 网络传输 + fork/COW 放大），**热 Key**（单 key QPS 超限）伤害的是"一个分片的容量"（Cluster 下打到单节点）。掌握两类的**发现**（`--bigkeys`/`MEMORY USAGE`/`--hotkeys`(LFU)/客户端与代理统计）与**治理**（拆分、UNLINK 异步删、多副本打散、本地缓存）；内存侧建立 **maxmemory + 8 种淘汰策略**（近似 LRU 采样与 LFU 衰减）、**mem_fragmentation_ratio 与 active defrag**、**KEYS 禁用 SCAN 替**的完整纪律。
 
 ## 一、大 Key：单线程的"一将无能累死三军"（★★★★★）

@@ -1,7 +1,7 @@
 # 用容器替代内存桩与数据准备
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：理解 Testcontainers 用真实中间件容器替代 H2/内存桩的价值与代价，能用 `@Container`/单例容器写可复现的集成测试，并掌握 CI 里跑得动它的工程前提。
 
 ## 一、为什么内存桩会骗过你
@@ -89,4 +89,4 @@ Testcontainers 要在 CI 里真能起容器，工程门槛别忽略：
 
 ## 六、关联技术
 
-`@DynamicPropertySource`/切片测试依赖 [JUnit 5 架构](../../junit/s1/S1-1-Lesson.md) 与 [Mockito 与 Spring 切片](../../mockito/s1/S1-4-Lesson.md)；容器编排背景在 [Kubernetes](../../kubernetes/s1/S1-1-Lesson.md)；什么时候该用真容器、什么时候内存桩够用，取舍见 [JUnit 与协同](../../junit/s1/S1-4-Lesson.md)。
+`@DynamicPropertySource`/切片测试依赖 [JUnit 5 架构、生命周期与断言](../../junit/s1/S1-1-Lesson.md) 与 [Mockito 与 Spring 切片](../../mockito/s1/S1-4-Lesson.md)；容器编排背景在 [Kubernetes](../../kubernetes/s1/S1-1-Lesson.md)；什么时候该用真容器、什么时候内存桩够用，取舍见 [JUnit 与协同](../../junit/s1/S1-4-Lesson.md)。

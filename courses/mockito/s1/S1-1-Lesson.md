@@ -1,7 +1,7 @@
 # Mock/Spy/Stub 与 when/verify
 
 > 本节难度：★★☆☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：分清 Mock/Stub/Spy 三种替身的意图差异，会用 `when/thenReturn/thenThrow` 打桩、`verify` 校验交互，避开"matcher 混用裸值"与"对 spy 用 when() 触发真实方法"两大高频异常。
 
 ## 一、三种替身，两种意图

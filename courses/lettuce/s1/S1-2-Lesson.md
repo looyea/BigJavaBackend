@@ -1,7 +1,7 @@
 # 连接池、Cluster/Sentinel 与异步/响应式 API
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：给"共享单连接"划出**需要用池/多条连接的边界**（多 EventLoop 分摊、阻塞/事务会话、Spring `POOL` 模式），并会用 commons-pool2 正确配 `GenericObjectPoolConfig`；掌握 **`RedisClusterClient`** 的用法与两大坑（拓扑刷新滞后于 failover、MOVED/ASK 由客户端透明处理）及 **Sentinel 支持**（`RedisURI` 直配 master 名，主从切换自动跟随）；建立 **sync / async(CompletableFuture) / reactive(Reactive Streams)** 三套 API 的心智模型与组合技巧（pipeline 用 async、WebFlux 栈用 reactive）。落点在 Spring Boot 的 `spring.data.redis` 配置项与 Lettuce 参数的对应关系。
 
 ## 一、什么时候真的需要"池"（★★★★☆）

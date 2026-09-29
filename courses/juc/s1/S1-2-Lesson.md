@@ -1,7 +1,7 @@
 # volatile 与原子类
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：把上一节的 JMM 落到两个最常用工具上——**volatile 的确切语义**（可见性 + 禁重排，但**不保证复合原子性**）与**原子类的 CAS 机制**；理解 `Unsafe`/`VarHandle`、**ABA 问题及其解法（版本号 `AtomicStampedReference`）**、以及高并发计数为何用 **LongAdder 的分段（base + Cell[]）** 而非 AtomicInteger。能准确回答"volatile 能保证原子性吗"这道必考题。
 
 ## 一、volatile 的两条硬保证（★★★★★）

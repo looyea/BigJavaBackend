@@ -1,7 +1,7 @@
 # 分区、副本与 ISR 机制
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：理解 Kafka 日志分段存储、Partition/Replica/ISR 三者关系，能根据 acks 和 min.insync.replicas 权衡可靠性与吞吐。
 
 ## 一、存储结构

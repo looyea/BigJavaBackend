@@ -1,7 +1,7 @@
 # Claims、刷新与算法攻击防护
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：记牢注册 claims（iss/sub/aud/exp/nbf/iat/jti）与私有 claims 的边界，设计合理的 access/refresh 双令牌刷新与轮换；能逐一识破并防御 `alg=none`、RS/HS 算法混淆、密钥误用、`kid` 注入等经典 JWT 攻击。
 
 ## 一、Claims：三类字段各司其职

@@ -1,7 +1,7 @@
 # 派生查询、自定义仓储与事务边界
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 Spring Data JPA 的仓储能力组织成"派生查询打底、动态条件补强、Fragment 兜底、事务边界收口"的四层结构。仓储方法有**三种来源**：①**方法名派生**——`findByStatusAndCreatedAfter` 被解析成谓词，关键字（`OrderBy`/`After`/`Between`/`In`）拼错或属性名对不上会启动即报错；②**`@Query`**——JPQL（用**实体/属性名**不是表/列名）或 `nativeQuery=true` 原生 SQL，配 `@Param` 命名参数，写操作加 `@Modifying` 并用 `clearAutomatically`/`flushAutomatically` 避免一级缓存读到旧值；③**投影**（接口/DTO 只取需要的列）。多可选筛选用 **Specification**（Criteria API 组合 `Predicate`、`JpaSpecificationExecutor`）或 **Example**（按实体样例 + `ExampleMatcher` 忽略大小写/空值）动态拼装，杜绝"每种组合写一个方法"。**Fragment 自定义仓储**：声明 `OrderRepositoryCustom` + 实现类 `OrderRepositoryImpl`（Bean 名必须=接口名+`Impl`），把 `EntityManager` 手写逻辑并入同一 `Repository`。事务边界：`SimpleJpaRepository` 类级 `@Transactional(readOnly=true)`、写方法覆盖为可写——`readOnly` 抑制 flush 但脏检查仍在，别把写放在只读事务里；**OSIV**（`spring.jpa.open-in-view=true` 是默认）让懒加载在视图渲染期也能触发，表面"不报错"实则把 N+1 与连接占用拖到最外层，应关闭。识破"方法名拼错启动失败""`@Modifying` 漏事务抛 `TransactionRequiredException`""OSIV 掩盖 `LazyInitializationException` 让 N+1 在页面渲染才暴露"等坑。
 
 ## 一、仓储方法的三种来源

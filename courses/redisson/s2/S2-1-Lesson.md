@@ -1,7 +1,7 @@
 # 分布式对象与远程服务
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 Redisson 从"分布式锁工具"升级为"**分布式数据结构框架**"来使用——用 `RMap`/`RSet`/`RSortedSet`/`RQueue`/`RDeque`/`RBlockingQueue`/`RTopic`（发布订阅）/`RAtomicLong`/`RBitSet` 等把 Redis 能力封装成 Java 集合语义，理解它们**背后的数据结构、网络往返与一致性代价**（多数非原子、跨命令靠 Lua 保证）；用 `RLocalCachedMap` 做"本地 + Redis"两级缓存并处理失效广播；用 `RemoteService`/`RRemoteCallable` 把方法调用/异步任务下发到别的 JVM 执行。核心取舍：分布式对象**便捷但有隐藏成本**——每次操作都可能是一次网络往返、大集合会退化成多次命令、序列化（Codec）开销与兼容性必须评估；不要用 `RMap` 存海量数据当"无限内存哈希"。识破"把 RMap 当本地 HashMap 疯狂 `entrySet()` 全量拉取""RRemoteCallable 传大对象/依赖类不一致""本地缓存不设失效导致脏读"等坑。
 
 ## 一、分布式集合：语义像集合，成本像网络

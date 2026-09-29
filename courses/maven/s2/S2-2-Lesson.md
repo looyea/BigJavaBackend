@@ -1,7 +1,7 @@
 # 私服 Nexus、mirror 与 settings.xml
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：会配 settings.xml 的镜像/认证/profile，理解 Nexus 代理-宿主-分组三库模型与 release/snapshot 分流，能定私服故障的应急降级预案。
 
 ## 一、settings.xml：机器级配置的家

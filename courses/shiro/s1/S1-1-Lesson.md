@@ -1,7 +1,7 @@
 # Realm 与权限粒度设计
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★☆☆☆
+> 重要程度：★★☆☆☆
 > 学习产出：能画出 Subject → SecurityManager → Realm 的三段架构，写对 `user:create` 式权限串与通配表达式；理解 Shiro 自带的授权缓存与 SessionDAO 集群化方案，并给出 Shiro 与 Spring Security 的选型判断。
 
 ## 一、三段架构：Shiro 自己管到 Session

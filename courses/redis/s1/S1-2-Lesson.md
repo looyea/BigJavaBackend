@@ -1,7 +1,7 @@
 # 持久化与高可用架构
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：分清 **RDB（快照，fork+COW，恢复快、会丢数据）与 AOF（追加日志，appendfsync 三档、体积大恢复慢）** 及 7.x **混合持久化**（AOF rewrite 时头部存 RDB 体）；理解 **主从复制**的全量/增量（backlog、replid、`psync2` 断线续传）链路；掌握 **Sentinel 哨兵**（监控/选主/多数派投票自动 failover）解决"主挂了谁来顶"，以及 **Cluster 分槽**（16384 slot、MOVED/ASK 重定向、`CLUSTER SETSLOT IMPORTING/MIGRATING` 迁移）解决"单机容量与写扩展"。落点在金融"缓存可否重建"与电商大集群拓扑取舍。
 
 ## 一、RDB：快照的快与狠（★★★★☆）

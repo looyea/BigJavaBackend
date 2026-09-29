@@ -1,7 +1,7 @@
 # RocketMQ 架构与存储模型
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 RocketMQ 四大组件协作流程、CommitLog 顺序写原理、ConsumeQueue 索引结构与主从/Dledger 高可用方案。
 
 ## 一、四大组件

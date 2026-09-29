@@ -1,7 +1,7 @@
 # Jakarta EE 11 与 Web Profile
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：说清 Jakarta EE 是什么、由谁治理、EE 11 相对 Java EE 的关键变化；分层记住 Core/Web/Full 三档 Profile 各含哪些规范；分清 API 与 SPI；建立"Jakarta 规范 ↔ Spring 技术"的映射表，并能在存量企业（金融/电力大机）与新建互联网系统之间做出选型与迁移判断。
 
 ## 一、Jakarta EE 到底是什么

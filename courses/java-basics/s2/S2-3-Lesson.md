@@ -1,7 +1,7 @@
 # Lambda 与 Stream API
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：认全核心函数式接口（`Function/Consumer/Supplier/Predicate` 及原始类型特化），讲清 Lambda 捕获变量的 effectively-final 约束与 `this` 语义；掌握 Stream 的**惰性求值 / 中间-终端操作 / 只能消费一次**模型；尤其能说清**并行流的陷阱**（共享 ForkJoinPool、副作用、并非到处都快）。这是写现代 Java、读懂 Reactor/WebFlux 的基础。
 
 ## 一、函数式接口：Lambda 的类型（★★★☆☆）

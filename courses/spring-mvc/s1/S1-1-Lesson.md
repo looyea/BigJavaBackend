@@ -1,7 +1,7 @@
 # 请求处理链路与映射机制
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：吃透 `HandlerMapping` 如何把一个 URL 精确匹配到唯一 `HandlerMethod`，包括路径模式比较器（AntPathMatcher / PathPattern）的排序规则；理解拦截器与 `HandlerAdapter` 的分工；能解释"两个映射都匹配时谁赢"。
 > 与 spring-boot 包 S2-2 的分工：Boot 篇讲"九大组件如何被自动装配、请求主干九步"；本节深挖**映射匹配算法本身**——这是 MVC 最容易被忽略却天天踩的内核。
 

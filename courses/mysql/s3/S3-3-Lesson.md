@@ -1,7 +1,7 @@
 # 慢查询治理与 SQL 优化实战
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：建立慢查询治理的**完整闭环**——用**慢日志**（`slow_query_log` / `long_query_time` / `log_queries_not_using_indexes`）+ `pt-query-digest` 找到 TOP 慢 SQL；用**正确姿势读 EXPLAIN**（type / key / rows / filtered / Extra，配合 `ANALYZE TABLE` 修统计）定位慢因；掌握三大高频套路的优化：**深分页**（`LIMIT 大offset` 的"扫描后丢弃"代价 → **延迟关联**与**书签续页**）、**索引失效治理**（呼应 s1-2 逐条复盘 + 排序/分组引发的 `filesort`、`Using temporary`）、**大批量写**（分批提交、`INSERT ... ON DUPLICATE KEY UPDATE`、避免巨事务连带 undo/binlog 膨胀与主从延迟，呼应 s2-2/s3-2）。落点在电商订单列表翻页、对账批量导入等真实场景。
 
 ## 一、慢日志：治理的入口（★★★★☆）

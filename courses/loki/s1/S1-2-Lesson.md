@@ -1,7 +1,7 @@
 # LogQL 与 Grafana 集成
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能写 LogQL 的两类查询（日志流查询与指标查询），用 parser 做字段提取与过滤，在 Grafana 里配置 derived field 实现日志→链路跳转，并基于 LogQL 搭出可用的告警。
 
 ## 一、两类查询一个语法树
@@ -55,9 +55,9 @@ avg_over_time({app="payment-gateway"} | json | level="ERROR" | unwrap duration [
 ## 五、性能与表达力边界
 
 - 宽窗口 + 高扇出 = 超时：用 query-frontend 的 split by interval 自动切片，配合结果缓存（历史时段不可变，缓存友好——这是 Loki 比 ES 天然的优势之一）；
-- 全文能力缺失是模型决定的：`|~` 是逐行正则不是索引；高频"任意词检索"需求要么改日志结构（把关键词变成低基数标签/字段），要么该流迁去 ELK（呼应 [ELK vs Loki](../../elk/s1/S1-3-Lesson.md)）；
+- 全文能力缺失是模型决定的：`|~` 是逐行正则不是索引；高频"任意词检索"需求要么改日志结构（把关键词变成低基数标签/字段），要么该流迁去 ELK（呼应 [ELK vs Loki：全文索引取舍（关联）](../../elk/s1/S1-3-Lesson.md)）；
 - 聚合看板克制使用 unwrap：60 服务 × 全量日志的数值聚合扫描成本会反超预期，业务指标请回 Prometheus。
 
 ## 六、关联技术
 
-标签模型与基数护栏见 [Loki 架构与标签模型](S1-1-Lesson.md)；选型对照见 [与 ELK 选型对比](S1-3-Lesson.md)；日志→Trace 跳转的另一半依赖链路上下文，见 [OpenTelemetry 分布式追踪](../../opentelemetry/s1/S1-1-Lesson.md)（traceId 贯通与采样策略）。
+标签模型与基数护栏见 [Loki 架构与标签模型](S1-1-Lesson.md)；选型对照见 [与 ELK 选型对比（关联）](S1-3-Lesson.md)；日志→Trace 跳转的另一半依赖链路上下文，见 [OpenTelemetry 分布式追踪](../../opentelemetry/s1/S1-1-Lesson.md)（traceId 贯通与采样策略）。

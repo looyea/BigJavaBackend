@@ -1,7 +1,7 @@
 # 索引生命周期 ILM 与冷热架构
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能为日志索引设计一套 ILM 策略（滚动阈值、各阶段动作、冷热分层落点），算清存储成本账，并避开 force merge、shrink 与别名相关的经典事故。
 
 ## 一、为什么日志必须管"生命周期"
@@ -88,4 +88,4 @@ New ──rollover(满足阈值)──→ Hot ──(到期)──→ Warm ─�
 
 ## 六、关联技术
 
-分片与副本机理在 [Elasticsearch s1-3 容量规划](../../elasticsearch/s1/S1-3-Lesson.md)；全文索引成本换来的检索能力如何对标 Loki，见 [ELK vs Loki](S1-3-Lesson.md)；Kibana 侧 Space 与保留合规可结合 Snapshot Lifecycle Management（SLM）做跨集群备份。
+分片与副本机理在 [Elasticsearch s1-3 容量规划](../../elasticsearch/s1/S1-3-Lesson.md)；全文索引成本换来的检索能力如何对标 Loki，见 [ELK vs Loki：全文索引取舍（关联）](S1-3-Lesson.md)；Kibana 侧 Space 与保留合规可结合 Snapshot Lifecycle Management（SLM）做跨集群备份。

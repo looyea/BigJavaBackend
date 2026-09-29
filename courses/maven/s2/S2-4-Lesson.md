@@ -1,7 +1,7 @@
 # 多模块构建、Profile 与 CI 集成
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把一个多模块 Maven 工程在 CI 里"又快又稳"地构建出来。核心概念：**reactor（反应堆）**按依赖拓扑排序聚合模块的构建顺序，`mvn -pl <模块> -am`（--also-make）只构建指定模块及其**上游依赖**、`-amd`（--also-make-dependents）连带下游，实现**增量/定向构建**，避免每次全量。用 **Profile** 按环境（dev/test/prod）注入不同属性、仓库、插件配置，激活方式有 `-P`、`activeByDefault`、按属性/JDK/文件自动触发——但配置尽量留在 POM、把环境差异交给 CI 变量而非散落多份 POM。版本管理用 **`${revision}` 占位 + flatten-maven-plugin** 做全工程版本统一、单点修改。CI 集成的关键工程实践：**本地仓库缓存**（`~/.m2` 用 actions/cache 等缓存）避免每次重下依赖、**并行构建** `-T`、**按变更模块裁剪**构建范围、SNAPSHOT vs Release 仓库策略、失败快速反馈。识破"CI 每次全量构建拖慢反馈""Profile 靠手工 -P 易漏""`${revision}` 未 flatten 导致下游拿到字面量版本""缓存了 SNAPSHOT 造成脏依赖"等坑。
 
 ## 一、reactor 与定向构建

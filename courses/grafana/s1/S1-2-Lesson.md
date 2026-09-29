@@ -1,7 +1,7 @@
 # Dashboard as Code、告警与权限
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：掌握看板 JSON/Provisioning 版本化管理、Grafana 统一告警规则组织，以及组织/文件夹/RBAC 权限模型。
 
 ## 一、Dashboard as Code：看板是代码不是手工活

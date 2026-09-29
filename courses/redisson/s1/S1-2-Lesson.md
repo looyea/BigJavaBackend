@@ -1,7 +1,7 @@
 # RedLock 争议与读写锁/信号量/闭锁
 
 > 本节难度：★★★★★
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：① 讲清 **RedLock（红锁）** 要解决的"主从异步复制丢锁"问题与算法（向 N 个**独立** Redis 实例逐个加锁、过半成功且总耗时 < lease 才算持锁），并**客观呈现 antirez 与 Martin Kleppmann 的世纪论战**（GC 停顿 / 时钟漂移 / 无 fencing token 导致红锁仍不保证互斥），给出"多数业务用不用红锁"的判断；② 掌握 Redisson 另一组同步器：`RReadWriteLock`（读写锁，读读共享、读写互斥）、`RSemaphore`（分布式信号量限并发）、`RCountDownLatch`（分布式闭锁等 N 个任务完成）、`RFairLock`/`RFencedLock`（公平锁与带栅栏令牌的锁）。落到"限流/多步任务编排/防止主从切换丢锁"选型。
 
 ## 一、RedLock：想解决什么、怎么解（★★★★★）

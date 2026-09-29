@@ -1,7 +1,7 @@
 # 并发容器与同步器
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：吃透 **ConcurrentHashMap** 的并发安全机制（CAS + 桶头 `synchronized`、`size` 的 `baseCount + CounterCell` 分散计数——结构本身已在 java-basics s1-3 讲透，这里只补"怎么并发安全"）；分清 **CountDownLatch / CyclicBarrier / Semaphore** 三个同步器的语义边界与选型；了解阻塞队列家族、`CopyOnWriteArrayList`、`ConcurrentLinkedQueue`。
 
 ## 一、ConcurrentHashMap：怎么"并发安全"（★★★★★）

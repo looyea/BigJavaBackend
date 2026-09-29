@@ -1,7 +1,7 @@
 # DSL 拓扑与 KStream/KTable
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能讲清 Kafka Streams 作为"嵌入应用的流处理库"的运行形态与拓扑（SourceProcessor→中间 Processor→Sink 的 DAG）；建立 KStream（事件流，每条是独立记录）与 KTable（变更日志/物化视图，按 key 保留最新值）这对核心抽象及其相互转换（`toStream/toTable/groupByKey`）；用 DSL 的 map/filter/`selectKey`/`groupByKey`/`aggregate`/`join` 表达常见处理，理解本地状态 store 与 changelog topic 的关系，并识破"该用 KTable 却用 KStream 导致重复累加""无 key 的 join/聚合触发全分区 shuffle 或 reprocess"等错误。
 
 ## 一、运行形态：应用进程里的流处理

@@ -1,7 +1,7 @@
 # 注解注入、ArgumentCaptor 与深度 Stub
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：理解 `@Mock/@InjectMocks` 的三种注入门与优先级，能用 `ArgumentCaptor` 对"发出去的消息"做内容断言，掌握 `thenAnswer` 动态打桩与深度 Stub 的正确姿势和它的批判边界。
 
 ## 一、注解注入：MockitoExtension 替你做了什么

@@ -1,7 +1,7 @@
 # 服务发现、Exporter 与长期存储
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 Prometheus 服务发现机制与 relabel 流程、常用 Exporter 体系，以及 remote_write/Thanos/Mimir 长期存储选型。
 
 ## 一、服务发现（SD）：targets 从哪来

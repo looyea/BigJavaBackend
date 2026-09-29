@@ -1,7 +1,7 @@
 # BeanFactory 与 ApplicationContext
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：分得清 `BeanFactory` 与 `ApplicationContext` 的层次与能力差异；知道"容器启动"到底在做什么（定义→注册→实例化）；能解释为什么几乎所有场景都该用 ApplicationContext 而非裸 BeanFactory。
 > 与 spring-boot 包的分工：Boot 包讲"自动装配把容器怎么填好"；本节回到 Spring 本体，讲容器本身的抽象层次与元数据模型。
 

@@ -1,7 +1,7 @@
 # W-TinyLFU 与失效策略
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：本地缓存的第一性问题不是"怎么存"而是"**在有限内存下保留哪些 key**"——即淘汰算法。理解 Caffeine 选用的 **W-TinyLFU**（Window-TinyLFU：一小段 LRU 准入窗 + 主体 SLRU 保护区 + Count-Min Sketch 频率草图做准入决策），说清它相比纯 LRU 如何同时扛住"**突发扫描污染**"和"**频率型热点**"两类负载；掌握 Caffeine 三大容量/失效控制手段：`maximumSize`/`maximumWeight`、`expireAfterWrite`/`expireAfterAccess`/`refreshAfterWrite`，辨析**过期 ≠ 淘汰 ≠ 刷新**，以及 `CacheLoader`/`LoadingCache` 的加载与回填语义。
 
 ## 一、为什么 LRU 不够，W-TinyLFU 补了什么（★★★★★，核心）

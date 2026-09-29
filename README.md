@@ -1,5 +1,7 @@
 # 大Java后端 · Big Java Backend ☕
 
+**中文** | [English README](README.en.md)
+
 一个**可运行、可打卡、可扩展**的 Java 后端「打怪升级」学习平台。**运行时零第三方依赖**——原生 ES Module + 自写
 Markdown 渲染器，无 UI 框架、无后端进程；开发 / 构建走 **Vite**（`npm run dev` / `npm run build`），产物为纯静态资源，
 **彻底脱离 Python**；多套暗色/护眼主题。专为「想按资深架构师的标准，系统刷完 Java 后端技术栈，并在本地边学边往 GitHub 提交」的你而做。
@@ -161,6 +163,7 @@ BigJavaBackend/
 ├─ dist/                      # npm run build 的纯静态产物（已 .gitignore）
 ├─ node_modules/              # 开发依赖（npm install 生成；已 .gitignore）
 ├─ BigJavaBackend.md          # 原始需求规格（课程设计初衷）
+├─ README.md / README.en.md   # 中英双语说明（顶部互切链接，GitHub 首页默认渲染 README.md）
 ├─ 教学大纲.md                # 由 npm run outline 从 data.js 生成的全课程大纲
 ├─ run-dev.bat                # 开发：缺依赖自动 npm install → npm run dev（:5180）
 └─ run-prod.bat               # 生产：npm run check → build → preview（:8080）

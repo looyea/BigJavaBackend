@@ -1,7 +1,7 @@
 # 依赖声明与冲突解决
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 configuration 体系与 api/implementation 语义、传递依赖控制手段、dependency constraints 与 BOM 导入、冲突解决策略，能读懂 Gradle 依赖树并定位版本异常。
 
 ## 一、configuration：Gradle 依赖的挂载点

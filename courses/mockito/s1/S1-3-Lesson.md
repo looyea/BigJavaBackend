@@ -1,7 +1,7 @@
 # 静态/final Mock、strictness 与过度 Mock
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：会用 `mockStatic`/`mockConstruction` 处理绕不开的静态与 new，说清 Mockito 5 默认 InlineMockMaker 为何能 mock final 及其代价，建立 strictness 三档的选用判断，并能识别与反驳"过度 Mock"的五个信号。
 
 ## 一、静态方法 mock：mockStatic 是线程局部的

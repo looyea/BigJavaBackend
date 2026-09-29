@@ -1,4 +1,8 @@
-# Java NIO 三大件：Channel / Buffer / Selector · 讲义
+# Java NIO 三大件 Channel/Buffer/Selector
+
+> 本节难度：★★★★☆
+> 重要程度：★★★★☆
+> 学习产出：ByteBuffer 的 position/limit/capacity 与 flip 法则、直接内存与 OOM、scatter/gather；Selector 注册与 keys 迭代陷阱；FileChannel 零拷贝 mmap/transferTo 与 Kafka 的应用。
 
 > 前两节讲清了"模型层"（多路复用 + Reactor）。本节往下沉一层，看 **Java 到底用什么 API 把这些模型落地**：`Channel`（双向通道）、`Buffer`（数据容器）、`Selector`（多路复用的入口）。这三件是理解 Netty 一切抽象（ByteBuf、EventLoop、Channel）的前身 —— Netty 没有另起炉灶，而是**把 JDK NIO 的坑逐一填了**。学完你要能解释：为什么 `flip()` 是新手噩梦、直接内存为什么会 OOM、以及 Kafka 怎么用 `transferTo` 做到零拷贝。（重要度 4/5，重点标准）
 

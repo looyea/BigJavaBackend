@@ -1,7 +1,7 @@
 # ConfigMap/Secret 与 PV/PVC/CSI
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 ConfigMap/Secret 的注入方式与热更新边界，理解 PV/PVC/StorageClass/CSI 的配置与存储抽象分层，能处理"配置改了不生效""PVC 一直 Pending"两类高频问题。
 
 ## 一、ConfigMap：配置与镜像解耦

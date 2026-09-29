@@ -1,7 +1,7 @@
 # 连接泄漏、超时与故障定位
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把"连不上数据库"这一大类线上故障，拆成**泄漏、超时、池耗尽**三条可定位的线索，而不是无脑加大池。连接泄漏 = 借出的连接没被归还（未 `close`、未走 try-with-resources、异常路径漏还、把 `Connection` 存成字段跨方法裸用），池里的可用连接被逐渐占光，最终 `getConnection` 超时抛 `Connection is not available, request timed out after ...`。HikariCP 用 **`leakDetectionThreshold`** 抓现行：某连接借出超过该时长仍未归还，就打一条**带借出线程栈**的 WARN，直接指向"哪段代码拿了没还"——注意它**只告警不强制回收**，必须自己修归还逻辑，且阈值太短会把正常长事务误报成泄漏刷屏，需按最长合理事务设。要**严格区分三类超时**：①**借连接超时**（`connectionTimeout`，池耗尽/泄漏的症状，报 `request timed out`）；②**SQL 执行超时**（`Statement.setQueryTimeout` / JDBC `socketTimeout`，是数据库执行慢，不是拿不到连接）；③**事务超时**（Spring `@Transactional(timeout=)`，超过则回滚）。**池耗尽的假象**是"看起来池太小"，真因常是慢 SQL 或泄漏把连接占住：读池指标 `active/idle/waiting`（`HikariPoolMXBean` 或 Micrometer `hikaricp_connections_active`/`_pending`），`active≈max` 且 `waiting>0` 说明全被占；再抓 **jstack 线程栈**看持有连接的线程卡在哪（慢查询/外部调用/死循环）。识破"泄漏 WARN 只当噪音忽略""借不到连接就一味调大 `maximumPoolSize` 掩盖泄漏""把 SQL 超时误当连接超时去改池参数"等坑——电商大促、金融批量任务里的长事务未还是池耗尽的头号常客。
 
 ## 一、用 leakDetectionThreshold 抓未归还

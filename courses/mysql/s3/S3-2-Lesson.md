@@ -1,7 +1,7 @@
 # 主从复制、高可用与冷热备份
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：讲清主从复制的**一条链路三个线程**（主库 binlog dump → 从库 IO 写 relay log → SQL 回放），**异步/半同步/MGR** 三种模式在"丢数据风险 vs 性能"上的取舍；用 **GTID** 替代易错的 binlog file+position 做复制与切换定位；理解**主从延迟**的成因与应对（并行复制、读写分离"刚写完读主"、`Seconds_Behind` 监控）。高可用侧掌握 **MHA / MySQL InnoDB Cluster（MGR + MySQL Shell + Router）**、**故障切换与脑裂防护、防双写**。备份侧分清**冷/热备、逻辑 `mysqldump`/物理 `XtraBackup`**，并能走通 **全量 + binlog 的 PITR 时间点恢复**与 `pt-table-checksum` 数据校验。呼应 s3-1：binlog 在这里既是复制载体又是恢复依据。
 
 ## 一、复制链路：一主多从的三个线程（★★★★☆）

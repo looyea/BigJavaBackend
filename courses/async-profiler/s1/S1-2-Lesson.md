@@ -1,7 +1,7 @@
 # CPU/alloc/lock 与 Wall 模式采样
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能按"要回答什么问题"选对 async-profiler 的采样事件，而不是只会默认 CPU 模式。async-profiler 用 `-e` 切换事件：`cpu`（默认，基于 perf_events/itimer 采"在 CPU 上跑"的栈，找计算热点）、`alloc`（追踪对象分配，定位"谁在疯狂 new、TLAB 溢出"，找 GC 压力来源）、`lock`（采偏向锁/重量级锁的等待，找锁竞争与同步瓶颈）、`itimer`（无 perf_events 权限时的兜底时钟模式）。**Wall（wall-clock）模式**按真实墙上时间采样，把"阻塞、IO、sleep、等锁"这些不占 CPU 的时间也算进来——这是它和 cpu 模式的本质差异：cpu 模式看不见"在等"的耗时，wall 能看见等待，专治"CPU 不高但接口很慢"（下游 IO、锁等待、线程池排队）。要点：cpu 火焰图找的是"算得多的地方"，wall 火焰图找的是"等得久的地方"，两者结论可能完全不同；alloc 图看分配量而非耗时，别当 CPU 热点读；容器里常无 perf 权限需退 itimer。识破"接口慢只采 cpu 图看不到 IO 等待""用 alloc 图去找 CPU 热点""lock 事件在小样本下噪声大就下结论"等坑。
 
 ## 一、按问题选事件：cpu / alloc / lock

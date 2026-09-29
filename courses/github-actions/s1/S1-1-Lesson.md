@@ -1,7 +1,7 @@
 # Workflow 语法、触发器与 Runner
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能写出结构正确的 workflow（jobs/steps/needs/matrix），用 on 的各触发器与条件控制执行时机，区分 hosted 与 self-hosted Runner 的选型边界，并处理"双跑、缓存、权限"三个高频实战问题。
 
 ## 一、骨架：一个 workflow 文件的最小完整形态

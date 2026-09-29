@@ -1,7 +1,7 @@
 # Druid 监控与过滤器链
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：理解 Druid Filter 链架构，掌握 StatFilter 慢 SQL 定位与 WallFilter 防注入配置，会保护监控台安全。
 
 ## 一、Druid 定位

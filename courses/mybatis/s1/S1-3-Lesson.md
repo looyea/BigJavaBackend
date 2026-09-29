@@ -1,7 +1,7 @@
 # MyBatis-Plus 工程提效
 
 > 本节难度：★★☆☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 MyBatis-Plus 的 BaseMapper 泛型 CRUD、条件构造器 Wrapper、分页/乐观锁/逻辑删除插件，以及代码生成器与 Active Record 模式的使用边界。
 
 ## 一、MyBatis-Plus 定位

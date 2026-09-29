@@ -1,7 +1,7 @@
 # RAG：切分、Embedding 与召回
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能设计一条完整的 RAG 离线索引 + 在线检索流水线；理解文档切分（chunking）、Embedding、向量库选型、混合检索与重排（rerank）每一步的取舍；用 Spring AI 的 `ETL Pipeline` 与 `VectorStore` 落地，并知道"召回质量"才是 RAG 成败关键。
 
 ## 一、RAG 解决什么：给模型外挂"私有、最新、可溯源"的知识

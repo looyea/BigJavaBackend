@@ -1,7 +1,7 @@
 # 原生镜像原理与限制
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：从底层讲清 GraalVM 原生镜像（Native Image）到底把 Java 编译成了什么、AOT 与 JIT 的本质差别；吃透**封闭世界假设（closed-world）**与**可达性元数据（reachability metadata）**这对因果——为什么反射/动态代理/资源加载在原生镜像里会失灵、如何补救；量化启动/内存收益与构建/吞吐代价，形成"什么服务该上、什么别上"的判断力。
 
 > **分工说明**：Spring Boot 侧如何用 `native-maven-plugin`、`process-aot`、`RuntimeHints` 把应用**打包成**原生镜像，属实践流程，见 spring-boot s3-2；本节专讲**底层原理与限制**——那些配置之所以存在的根因。

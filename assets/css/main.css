@@ -49,6 +49,23 @@ a:hover { text-decoration: underline; }
 .page-title { font-size: 26px; margin: 0 0 6px; }
 .page-sub { color: var(--text-soft); margin: 0 0 22px; }
 
+/* ---------- 课程包官方 / 参考网站 ---------- */
+.pkg-resources {
+  margin: -8px 0 26px; padding: 14px 16px;
+  background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
+}
+.pkg-resources-label {
+  display: block; font-size: 12px; letter-spacing: 1px;
+  color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;
+}
+.res-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.res-link {
+  display: inline-block; padding: 6px 12px; font-size: 14px;
+  color: var(--accent-2); background: var(--bg-soft);
+  border: 1px solid var(--line); border-radius: 8px; transition: all .15s;
+}
+.res-link:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+
 /* ---------- 分区 & 课程卡 ---------- */
 .category { margin-bottom: 34px; }
 .category-head {

@@ -1,7 +1,7 @@
 # Java 22-25：Loom/Panama 收口
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：看清 21 之后的"特性流水线"把三大长期工程收尾到哪——**Project Panama 的 FFM API（替代 JNI，Java 22 转正）**、**Project Loom 的结构化并发 + Scoped Values 走向定型**、**Project Valhalla 的值类/原始类型模式进入预览前奏**。建立"哪些已能上生产、哪些还在预览/被撤回"的判断力，并理解 Java 演进背后的**项目制（Project-based）与预览机制**——这正是 s3-3"渐进、务实"取向的最新注脚。
 
 ## 一、FFM API：和 JNI 说再见（★★★★★，已转正）

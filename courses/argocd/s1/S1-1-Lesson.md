@@ -1,7 +1,7 @@
 # GitOps 原理与 Argo CD 架构
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能讲清 GitOps 四原则与"拉模式"相对推模式的价值，画出 Argo CD 四组件架构与调和循环，完成一次 Application/Sync Wave 落地并解释 RBAC 与凭证的收口方式。
 
 ## 一、GitOps 四原则

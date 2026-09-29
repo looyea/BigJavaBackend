@@ -1,7 +1,7 @@
 # Deployment、ReplicaSet 与滚动发布回滚
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：掌握 Deployment→ReplicaSet→Pod 的版本链模型，能配出安全的滚动发布参数（maxSurge/maxUnavailable），会用 revision 历史回滚，并理解金丝雀/蓝绿在原生 K8s 的实现方式与局限。
 
 ## 一、版本链：Deployment 管"发布"，ReplicaSet 管"副本"

@@ -1,7 +1,7 @@
 # 扩展模型与条件执行
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能画出 Jupiter 扩展回调的执行顺序，用 `ParameterResolver` 写一个注入测试参数的小扩展，掌握 `@EnabledOnOs`/`@EnabledIf` 等条件执行手段与 Tag 过滤的分工，并理解 `@RegisterExtension` 相比 `@ExtendWith` 的可配置优势。
 
 ## 一、扩展是什么：统一的生命周期钩子 API

@@ -1,7 +1,7 @@
 # Optional 与语言级设计取向
 
 > 本节难度：★★☆☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：理解 `Optional` 的**真实定位——它是"返回值容器"而非万能空值工具**，掌握 `ofNullable/of/orElse/orElseGet/orElseThrow/filter/map/flatMap` 的正确用法与三大反模式；顺带建立 Java 的**语言级设计取向**观感：克制、务实、渐进（对比 Kotlin/Scala 的空安全），学会判断"何时该用、何时是过度设计"。
 
 ## 一、为什么会有 Optional：null 的百年污点（★★☆☆☆）

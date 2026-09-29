@@ -1,7 +1,7 @@
 # 网络、磁盘与日志定位脚本
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能用 ss/df/du/连接状态、以及 grep/awk/find/xargs 组合脚本快速定位"连不上、盘满了、日志里找异常"三类高频问题，并写出可复用、可放进告警脚本的一行式命令。
 
 ## 一、网络：连接状态是第一现场
@@ -78,4 +78,4 @@ echo "现场已存 $out"
 
 ## 六、关联技术
 
-这些是"手摇式"排障，规模化要靠 [ELK / Loki](../../elk/s1/S1-1-Lesson.md) 集中检索；进程内 CPU/线程用 [Arthas](../../arthas/s1/S1-1-Lesson.md)；容器里的网络与存储问题（CNI、PV 满）在 [Kubernetes](../../kubernetes/s1/S1-1-Lesson.md) 语境复看；资源类指标解读回到上一节 [四件套与 Top/vmstat](S1-1-Lesson.md)。
+这些是"手摇式"排障，规模化要靠 [ELK / Loki](../../elk/s1/S1-1-Lesson.md) 集中检索；进程内 CPU/线程用 [Arthas](../../arthas/s1/S1-1-Lesson.md)；容器里的网络与存储问题（CNI、PV 满）在 [Kubernetes](../../kubernetes/s1/S1-1-Lesson.md) 语境复看；资源类指标解读回到上一节 [进程/内存/CPU/IO 四件套与 Top/vmstat](S1-1-Lesson.md)。

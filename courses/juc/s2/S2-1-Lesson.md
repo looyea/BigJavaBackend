@@ -1,7 +1,7 @@
 # AQS 源码剖析
 
 > 本节难度：★★★★★
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：拆开封在 `ReentrantLock`、`Semaphore`、`CountDownLatch`、`ReentrantReadWriteLock` 内部的同一个引擎——**AQS（AbstractQueuedSynchronizer）**。掌握它的两大支柱 **`volatile int state` + CLH 变体的双向等待队列**，理解**独占（exclusive）与共享（shared）**两种模式、`tryAcquire/tryRelease` 模板方法、以及**公平 vs 非公平**在源码层面的那行差别。学完能回答"ReentrantLock 到底怎么排队、怎么唤醒"。
 
 ## 一、AQS 的骨架：state + 队列（★★★★★）

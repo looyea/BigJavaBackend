@@ -1,7 +1,7 @@
 # 写入流程与近实时可见
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能画出 ES 一条文档的写入路径（primary → in-memory buffer + translog → refresh 生成 segment → fsync 落盘 → merge 段合并），讲清"为什么是近实时(NRT)而非实时"以及 `refresh_interval`、`translog`  durability、`flush` 各自作用；理解段不可变带来的删除/更新代价与段合并的 GC；掌握 routing、`op_type=create` 防覆盖、`_seq_no`/`primary_term` 乐观并发，并能权衡"要即时可见"时的 `refresh=wait_for` 取舍。
 
 ## 一、一条文档写入的完整路径

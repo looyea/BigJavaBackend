@@ -1,7 +1,7 @@
 # JUnit 5 架构、生命周期与断言
 
 > 本节难度：★★☆☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：分清 JUnit 5 三大模块与注解生命周期，能正确使用 `@BeforeEach`/`@AfterAll`/`@TestInstance` 管理资源，用 Assertions 的多值断言与 `assertThrows` 写出精准、可读的单元测试。
 
 ## 一、三个模块各司其职

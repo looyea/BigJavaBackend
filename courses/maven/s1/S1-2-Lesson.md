@@ -1,7 +1,7 @@
 # 继承、聚合与多模块、BOM
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：能用 parent/modules 搭建多模块工程，分清 dependencyManagement 的继承与 import 语义，掌握 ${revision}+flatten 的版本单一事实源方案。
 
 ## 一、继承与聚合：两个正交机制

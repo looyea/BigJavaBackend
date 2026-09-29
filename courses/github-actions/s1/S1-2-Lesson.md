@@ -1,7 +1,7 @@
 # Action 复用、Marketplace 与密钥
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能辨别三种 Action 形态（action@vN、composite、reusable workflow）并设计组织级复用层，会用 secrets/environment 做凭证治理，能为 Java 流水线配上可靠的缓存与制品链。
 
 ## 一、三种复用形态分层

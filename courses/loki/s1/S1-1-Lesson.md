@@ -1,7 +1,7 @@
 # Loki 架构与标签模型
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：能画出 Loki 写入/查询两条路径上各组件的职责，说清"流（stream）"与标签集的关系，制定不炸基数的标签规范，并给出 Promtail/Alloy 采集 Spring Boot 日志的落地配置。
 
 ## 一、Loki 的数据模型：流 + chunk + 标签索引
@@ -69,4 +69,4 @@ scrape_configs:
 
 ## 六、关联技术
 
-查询语言与 Grafana 联动在下一节 [LogQL 与 Grafana 集成](S1-2-Lesson.md)；与 ELK 的成本/能力对照见 [ELK vs Loki](../../elk/s1/S1-3-Lesson.md)；K8s 服务发现与 Pod 标签规范回到 [Kubernetes](../../kubernetes/s1/S1-1-Lesson.md)。
+查询语言与 Grafana 联动在下一节 [LogQL 与 Grafana 集成](S1-2-Lesson.md)；与 ELK 的成本/能力对照见 [ELK vs Loki：全文索引取舍（关联）](../../elk/s1/S1-3-Lesson.md)；K8s 服务发现与 Pod 标签规范回到 [Kubernetes](../../kubernetes/s1/S1-1-Lesson.md)。

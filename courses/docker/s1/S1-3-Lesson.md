@@ -1,7 +1,7 @@
 # JVM 的容器资源感知
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：理解 JVM 如何读取 cgroup 内存/CPU limit 来决定堆与线程数，掌握 MaxRAMPercentage 的正确用法，能定位并根治容器里 Java 进程被 OOMKilled 的经典事故。
 
 ## 一、事故原型：容器 limit 512m，JVM 却按宿主 16G 算堆

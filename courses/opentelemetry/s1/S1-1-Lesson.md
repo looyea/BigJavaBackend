@@ -1,7 +1,7 @@
 # OTel 架构：API/SDK/Collector 与 OTLP
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：理解 OpenTelemetry 三支柱数据模型、API/SDK 分层设计与 Collector Pipeline 架构。
 
 ## 一、OTel 定位

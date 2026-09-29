@@ -4,8 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Big Java Backend · 大Java后端</title>
+<!-- 内嵌 SVG 图标：避开站点根目录的 favicon.ico 请求（没有该文件时控制台会报 404） -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23e8a33d'/><text x='16' y='23' text-anchor='middle' font-size='18' font-weight='700' font-family='sans-serif' fill='%2314161a'>%E5%A4%A7</text></svg>">
 <link rel="stylesheet" href="assets/css/themes.css">
 <link rel="stylesheet" href="assets/css/main.css">
+<script>
+  /* 主题在首帧前就位：否则已保存浅色主题的用户每次进入都会先看到一瞬默认深色 */
+  try { document.documentElement.dataset.theme = localStorage.getItem('bjb.theme') || 'dark'; } catch (e) { /* 隐私模式下 localStorage 不可用，保留默认 */ }
+</script>
 </head>
 <body>
 <header class="site-header">

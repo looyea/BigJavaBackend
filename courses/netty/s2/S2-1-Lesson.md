@@ -1,4 +1,8 @@
-# EventLoop、Channel、ChannelPipeline 与 Handler · 讲义
+# EventLoop、Channel、ChannelPipeline 与 Handler
+
+> 本节难度：★★★★☆
+> 重要程度：★★★★★
+> 学习产出：Netty 启动骨架与七大核心接口；Pipeline 双向链表、入站/出站传播规则、异常传播、handler 执行线程与 `@ChannelHandler.Sharable`、阻塞任务为何必须走单独线程池。
 
 > 前两阶段我们讲"为什么"（IO 模型、Reactor、NIO 的坑）。从这里起进入 **Netty 本体**。本节是全包**重要度最高（5/5）**的一节：把 Netty 启动骨架和七大核心接口的关系钉死，讲透 `ChannelPipeline` 这条双向责任链怎么传播事件与异常，以及"Handler 到底在哪个线程跑、能不能共享、重活为什么必须换线程池"。理解本节，后面 ByteBuf、编解码、线程模型全都是它的推论。（核心精讲，含源码级走查）
 

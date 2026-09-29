@@ -1,7 +1,7 @@
 # 布隆过滤器、限流器与 RMapCache
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：把 redis/lettuce 两包点到的"现成原语"真正用起来——**`RBloomFilter`**（位图 + 多哈希，判"无"一定无、判"有"可能假阳性）落地缓存穿透防护；**`RRateLimiter`**（令牌桶，`RateInterval` 配速率）做分布式限流，讲清它和 `RSemaphore`（限并发 vs 限速率）的分工；**`RMapCache`**（带 TTL/驱逐的分布式 Map，本地+Redis 二级）作为多级缓存的 Redisson 实现。每个都给"能直接抄"的配置 + 正反用例，并点出各自**最易踩的坑**（布隆不能删元素、限流器时钟与预消费、RMapCache 与 RMap 的区别）。
 
 ## 一、RBloomFilter：把穿透挡在 Redis 层（★★★★★）

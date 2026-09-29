@@ -1,7 +1,7 @@
 # G1 / ZGC / Shenandoah
 
 > 本节难度：★★★★★
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：建立**停顿模型**视角看现代收集器——G1 用 **Region + 停顿预测 + 优先回收**把"可预测的低停顿"做到通用最优；ZGC / Shenandoah 用**并发整理**（着色指针 / Brooks 转发指针 + 屏障）把停顿压到**亚毫秒、且与堆大小近乎无关**。讲清 G1 的 **RSet/SATB**、Mixed GC 与"to-space exhausted"，ZGC 的**读屏障**与三重代价，Shenandoah 的**并发 evacuation**；并能按"延迟 / 吞吐 / 堆规模 / JDK 版本"四轴选型。CMS 为何被淘汰、G1 何时退化成 Full GC，是这节的实战落点。
 
 ## 一、先看约束：GC 的不可能三角

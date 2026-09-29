@@ -1,7 +1,7 @@
 # Redisson 在 Cluster/Sentinel 下的可靠性
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：能把 Redisson 从"单机能用"推进到"集群/哨兵下也可靠"——理解 **Cluster 的 slot 分片**对多 Key 操作的约束（跨 slot 的命令/事务/Lua 需 **hash tag `{...}`** 把相关 key 钉到同一 slot，否则 `CROSS_SLOT` 报错）、`RTopic` 在 Cluster 下的广播语义与订阅收敛、连接层在 **节点故障/主从切换**时的自动重连与重试；关键要认清 **Sentinel/Cluster 主从切换与锁可靠性之间的张力**：单节点 `RLock` 依赖数据不丢，而主从异步复制在 master 挂掉、slave 提升时**可能丢失尚未同步的锁**，这正是 RedLock 想解决却又有争议的场景。据此做出工程判断：一般互斥用单节点锁 + 合理 TTL + 幂等/双重校验兜底，强一致要求才权衡 RedLock 或改走 CP 协调服务（ZooKeeper/etcd）。识破"跨 slot 多 key 操作不加 hash tag""以为单点锁能扛主从切换不丢""看门狗在网络分区脑裂时两边都持锁"等坑。
 
 ## 一、Cluster：slot 分片与 hash tag

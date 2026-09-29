@@ -1,7 +1,7 @@
 # 堆转储分析与内存泄漏定位
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：拿到一个 `.hprof` 堆转储，能用 **Eclipse MAT** 走通"Histogram → 支配树 Dominator Tree → Leak Suspects → 到 GC Roots 的路径（Path to GC Roots, exclude weak/soft）"这条主线，把"内存被谁占着"落到**具体对象 + 具体引用链 + 具体代码行**；理解 **Shallow Heap vs Retained Heap**、为什么支配树比直方图更快锁定真凶；并背熟 Java 五大泄漏现场——**无界缓存、静态集合、未 `remove()` 的 ThreadLocal、监听器/回调注册不注销、未关闭的资源**，每一种都对应前几节埋下的伏笔。这是整个 JVM 包的"收口实战"：s2-1 告诉你什么算垃圾、s3-1 告诉你何时该 dump、这节告诉你 dump 出来后怎么定罪。
 
 ## 一、先取到一个能分析的 dump

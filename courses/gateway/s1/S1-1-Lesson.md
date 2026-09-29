@@ -1,7 +1,7 @@
 # 网关三大件与全局过滤器
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 Spring Cloud Gateway 的 Route/Predicate/Filter 三大件模型及 GlobalFilter 执行链路。
 
 ## 一、核心模型

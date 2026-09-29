@@ -1,4 +1,8 @@
-# EventLoop 线程模型、Future/Promise 与优雅关闭 · 讲义
+# EventLoop 线程模型、Future/Promise 与优雅关闭
+
+> 本节难度：★★★★☆
+> 重要程度：★★★★☆
+> 学习产出：无锁串行化的收益与陷阱、`execute/onWorkerThread`、`EventLoopGroup` 与 `DefaultEventExecutorGroup` 分离重任务、ChannelGroup 广播、`Future.addListener` 避免阻塞、`shutdownGracefully` 与定时任务精度。
 
 > s1-2 立了"IO 线程绝不阻塞"的规矩，s2-1 讲了 Handler 默认跑在 Channel 的 EventLoop 上。本节把这套**线程模型**彻底讲透：无锁串行化到底赚了什么、`execute/inEventLoop` 的调度语义、`Future/Promise` 怎么"不阻塞地拿异步结果"、`ChannelGroup` 怎么跨线程广播，以及生产发布必踩的**优雅关闭** `shutdownGracefully`。最后点一下定时任务在 EventLoop 上的精度问题。（重要度 4/5，重点标准）
 

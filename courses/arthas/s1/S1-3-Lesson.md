@@ -1,7 +1,7 @@
 # 火焰图、JVM 仪表盘与诊断联动（关联）
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 Arthas 从"单点看一个方法"升级到"全局体检 + 热点定位 + 内存诊断"的联动排查。**dashboard** 一屏给线程/内存/GC/CPU 总览，先判断问题域（是 CPU 高、GC 频繁还是线程阻塞）；**jvm / memory / thread** 分别下钻运行时参数、堆区占用、最忙线程栈；**profiler** 命令内置 async-profiler，在线低开销产出 CPU/alloc/lock 火焰图，宽帧即热点，替代"装 agent + 重启"的重排查；**vmtool / heapdump / ognl** 处理内存侧——按类实例直方图、找引用链、必要时 dump 堆给 MAT 分析。诊断"联动"的关键是把三者串成一条链：dashboard 发现某线程池 CPU 高 → thread 定位到具体栈 → profiler 火焰图确认热点函数 → 若怀疑对象堆积用 vmtool 看实例数、heapdump 找泄漏根。要点：profiler 要 start/stop 成对、低占空比，别常驻高频导出；heapdump 会 STW、生产慎用且导到隔离机分析。识破"火焰图把 JIT 编译栈当业务热点""不看 dashboard 直接 dump 全量堆导致长时间 STW""vmtool 强转实例改了线上状态"等坑。
 
 ## 一、dashboard 全局体检，先定问题域

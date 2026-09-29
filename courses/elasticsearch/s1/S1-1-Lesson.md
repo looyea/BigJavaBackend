@@ -1,7 +1,7 @@
 # 倒排索引与分词器链路
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能讲清正排/倒排索引的区别与倒排索引的 dictionary + posting list 结构，画出一条 analysis 链路（character filter → tokenizer → token filter）并说明索引期与搜索期为何要对称；会用 mapping 区分 `text`（分词检索）与 `keyword`（精确/聚合/排序），理解 BM25 相关度打分的关键因子，并识破"用 keyword 做全文搜索""分词器索引/搜索不对称导致搜不到"这类高频配置错误。
 
 ## 一、为什么是倒排索引

@@ -1,4 +1,8 @@
-# ByteBuf、内存模型与引用计数 · 讲义
+# ByteBuf、内存模型与引用计数
+
+> 本节难度：★★★★☆
+> 重要程度：★★★★☆
+> 学习产出：ByteBuf 对比 ByteBuffer、读写双指针、池化 PooledByteBufAllocator 与 jemalloc 分代、直接内存、`ReferenceCountUtil` 与 release 泄漏定位、`LEAK` 日志与 CompositeByteBuf 零拷贝。
 
 > 上一节 s1-3 我们看到 JDK `ByteBuffer` 的三大痛点：单 position + flip、直接内存靠 GC 管易泄漏、无池化反复向 OS 申请。Netty 用自己的 **`ByteBuf`** 一次性解决，代价是引入了**手动引用计数**这套"心智负担"。本节讲透 ByteBuf 的读写双指针、池化 + jemalloc 分代的内存分配器、以及最劝退也最关键的**泄漏定位**。（重要度 4/5，重点标准）
 

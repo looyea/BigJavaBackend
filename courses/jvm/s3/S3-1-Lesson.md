@@ -1,7 +1,7 @@
 # OOM / CPU 飙高 / 频繁 Full GC 排查手册
 
 > 本节难度：★★★★★
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：把前面所有 JVM 原理**收敛成一张可照着敲的命令排查表**。掌握"现象 → 分类 → 采样 → 定位 → 结论"的完整链路：**OOM 先看错误后缀定位是堆内还是堆外**；**CPU 飙高用 `top -Hp` 找线程号转 16 进制再到 `jstack` 里定位栈**；**频繁 Full GC 用 `jstat -gcutil` + GC 日志 + dump 三连**。会用 `jps/jstat/jmap/jstack/jcmd` 与 **Arthas**（`dashboard/thread -n/heapdump/profiler`）联动，并知道每个命令的**代价与禁忌**（`jmap -histo:live` 会触发 Full GC、生产大堆 `jmap -dump` 会长时间 STW）。电商大促抖动、金融网关 CPU 打满、电力设备频繁 Full GC，都按这套路径出结论。
 
 ## 一、通用三板斧：先定位进程，再分类现象

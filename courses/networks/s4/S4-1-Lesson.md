@@ -1,5 +1,9 @@
 # Socket 选项、Linux 内核参数与网络调优
 
+> 本节难度：★★★★☆
+> 重要程度：★★★★☆
+> 学习产出：TCP_NODELAY / SO_RCVBUF/SO_SNDBUF / SO_LINGER / SO_REUSEPORT / TCP_DEFER_ACCEPT / keepalive 三参数；backlog、somaxconn、文件描述符与端口范围、conntrack 表满、BBR 与万兆网调优清单。
+
 > 前三节把协议讲透了，本节把它们落到**一行行可改的参数**上：哪个 socket option 管什么、哪个 `/proc/sys/net` 内核参数在何时该调、调错的代价是什么。这是一份能带进生产的清单。（重要度 4/5，重点标准；综合 s2 全部 + s3-3/s3-4）
 
 ## 一、Socket 选项速查（setsockopt 层）

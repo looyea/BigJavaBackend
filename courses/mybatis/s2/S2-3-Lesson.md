@@ -1,7 +1,7 @@
 # MyBatis 与 JPA/Spring 整合及选型（关联）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 MyBatis 融入 Spring 生态，并对"MyBatis 还是 JPA"给出有依据的选型。整合要点：用 `mybatis-spring-boot-starter` 自动配置 `SqlSessionFactory`；`@MapperScan` 批量生成 Mapper 代理并注册为 Bean，或 `@Mapper` 标注单接口；`Mapper` 由 **`SqlSessionTemplate`**（线程安全、Spring 管理的单例，内部按当前事务绑定的 `SqlSession` 执行）驱动，从而**复用 Spring 事务**——`@Transactional` 与 MyBatis 操作共处同一事务、异常触发回滚，无需手工 commit/close。动态数据源靠 `AbstractRoutingDataSource` + 注解/AOP 路由 key 切换（读写分离、多租户库）。**选型对比**：JPA/Hibernate 面向**领域模型与状态管理**——实体托管、脏检查、自动 DDL、派生查询，适合**领域复杂、以对象为中心、CRUD 规整**的场景，代价是黑盒 SQL 不可控、N+1 与抓取策略要调、复杂报表 SQL 难表达；MyBatis 面向 **SQL 与映射**——你手写每一句 SQL，适合**DBA 主导、复杂查询/报表/批量、需要精细调优与方言控制**的场景，代价是样板映射与手工维护 SQL。**混用策略**：一个工程里可 JPA 管领域写模型、MyBatis 管复杂读/报表（CQRS 倾向），但要统一事务管理器与数据源，避免两套 Session 割裂。识破"两套 ORM 各自开事务导致不回滚""动态数据源在事务开启后切换失效（连接已绑定）""@Transactional 加在 private/自调用不生效""把 JPA 黑盒 SQL 的性能问题硬扛不用 MyBatis 兜底"等坑。
 
 ## 一、与 Spring 事务/SqlSessionTemplate 集成

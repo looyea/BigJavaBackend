@@ -1,4 +1,8 @@
-# 编解码器与粘包/拆包治理 · 讲义
+# 编解码器与粘包/拆包治理
+
+> 本节难度：★★★★☆
+> 重要程度：★★★★☆
+> 学习产出：LengthFieldBasedFrameDecoder 五个参数的推导、Delimiter/LineBased/FixedLength 选型、序列化（Protobuf/JSON）与 ObjectInputValidation、`ByteToMessageDecoder` 累积与半包丢弃、HTTP 编解码器复用。
 
 > networks/s2-4 我们从**协议视角**讲过"TCP 是字节流、没有消息边界 → 应用层必须定界"。本节从**Netty 实现视角**落地：用哪些解码器把乱切的字节流重新切成一条条完整消息，`LengthFieldBasedFrameDecoder` 那五个参数到底怎么推、半包为什么不能丢、序列化器（Protobuf/JSON/Java）怎么接上、以及 HTTP 编解码器怎么复用。（重要度 4/5，重点标准）
 

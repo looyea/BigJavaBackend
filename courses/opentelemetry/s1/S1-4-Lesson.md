@@ -1,7 +1,7 @@
 # 与 SkyWalking/Prometheus 的关系（关联）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★☆☆
+> 重要程度：★★★☆☆
 > 学习产出：厘清 OTel 标准与 SkyWalking/Prometheus 产品的分工边界，掌握迁移与共存的落地方案。
 
 ## 一、定位差异：标准 vs 产品

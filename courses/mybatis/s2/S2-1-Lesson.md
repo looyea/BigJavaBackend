@@ -1,7 +1,7 @@
 # 类型处理器、结果映射与关联查询
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把数据库列与 Java 属性之间"对不上"的映射，用 MyBatis 的三大机制优雅打通。核心是 **TypeHandler**：定义某个 Java 类型 ↔ JDBC 类型的双向转换（`setParameter` 写、`getResult` 读），用来落枚举、`LocalDateTime`、JSON 对象、逗号分隔集合等——注册方式有全局 `<typeHandlers>`、包扫描、字段级 `jdbcType/typeHandler` 指定、以及 MyBatis-Plus 的 `@TableField(typeHandler=...)`。**结果映射 resultMap** 处理列名≠属性名、主键 `<id>`、普通 `<result>`；**关联查询**用 `<association>`（一对一，如订单→用户）与 `<collection>`（一对多，如订单→明细），各有**嵌套结果**（一条 JOIN SQL + resultMap 自动装配，推荐、无 N+1）与**嵌套查询**（`select`+`column` 延迟加载、简单但易 N+1）两种实现路径。**discriminator** 按某列值把行路由到不同子类型，实现多态映射（如按 type 映射 Payment/Credit/Debit）。要点：嵌套结果要正确声明 `<id>` 以去重聚合行、`collection` 靠主键判定边界；嵌套查询配 `aggressiveLazyLoading`/`fetchType` 控制加载。识破"association 用嵌套查询触发 N+1""枚举 ordinal 漂移导致历史数据错映射""JSON 列 TypeHandler 未指定 jdbcType 写入报 null 类型错""忘配 `<id>` 使一对多装配重复"等坑。
 
 ## 一、TypeHandler：定制 Java↔JDBC 转换

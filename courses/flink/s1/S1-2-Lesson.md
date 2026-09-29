@@ -1,7 +1,7 @@
 # 水位线、状态后端与 exactly-once
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能讲清水位线（Watermark）如何作为"事件时间进度"的估计在多分区下取 min 推进、空闲分区为何会卡住窗口及其对策；区分状态后端（HashMap 堆内 vs RocksDB 堆外）的取舍与增量 Checkpoint；理解 Flink 端到端 exactly-once 的两块基石——Chandy-Lamport 快照式 Checkpoint 与两阶段提交（2PC）Sink，并识破"Source 不可重放/Sink 非幂等却宣称 exactly-once""水位线设在单分区导致整体停滞"等事故。
 
 ## 一、水位线：谁在推进、为什么卡住

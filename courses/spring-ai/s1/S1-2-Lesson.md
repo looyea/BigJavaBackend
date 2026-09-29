@@ -1,7 +1,7 @@
 # Tool/Function Calling 与 Agent 编排
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：讲清 Function/Tool Calling 让模型"会做事"的协议本质（模型只产出结构化调用意图，真正执行在你的代码里）；会用 Spring AI 的 `@Tool`/`FunctionCallback` 注册工具；理解 ReAct 循环与 Agent 编排的成本/超时/安全治理。
 
 ## 一、本质：模型不执行任何东西，它只"点菜"

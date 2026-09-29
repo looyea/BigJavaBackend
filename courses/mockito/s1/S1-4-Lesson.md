@@ -1,7 +1,7 @@
 # Spring Boot 切片测试（关联 JUnit）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：掌握 `@WebMvcTest`/`@DataJpaTest` 等切片注解"只装一类 Bean"的机制与 `@MockitoBean` 顶替协作者的用法，会用 MockMvc/WebTestClient/TestRestTemplate 三档入口，并给出切片与 `@SpringBootTest` 的升级判据。
 
 ## 一、切片的核心卖点：上下文只装该装的那一小撮

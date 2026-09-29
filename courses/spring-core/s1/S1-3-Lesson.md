@@ -1,7 +1,7 @@
 # 资源抽象、SpEL 与容器扩展点
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 Spring 三类"看不见的底层能力"讲清楚并落地——**Resource 抽象**用统一接口屏蔽 classpath/file/url 的差异，让配置、模板、静态资源以同一种方式加载；**SpEL** 是在运行时对对象图求值的表达式语言，用于 `@Value("#{...}")`、条件装配、动态规则，但要认清它与 `${}` 占位符的本质区别（占位符只取属性值、SpEL 能运算与调用方法）；**容器扩展点**是理解 Spring "可插拔"的钥匙——按介入时机区分 `BeanFactoryPostProcessor`（改 BeanDefinition，早于实例化）、`BeanPostProcessor`（包裹每个 Bean 的初始化前后，AOP 代理就在这里织入）、`InstantiationAwareBeanPostProcessor`（注入前干预实例化与属性填充）。识破"用 SpEL 拼用户输入造成表达式注入""BeanPostProcessor 里做重活拖慢启动""把该在 BeanFactoryPostProcessor 改的元数据放到 BeanPostProcessor 做"等坑。
 
 ## 一、Resource 抽象：统一加载异构资源

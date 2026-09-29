@@ -1,4 +1,8 @@
-# Netty 实战：HTTP 服务、RPC 与生态集成 · 讲义
+# Netty 实战：HTTP 服务、RPC 与生态集成
+
+> 本节难度：★★★★☆
+> 重要程度：★★★★☆
+> 学习产出：用 Netty 实现 HTTP/1.1 服务与自定义协议的完整代码走查；Spring WebFlux/Reactor Netty、Dubbo/gRPC、Elasticsearch、Kafka 客户端、RocketMQ 为何选 Netty；网关（Spring Cloud Gateway）与业务线程模型的关系。
 
 > 学到这里，抽象、内存、编解码、线程、背压都齐了。本节把 Netty 放回**真实工程**：一条完整的 HTTP 服务与一条自定义协议 RPC 的端到端代码走查，以及"为什么 Spring WebFlux / Dubbo / gRPC / Elasticsearch / Kafka / RocketMQ / 云原生网关都选 Netty 当底座"。看懂这些，你才真正理解 Netty 在后端技术栈里的位置（重要度 4/5，重点标准）
 

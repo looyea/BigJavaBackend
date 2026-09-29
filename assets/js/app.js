@@ -1,6 +1,7 @@
 /* 路由 + 页面渲染：首页 / 课程包 / 小节课程 / 小测验 / 作业题 / 面试题 / 地图 / 进度 */
 /* 缓存由 Vite 构建的内容哈希自动管理；开发期 Vite dev server 不强缓存，改完刷新即见 */
 import { CATEGORIES, INDEX, findSection, secFile, secKey } from './data.js';
+import { PKG_LINKS } from './links.js';
 import { renderMarkdown, parseQuiz, stripTitle, renderInline, gradeQuiz } from './md.js';
 import * as store from './store.js';
 
@@ -155,9 +156,19 @@ function viewPkg(pkgId) {
     </section>`;
   }).join('');
 
+  /* 官方 / 中文资源链接区：置于课程包简介之后、阶段列表之前（详见 assets/js/links.js，均为实测可达网址） */
+  const links = PKG_LINKS[pkg.id];
+  const resources = (links && links.length)
+    ? `<div class="pkg-resources">
+        <span class="pkg-resources-label">官方 / 参考网站</span>
+        <div class="res-links">${links.map((l) => `<a class="res-link" href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.t)} ↗</a>`).join('')}</div>
+      </div>`
+    : '';
+
   return `${crumb([{ text: '首页', href: '#/' }, { text: cat.name, href: '#/' }, { text: pkg.name }])}
     <h1 class="page-title">${esc(pkg.name)} <span class="tag">${esc(cat.name)}</span></h1>
     <p class="page-sub">${esc(pkg.desc)}<br>课程包重要性：${stars(pkg.importance)} &nbsp;·&nbsp; 共 ${pkg.stages.length} 个阶段 / ${stat.total} 个小节 &nbsp;·&nbsp; 当前进度 ${stat.done}/${stat.total}</p>
+    ${resources}
     ${stages}`;
 }
 
@@ -174,13 +185,14 @@ function secStatusTag(sec) {
 async function viewSection(pkgId, stageId, secId, tab) {
   const sec = findSection(pkgId, stageId, secId);
   if (!sec) return notFound('小节不存在');
-  const pkg = INDEX.pkg[pkgId], stage = pkg.stages.find((s) => s.id === stageId);
+  /* 路由里的包/阶段/小节编号可能被大写书写，findSection 已归一，后续一律以 sec 上的真实 id 为准 */
+  const pkg = INDEX.pkg[sec.pkg], stage = pkg.stages.find((s) => s.id === sec.stage);
   if (!store.isUnlocked(sec) && tab !== 'homework' && tab !== 'interview') {
     return notFound('该小节尚未解锁', '请先通过同课程包内上一节的小测验（≥ 60 分）。');
   }
   const head = `${crumb([
     { text: '首页', href: '#/' },
-    { text: pkg.name, href: `#/pkg/${pkgId}` },
+    { text: pkg.name, href: `#/pkg/${pkg.id}` },
     { text: stage.name },
     { text: sec.title },
   ])}
@@ -205,7 +217,7 @@ function tabs(sec, tab) {
 async function renderLesson(sec, file) {
   const md = await loadMd(file);
   if (md === null) return notFound('课程内容正在编写中', `预期文件：<code>${file}</code>`);
-  const { html, headings } = renderMarkdown(stripTitle(md));
+  const { html, headings } = renderMarkdown(stripTitle(md), file);
   return `<div class="lesson-layout">
     <aside class="lesson-toc">${headings.map((h) => `<div style="padding-left:${(h.lv - 2) * 12}px"><button type="button" class="toc-link" data-jump="${h.id}">${esc(h.text)}</button></div>`).join('')}</aside>
     <article class="md" id="lesson-md">${html}</article>
@@ -217,7 +229,7 @@ async function renderLesson(sec, file) {
 async function renderDoc(sec, file, label) {
   const md = await loadMd(file);
   if (md === null) return notFound(`${label}正在编写中`, `预期文件：<code>${file}</code>`);
-  return `<article class="md">${renderMarkdown(stripTitle(md)).html}</article>` + nextLink(sec);
+  return `<article class="md">${renderMarkdown(stripTitle(md), file).html}</article>` + nextLink(sec);
 }
 
 function nextLink(sec) {
@@ -243,7 +255,7 @@ async function renderQuiz(sec, file) {
   /* 非标格式降级：小测可按实际情况采用其它形式（实验清单/设问/答辩题），此时不自动判分，但必须能过关 */
   if (!currentQuiz) {
     return `<article class="md">
-      ${renderMarkdown(stripTitle(md)).html}
+      ${renderMarkdown(stripTitle(md), file).html}
       <div class="btn-row"><button class="btn" id="quiz-manual">我已完成本小节自定义测验，标记通过</button></div>
       <div class="banner">本小节小测采用自定义格式（未解析出可自动判分的题目），因此不计分不判分，仅记录完成。
       若需自动判分，请使用约定格式：<code>### 1. 题干（5分）</code> + <code>- A. 选项</code> + <code>&gt; 答案：B</code>（主观题用 <code>&gt; 参考答案：</code>）。</div>
@@ -259,7 +271,7 @@ async function renderQuiz(sec, file) {
       : q.kind === 'fill'
         ? '<input class="q-text" type="text" autocomplete="off" placeholder="填写答案（多个可接受答案在题面用 / 分隔）">'
         : '<textarea class="q-text" rows="4" placeholder="写出你的要点，判分时按参考答案关键词命中比例给分"></textarea>';
-    return `<div class="quiz-q" data-no="${q.no}" data-kind="${q.kind}" data-answer="${esc(q.answer)}" data-answer-text="${esc(q.keywords.join('｜') || q.answer)}" data-explain="${esc(q.explain || '')}">
+    return `<div class="quiz-q" data-no="${q.no}" data-kind="${q.kind}">
       <span class="q-score">${fmt(q.maxScore)} 分</span>
       <div class="q-title">${q.no}. ${renderInline(q.stem)} <span class="tag">${KIND_LABEL[q.kind]}</span></div>
       ${input}
@@ -334,7 +346,6 @@ app.addEventListener('click', (e) => {
   if (e.target.id === 'quiz-manual') {
     const result = store.markManual(sec);
     e.target.disabled = true;
-    document.getElementById('quiz-banner')?.remove?.();
     toast('本小节已标记通过');
     afterPass(result, sec);
   }
@@ -354,12 +365,13 @@ app.addEventListener('click', (e) => {
     box.classList.toggle('wrong', none);
     box.classList.toggle('partial', !full && !none);
     const mine = picks[box.dataset.no];
+    /* 参考答案只能过一次转义：先 esc 再 renderInline 会让 <id> 一类文本以 &lt;id&gt; 的形态显示出来 */
     const expected = isChoiceKind(q.kind)
-      ? `正确项：${q.answer}` : `参考答案：${esc(q.keywords.join(' ｜ ') || q.answer)}`;
+      ? `正确项：${q.answer}` : `参考答案：${renderInline(q.keywords.join(' ｜ ') || q.answer)}`;
     box.querySelector('.quiz-result').innerHTML =
       `${full ? `<span style="color:var(--ok)">✔ 正确（${fmt(q.maxScore)} 分）</span>`
         : `<span style="color:${none ? 'var(--bad)' : 'var(--accent)'}">${none ? '✘ 不得分' : '△ 部分命中'}（得 ${fmt(d.earned)} / ${fmt(q.maxScore)} 分）</span>`}
-      ${(full ? '' : `你的作答：${mine || '未作答'}；${isChoiceKind(q.kind) ? expected : renderInline(expected)}<br>`) + (q.explain ? `<div class="exp">解析：${renderInline(q.explain)}</div>` : '')}`;
+      ${(full ? '' : `你的作答：${esc(mine) || '未作答'}；${expected}<br>`) + (q.explain ? `<div class="exp">解析：${renderInline(q.explain)}</div>` : '')}`;
     box.querySelectorAll('input, textarea').forEach((i) => { i.disabled = true; });
   });
 
@@ -502,7 +514,8 @@ window.addEventListener('hashchange', render);
 
 (async function boot() {
   applyTheme(store.getTheme());
-  const restored = Object.keys(localStorage).length ? 0 : await store.seedFromFile();
+  /* 播种判据只看「本地是否作答过」：localStorage 里常驻的 bjb.theme 会让整体非空判断永远成立 */
+  const restored = store.hasLocalProgress() ? 0 : await store.seedFromFile();
   if (restored) toast(`已从 progress.md 恢复 ${restored} 条进度`);
   await render();
 })();

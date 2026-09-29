@@ -1,7 +1,7 @@
 # Lettuce 与 Redisson 的定位与选型（关联）
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：把"Redis Java 客户端"这张地图收口——**Lettuce 是命令级客户端**（把 Redis 的每条命令映射成 API，你负责拼语义），**Redisson 是面向对象的分布式框架**（在 Redis 之上实现 Lock/Map/Set/BloomFilter/RRateLimiter 等**数据结构与分布式原语**，它把语义封装好给你）。关键认知：**Redisson 底层默认就构建在 Netty 上、可复用 Lettuce/Netty 连接资源**，二者不是竞品而是**分层协作**——命令操作用 Lettuce（或 Spring Data Redis），分布式协调原语用 Redisson。给出"什么活派给谁"的清晰边界与选型决策表。
 
 ## 一、抽象层次不同：命令 vs 对象（★★★★★，核心）

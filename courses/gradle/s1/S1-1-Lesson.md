@@ -1,7 +1,7 @@
 # build.gradle、settings 与 Groovy/Kotlin DSL
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能读懂并写出 Gradle 工程骨架（settings + build），分清配置期/执行期两段模型，说清 Groovy 与 Kotlin DSL 的取舍，理解 Gradle 与 Maven 声明式哲学的根本差异。
 
 ## 一、工程骨架：两个文件各管一头

@@ -1,7 +1,7 @@
 # Nacos + Sentinel + Seata 组件协同
 
 > 本节难度：★★★☆☆
-> 本节重要性：★★★★☆
+> 重要程度：★★★★☆
 > 学习产出：能把 Spring Cloud Alibaba（SCA）四大件——**Nacos（注册+配置）、Sentinel（限流熔断）、Seata（分布式事务）、OpenFeign/Dubbo（调用）**——的装配关系、彼此联动和"同一个服务里既限流又开全局事务"的接入顺序讲清楚。装配第一步是**版本对齐**：用 SCA 的 BOM（`spring-cloud-alibaba-dependencies`）统一 Nacos/Sentinel/Seata 各 starter 版本，并与 Spring Boot/Cloud 版本兼容矩阵对齐，否则极易出现 starter 之间类冲突、自动配置打架。分工与集成：`nacos-discovery` 负责服务注册与发现，`nacos-config` 负责外部化配置（`spring.config.import` 或 bootstrap）；Sentinel 靠 `spring-cloud-alibaba-sentinel` 接入，**要让 OpenFeign 走 Sentinel 做熔断降级，必须 `feign.sentinel.enabled=true`**，否则 Feign 调用不产生 Sentinel 资源、`fallback` 不生效；Seata 靠 `seata-spring-boot-starter`，通过**代理 DataSource** 拦截分支事务、`@GlobalTransactional` 开启全局事务。三者与 Nacos 的**联动**是重点：Seata 的 **TC（事务协调器）集群也注册到 Nacos**，RM/TC 通过 Nacos 互相发现，`tx-service-group→cluster` 的 `vgroupMapping` 从 Nacos 取；Sentinel 的流控/降级规则推荐用 **Nacos DataSource 持久化动态推送**（只存内存/控制台则重启即丢、无法程序化下发）；配置变更经 Nacos 推给各组件。在一个跨服务写操作的**接入顺序**上：请求先经**入口 Sentinel 限流**（挡住超量流量、保护后端），通过后进入业务、由 **`@GlobalTransactional` 拉起 Seata 全局事务**，再经 **OpenFeign 调下游**——此时 **Seata 的 xid 必须随 Feign 请求头传播**（`TxApplicationContext` / Feign `RequestInterceptor` 携带 `TX_XID`），下游分支才能挂到同一全局事务；而 Sentinel 的 `fallback` 降级返回要**落在事务边界之外妥善处置**，别把"降级产生的半成品写"提交进全局事务。识破"版本不对齐→starter 冲突""忘开 `feign.sentinel.enabled` → Feign 无熔断""Seata xid 不传播→下游分支游离于全局事务导致数据不一致""TC 没注册到 Nacos→各环境连错协调器""Sentinel 规则不接 Nacos→重启丢规则"等坑——电商下单跨库存/订单/积分多服务、金融转账正是这套组合的典型战场。
 
 ## 一、装配关系与版本对齐

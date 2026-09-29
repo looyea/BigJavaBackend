@@ -1,7 +1,7 @@
 # 认证会话安全与 JWT/CSRF 协同
 
 > 本节难度：★★★★☆
-> 本节重要性：★★★★★
+> 重要程度：★★★★★
 > 学习产出：能把"会话"和"令牌"两套认证形态的安全要点讲透，并让 CSRF 防御与它们正确配合。**会话（Cookie-Session）**侧三大风险：**会话固定**（攻击者预先塞一个已知 JSESSIONID，等受害者登录后劫持其身份）——防御是**登录后重建会话、作废旧 ID**；**会话劫持**（令牌被窃取即冒充）——靠 **Cookie 属性**兜底：`HttpOnly`（禁 JS 读，抗 XSS 偷 Cookie）、`Secure`（仅 HTTPS 传）、`SameSite=Lax/Strict`（跨站请求不带 Cookie，天然抗 CSRF）、合理 `Path`/过期与**空闲超时**；全站 HTTPS 防中间人嗅探。**JWT（自包含无状态令牌）**侧：把状态从服务端搬到令牌里，于是没有传统会话固定问题，但出现新课题——存放位置（`localStorage` 易被 XSS 窃取 vs `HttpOnly Cookie` 抗 XSS 但需另防 CSRF）、**过期与刷新**（access 短命 + refresh 轮换，refresh 泄露危害大要绑定/旋转检测）、**吊销难题**（无状态天然难即时失效，靠短 TTL + 黑名单/JTI）、算法攻击（`alg=none`、HS/RS 混淆、`kid` 注入）须强校验。**CSRF 本质**是"带凭证的跨站请求被诱导发起"：Cookie 会话会被浏览器自动携带故怕 CSRF（用 **CSRF Token + SameSite** 防），而 **JWT 放 Header（Authorization）时不受传统 CSRF 影响**（跨站表单带不上自定义头 + 无自动凭证），但**若把 JWT 塞进自动携带的 Cookie，CSRF 风险回来、仍需 SameSite/Token**。所以三者的协同关键是"**凭证怎么带、会不会被自动带**"。识破"登录后不重建会话""Cookie 不设 HttpOnly/Secure/SameSite""JWT 长效不吊销又存 localStorage""以为用了 JWT 就自动免疫 CSRF""Stateless 却把令牌放自动携带 Cookie"等坑。
 
 ## 一、会话安全：重建 + Cookie 属性
